@@ -1,5 +1,9 @@
 import React, { useRef, useState } from 'react';
 import { GoArrowUpRight } from 'react-icons/go';
+import arcClean from '../assets/arcClean.png';
+import nh35 from '../assets/nh35.png';
+import watch1 from '../assets/watch1.png';
+import watch2 from '../assets/watch2.png';
 
 // Simple textured background matching the CardNav aesthetic
 const Grain = () => (
@@ -52,7 +56,7 @@ export default function HomePage() {
         <section className="bg-[#f3eadf] shadow-sm relative overflow-hidden">
           {/* Background image */}
           <div className="absolute inset-0 opacity-20">
-            <img src="./src/assets/arcClean.png" alt="" className="w-full h-full object-cover object-center" />
+            <img src={arcClean} alt="" className="w-full h-full object-cover object-center" />
           </div>
           
           <div className="m-3 p-6 md:p-10 relative z-10">
@@ -61,7 +65,7 @@ export default function HomePage() {
           <div className="mx-auto max-w-sm">
             {/* Watch placeholder matching CardNav card style */}
             <div className="aspect-square rounded-xl border border-[#cdbfae] shadow-sm p-8 flex items-center justify-center bg-[#f3eadf]/80 backdrop-blur-sm">
-                <img src="./src/assets/watch1.png" alt="Watch" className='w-full h-full object-contain'/>
+                <img src={watch1} alt="Watch" className='w-full h-full object-contain'/>
             </div>
           </div>
               </Reveal>
@@ -101,7 +105,7 @@ export default function HomePage() {
         <section id="collection" className="mt-10 rounded-2xl border border-[#cdbfae] bg-[#f3eadf] shadow-sm relative overflow-hidden">
           {/* Background image */}
             <div className="absolute inset-0 opacity-20">
-              <img src="./src/assets/nh35.png" alt="" className="w-full h-full object-cover object-center scale-110 -rotate-12" />
+              <img src={nh35} alt="" className="w-full h-full object-cover object-center scale-110 -rotate-12" />
             </div>
           
           <div className="m-3 p-6 md:p-10 relative z-10">
@@ -122,7 +126,7 @@ export default function HomePage() {
           </div>
           
           <div className="mx-auto max-w-sm">
-            <img src="./src/assets/watch2.png" alt="" className='w-[250px]'/>
+            <img src={watch2} alt="" className='w-[250px]'/>
           </div>
               </div>
             </Reveal>
