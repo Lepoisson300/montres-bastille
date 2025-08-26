@@ -1,230 +1,223 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
-import { gsap } from "gsap";
-import { GoArrowUpRight } from "react-icons/go";
+// NavbarLuxury.tsx
+import React, { useEffect, useState } from "react";
+import { Link, NavLink } from "react-router-dom";
+import logo from "../assets/logo.png";
 
-type CardNavLink = {
-  label: string;
-  href: string;
-  ariaLabel: string;
+type RouteItem = {
+  name: string;
+  to: string;
 };
 
-export type CardNavItem = {
-  label: string;
-  bgColor: string;   // you can pass semi-transparent sepia tints too
-  textColor: string;
-  links: CardNavLink[];
-};
+const primaryRoutes: RouteItem[] = [
+  { name: "À propos", to: "/about" },
+  { name: "Votre Montres-Bastille", to: "/your-watch" },
+  { name: "Communauté", to: "/community" },
+  { name: "Contact", to: "/contact" },
+];
 
-export interface CardNavProps {
-  logo: string;
-  logoAlt?: string;
-  items: CardNavItem[];
-  className?: string;
-  ease?: string;
-  baseColor?: string;       // whole bar background
-  menuColor?: string;       // hamburger + logo tint
-  buttonBgColor?: string;
-  buttonTextColor?: string;
-  borderColor?: string;
-}
+const Nav: React.FC = () => {
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-const CardNav: React.FC<CardNavProps> = ({
-  logo,
-  logoAlt = "Logo",
-  items,
-  className = "",
-  ease = "power3.out",
-  baseColor = "#f3eadf",          // <- your page section bg
-  menuColor = "#2b2723",          // <- site text color
-  borderColor = "#cdbfae",
-}) => {
-  const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const navRef = useRef<HTMLDivElement | null>(null);
-  const cardsRef = useRef<HTMLDivElement[]>([]);
-  const tlRef = useRef<gsap.core.Timeline | null>(null);
-
-  const calculateHeight = () => {
-    const navEl = navRef.current;
-    if (!navEl) return 260;
-
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    if (isMobile) {
-      const contentEl = navEl.querySelector(".card-nav-content") as HTMLElement;
-      if (contentEl) {
-        const wasVisible = contentEl.style.visibility;
-        const wasPointerEvents = contentEl.style.pointerEvents;
-        const wasPosition = contentEl.style.position;
-        const wasHeight = contentEl.style.height;
-
-        contentEl.style.visibility = "visible";
-        contentEl.style.pointerEvents = "auto";
-        contentEl.style.position = "static";
-        contentEl.style.height = "auto";
-        contentEl.offsetHeight;
-
-        const topBar = 60;
-        const padding = 16;
-        const contentHeight = contentEl.scrollHeight;
-
-        contentEl.style.visibility = wasVisible;
-        contentEl.style.pointerEvents = wasPointerEvents;
-        contentEl.style.position = wasPosition;
-        contentEl.style.height = wasHeight;
-
-        return topBar + contentHeight + padding;
-      }
-    }
-    return 260;
-  };
-
-  const createTimeline = () => {
-    const navEl = navRef.current;
-    if (!navEl) return null;
-
-    gsap.set(navEl, { height: 60, overflow: "hidden" });
-    gsap.set(cardsRef.current, { y: 50, opacity: 0 });
-
-    const tl = gsap.timeline({ paused: true });
-    tl.to(navEl, { height: calculateHeight, duration: 0.4, ease });
-    tl.to(
-      cardsRef.current,
-      { y: 0, opacity: 1, duration: 0.4, ease, stagger: 0.08 },
-      "-=0.1"
-    );
-    return tl;
-  };
-
-  useLayoutEffect(() => {
-    const tl = createTimeline();
-    tlRef.current = tl;
-    return () => {
-      tl?.kill();
-      tlRef.current = null;
-    };
-  }, [ease, items]);
-
-  useLayoutEffect(() => {
-    const handleResize = () => {
-      if (!tlRef.current) return;
-
-      if (isExpanded) {
-        const newHeight = calculateHeight();
-        gsap.set(navRef.current, { height: newHeight });
-        tlRef.current.kill();
-        const newTl = createTimeline();
-        if (newTl) {
-          newTl.progress(1);
-          tlRef.current = newTl;
-        }
-      } else {
-        tlRef.current.kill();
-        const newTl = createTimeline();
-        if (newTl) tlRef.current = newTl;
-      }
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [isExpanded]);
-
-  const toggleMenu = () => {
-    const tl = tlRef.current;
-    if (!tl) return;
-    if (!isExpanded) {
-      setIsHamburgerOpen(true);
-      setIsExpanded(true);
-      tl.play(0);
-    } else {
-      setIsHamburgerOpen(false);
-      tl.eventCallback("onReverseComplete", () => setIsExpanded(false));
-      tl.reverse();
-    }
-  };
-
-  const setCardRef =
-    (i: number) =>
-    (el: HTMLDivElement | null) => {
-      if (el) cardsRef.current[i] = el;
-    };
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <div
-      className={`card-nav-container absolute left-1/2 -translate-x-1/2 w-[92%] max-w-[980px] z-[99] top-[1.2em] md:top-[2em] ${className}`}
+    <header
+      className={[
+        "fixed inset-x-0 top-0 z-50 transition-all duration-300",
+        scrolled ? "backdrop-blur-md" : "backdrop-blur-0",
+      ].join(" ")}
+      role="banner"
     >
-      <nav
-        ref={navRef}
-        className="card-nav block h-[60px] p-0 rounded-2xl shadow-sm relative overflow-hidden will-change-[height] border"
-        style={{ backgroundColor: baseColor, borderColor }}
-      >
-        {/* top bar */}
-        <div className="card-nav-top absolute inset-x-0 top-0 h-[60px] flex items-center justify-between px-3 md:px-4 z-[2]">
-          {/* hamburger */}
-          <div
-            className={`hamburger-menu ${isHamburgerOpen ? "open" : ""} group h-full flex flex-col items-center justify-center cursor-pointer gap-[6px] order-2 md:order-none`}
-            onClick={toggleMenu}
-            role="button"
-            aria-label={isExpanded ? "Close menu" : "Open menu"}
-            tabIndex={0}
-            style={{ color: menuColor }}
-          >
-            <div
-              className={`w-[30px] h-[2px] bg-current transition-[transform,opacity,margin] duration-300 ease-linear [transform-origin:50%_50%] ${
-                isHamburgerOpen ? "translate-y-[4px] rotate-45" : ""
-              } group-hover:opacity-75`}
-            />
-            <div
-              className={`w-[30px] h-[2px] bg-current transition-[transform,opacity,margin] duration-300 ease-linear [transform-origin:50%_50%] ${
-                isHamburgerOpen ? "-translate-y-[4px] -rotate-45" : ""
-              } group-hover:opacity-75`}
-            />
-          </div>
-
-          {/* centered logo */}
-          <div className="logo-container flex items-center md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 order-1 md:order-none">
-            <img src={logo} alt={logoAlt} className="h-[45px]" />
-          </div>
-
-          {/* CTA */}
-          
-        </div>
-
-        {/* expanding content */}
-        <div
-          className={`card-nav-content absolute left-0 right-0 top-[60px] bottom-0 p-2 flex flex-col items-stretch gap-2 justify-start z-[1] ${
-            isExpanded ? "visible pointer-events-auto" : "invisible pointer-events-none"
-          } md:flex-row md:items-end md:gap-3`}
-          aria-hidden={!isExpanded}
+      <div className="mx-auto mt-3 w-[95%] max-w-6xl">
+        <nav
+          className={[
+            "relative rounded-2xl border",
+            "bg-mb-midnight/95",
+            "border-mb-champagne/20",
+            "shadow-[0_2px_25px_rgba(0,0,0,0.35)]",
+            scrolled ? "py-2" : "py-3",
+          ].join(" ")}
+          aria-label="Primary"
         >
-          {(items || []).slice(0, 3).map((item, idx) => (
-            <div
-              key={`${item.label}-${idx}`}
-              ref={setCardRef(idx)}
-              className="select-none relative flex flex-col gap-2 p-[12px_16px] rounded-xl min-w-0 flex-[1_1_auto] h-auto min-h-[60px] md:h-full md:min-h-0 md:flex-[1_1_0%] border shadow-sm"
-              style={{ backgroundColor: item.bgColor, color: item.textColor, borderColor }}
-            >
-              <div className="font-serif tracking-[-0.5px] text-[18px] md:text-[22px]">
-                {item.label}
-              </div>
+          {/* Hairline top border */}
+          <span className="pointer-events-none absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-mb-champagne/60 to-transparent rounded-t-2xl" />
 
-              <div className="mt-auto flex flex-col gap-[2px]">
-                {item.links?.map((lnk, i) => (
-                  <a
-                    key={`${lnk.label}-${i}`}
-                    href={lnk.href}
-                    aria-label={lnk.ariaLabel}
-                    className="inline-flex items-center gap-[6px] no-underline cursor-pointer transition-opacity duration-300 hover:opacity-80 text-[15px] md:text-[16px]"
+          <div className="flex items-center justify-between px-4 md:px-6">
+            {/* Logo + Brand */}
+            <Link to="/" className="flex items-center gap-2 group">
+              <img
+                src={logo}
+                alt="Montres-Bastille"
+                className="h-12 w-12 "
+              />
+              <span className="font-serif text-lg tracking-wide text-mb-ivory">
+                Montres-Bastille
+              </span>
+            </Link>
+
+            {/* Desktop navigation */}
+            <ul className="hidden md:flex items-center gap-2">
+              {primaryRoutes.map(({ name, to }) => (
+                <li key={to} className="relative group">
+                  <NavLink
+                    to={to}
+                    className={({ isActive }) =>
+                      [
+                        "px-3 py-2 rounded-md text-sm uppercase tracking-[0.12em]",
+                        "transition-all duration-300",
+                        "text-mb-ivory/70 hover:text-mb-ivory",
+                        "hover:-translate-y-[2px] hover:shadow-md",
+                        isActive ? "text-mb-ivory" : "",
+                      ].join(" ")
+                    }
                   >
-                    <GoArrowUpRight className="shrink-0" aria-hidden="true" />
-                    {lnk.label}
-                  </a>
-                ))}
-              </div>
+                    {name}
+                  </NavLink>
+                  {/* Champagne underline */}
+                  <span
+                    aria-hidden
+                    className={[
+                      "absolute left-2 right-2 -bottom-0.5 h-px",
+                      "bg-gradient-to-r from-transparent via-mb-champagne to-transparent",
+                      "transition-opacity duration-300",
+                      "opacity-0 group-hover:opacity-100",
+                    ].join(" ")}
+                  />
+                </li>
+              ))}
+            </ul>
+
+            {/* Right side */}
+            <div className="flex items-center gap-2">
+              {/* CTA */}
+              <Link
+                to="/appointment"
+                className="hidden md:inline-flex items-center rounded-full border border-mb-champagne/50 px-4 py-2 text-sm text-mb-ivory 
+                           transition-all duration-300
+                           hover:border-mb-champagne hover:bg-mb-champagne/10 hover:-translate-y-[2px] hover:shadow-md"
+              >
+                Prendre rendez-vous
+              </Link>
+
+              
+              
+
+              {/* Account */}
+              <Link
+                to="/account"
+                aria-label="Compte"
+                className="hidden sm:inline-flex p-2 rounded-full text-mb-ivory/70 
+                           transition-all duration-300
+                           hover:text-mb-ivory hover:bg-white/5 hover:-translate-y-[2px] hover:shadow-md"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  className="h-5 w-5"
+                >
+                  <path
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5Z"
+                  />
+                </svg>
+              </Link>
+
+              {/* Mobile toggle */}
+              <button
+                type="button"
+                aria-expanded={open}
+                aria-controls="mobile-menu"
+                onClick={() => setOpen((v) => !v)}
+                className="md:hidden p-2 rounded-full text-mb-ivory/70 
+                           transition-all duration-300
+                           hover:text-mb-ivory hover:bg-white/5 hover:-translate-y-[2px] hover:shadow-md"
+              >
+                {open ? (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    className="h-6 w-6"
+                  >
+                    <path
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18 18 6M6 6l12 12"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    className="h-6 w-6"
+                  >
+                    <path
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4 7h16M4 12h16M4 17h16"
+                    />
+                  </svg>
+                )}
+              </button>
             </div>
-          ))}
-        </div>
-      </nav>
-    </div>
+          </div>
+
+          {/* Mobile drawer */}
+          <div
+            id="mobile-menu"
+            className={[
+              "md:hidden overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out",
+              open ? "max-h-[480px] opacity-100" : "max-h-0 opacity-0",
+            ].join(" ")}
+          >
+            <div className="px-4 pb-4 pt-2">
+              <ul className="divide-y divide-mb-ivory/10 rounded-xl border border-mb-ivory/10 bg-mb-midnight/95">
+                {primaryRoutes.map(({ name, to }) => (
+                  <li key={to}>
+                    <NavLink
+                      to={to}
+                      onClick={() => setOpen(false)}
+                      className={({ isActive }) =>
+                        [
+                          "block px-4 py-3 text-sm tracking-wide transition-all duration-300",
+                          "text-mb-ivory/70 hover:bg-mb-champagne/10 hover:text-mb-ivory hover:-translate-y-[2px] hover:shadow-md",
+                          isActive ? "bg-mb-champagne/20 text-mb-ivory" : "",
+                        ].join(" ")
+                      }
+                    >
+                      {name}
+                    </NavLink>
+                  </li>
+                ))}
+                <li>
+                  <Link
+                    to="/appointment"
+                    onClick={() => setOpen(false)}
+                    className="block px-4 py-3 text-sm tracking-wide text-mb-ivory 
+                               bg-mb-champagne/20 hover:bg-mb-champagne/30 hover:-translate-y-[2px] hover:shadow-md transition-all duration-300"
+                  >
+                    Prendre rendez-vous
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
   );
 };
 
-export default CardNav;
+export default Nav;
