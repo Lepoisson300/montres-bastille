@@ -30,7 +30,6 @@ const Nav: React.FC = () => {
     <header
       className={[
         "fixed inset-x-0 top-0 z-50 transition-all duration-300",
-        scrolled ? "backdrop-blur-md" : "backdrop-blur-0",
       ].join(" ")}
       role="banner"
     >
@@ -38,15 +37,15 @@ const Nav: React.FC = () => {
         <nav
           className={[
             "relative rounded-2xl border",
-            "bg-mb-midnight/95",
-            "border-mb-champagne/20",
+            "bg-midnight/95",
+            "border-champagne/20",
             "shadow-[0_2px_25px_rgba(0,0,0,0.35)]",
             scrolled ? "py-2" : "py-3",
           ].join(" ")}
           aria-label="Primary"
         >
           {/* Hairline top border */}
-          <span className="pointer-events-none absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-mb-champagne/60 to-transparent rounded-t-2xl" />
+          <span className="pointer-events-none absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-champagne/60 to-transparent rounded-t-2xl" />
 
           <div className="flex items-center justify-between px-4 md:px-6">
             {/* Logo + Brand */}
@@ -56,7 +55,7 @@ const Nav: React.FC = () => {
                 alt="Montres-Bastille"
                 className="h-12 w-12 "
               />
-              <span className="font-serif text-lg tracking-wide text-mb-ivory">
+              <span className="font-serif text-lg tracking-wide text-ivory">
                 Montres-Bastille
               </span>
             </Link>
@@ -71,9 +70,9 @@ const Nav: React.FC = () => {
                       [
                         "px-3 py-2 rounded-md text-sm uppercase tracking-[0.12em]",
                         "transition-all duration-300",
-                        "text-mb-ivory/70 hover:text-mb-ivory",
+                        "text-ivory/70 hover:text-ivory",
                         "hover:-translate-y-[2px] hover:shadow-md",
-                        isActive ? "text-mb-ivory" : "",
+                        isActive ? "text-ivory" : "",
                       ].join(" ")
                     }
                   >
@@ -84,7 +83,7 @@ const Nav: React.FC = () => {
                     aria-hidden
                     className={[
                       "absolute left-2 right-2 -bottom-0.5 h-px",
-                      "bg-gradient-to-r from-transparent via-mb-champagne to-transparent",
+                      "bg-gradient-to-r from-transparent via-champagne to-transparent",
                       "transition-opacity duration-300",
                       "opacity-0 group-hover:opacity-100",
                     ].join(" ")}
@@ -98,23 +97,20 @@ const Nav: React.FC = () => {
               {/* CTA */}
               <Link
                 to="/appointment"
-                className="hidden md:inline-flex items-center rounded-full border border-mb-champagne/50 px-4 py-2 text-sm text-mb-ivory 
+                className="hidden md:inline-flex items-center rounded-full border border-champagne/50 px-4 py-2 text-sm text-ivory 
                            transition-all duration-300
-                           hover:border-mb-champagne hover:bg-mb-champagne/10 hover:-translate-y-[2px] hover:shadow-md"
+                           hover:border-champagne hover:bg-champagne/10 hover:-translate-y-[2px] hover:shadow-md"
               >
                 Prendre rendez-vous
               </Link>
-
-              
-              
 
               {/* Account */}
               <Link
                 to="/account"
                 aria-label="Compte"
-                className="hidden sm:inline-flex p-2 rounded-full text-mb-ivory/70 
+                className="hidden sm:inline-flex p-2 rounded-full text-ivory/70 
                            transition-all duration-300
-                           hover:text-mb-ivory hover:bg-white/5 hover:-translate-y-[2px] hover:shadow-md"
+                           hover:text-ivory hover:bg-white/5 hover:-translate-y-[2px] hover:shadow-md"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -137,9 +133,9 @@ const Nav: React.FC = () => {
                 aria-expanded={open}
                 aria-controls="mobile-menu"
                 onClick={() => setOpen((v) => !v)}
-                className="md:hidden p-2 rounded-full text-mb-ivory/70 
+                className="md:hidden p-2 rounded-full text-ivory/70 
                            transition-all duration-300
-                           hover:text-mb-ivory hover:bg-white/5 hover:-translate-y-[2px] hover:shadow-md"
+                           hover:text-ivory hover:bg-white/5 hover:-translate-y-[2px] hover:shadow-md"
               >
                 {open ? (
                   <svg
@@ -183,7 +179,7 @@ const Nav: React.FC = () => {
             ].join(" ")}
           >
             <div className="px-4 pb-4 pt-2">
-              <ul className="divide-y divide-mb-ivory/10 rounded-xl border border-mb-ivory/10 bg-mb-midnight/95">
+              <ul className="divide-y divide-ivory/10 rounded-xl border border-ivory/10 bg-midnight/95">
                 {primaryRoutes.map(({ name, to }) => (
                   <li key={to}>
                     <NavLink
@@ -192,8 +188,8 @@ const Nav: React.FC = () => {
                       className={({ isActive }) =>
                         [
                           "block px-4 py-3 text-sm tracking-wide transition-all duration-300",
-                          "text-mb-ivory/70 hover:bg-mb-champagne/10 hover:text-mb-ivory hover:-translate-y-[2px] hover:shadow-md",
-                          isActive ? "bg-mb-champagne/20 text-mb-ivory" : "",
+                          "text-ivory/70 hover:bg-champagne/10 hover:text-ivory hover:-translate-y-[2px] hover:shadow-md",
+                          isActive ? "bg-champagne/20 text-ivory" : "",
                         ].join(" ")
                       }
                     >
@@ -205,8 +201,8 @@ const Nav: React.FC = () => {
                   <Link
                     to="/appointment"
                     onClick={() => setOpen(false)}
-                    className="block px-4 py-3 text-sm tracking-wide text-mb-ivory 
-                               bg-mb-champagne/20 hover:bg-mb-champagne/30 hover:-translate-y-[2px] hover:shadow-md transition-all duration-300"
+                    className="block px-4 py-3 text-sm tracking-wide text-ivory 
+                               bg-champagne/20 hover:bg-champagne/30 hover:-translate-y-[2px] hover:shadow-md transition-all duration-300"
                   >
                     Prendre rendez-vous
                   </Link>

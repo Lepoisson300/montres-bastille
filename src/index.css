@@ -1,1 +1,22 @@
+/* src/index.css */
 @import "tailwindcss";
+
+@theme {
+  --color-ink: #2B2723;
+  --color-ink2: #463F38;
+  --color-parchment: #F3EADF;
+
+  --color-sand-200: #EFE6DA;
+  --color-sand-300: #E6DCCF;
+  --color-sand-400: #DDD3C6;
+
+  --color-wheat-500: #CDBFAE;
+  --color-wheat-600: #AD9F8C;
+
+  --color-champagne: #C1A36B;
+  --color-midnight: #0F1A24;
+  --color-racing: #0E3B2E;
+  --color-bordeaux: #5E2A2B;
+  --color-slate: #2A2F36;
+  --color-ivory: #F6F1E9;
+}

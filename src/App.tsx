@@ -3,7 +3,7 @@ import Reveal from './Logic/Reveal'
 import HomePage from './pages/HomePage'
 import CardNav from "./components/Nav";
 import { BrowserRouter } from "react-router-dom";
-
+import ColorPalette from './components/Palette';
 
 
 function App() {
@@ -15,9 +15,9 @@ function App() {
           <CardNav />
           <HomePage />
         </BrowserRouter>
-
           <footer className="mt-20 bg-mb-midnight text-mb-ivory border-t border-mb-champagne/20">
-  <div className="mx-auto max-w-6xl px-6 py-12 md:px-12">
+  
+  <div className="mx-auto max-w-6xl px-6 md:px-12">
     <Reveal>
       <div className="grid gap-10 md:grid-cols-4">
         {/* Brand */}
