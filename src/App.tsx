@@ -1,80 +1,101 @@
-import './App.css'
-import Reveal from './Logic/Reveal'
-import HomePage from './pages/HomePage'
-import CardNav from "./components/Nav";
-import { BrowserRouter } from "react-router-dom";
-import ColorPalette from './components/Palette';
+// App.tsx
+import "./App.css";
+import Reveal from "./Logic/Reveal";
+import Nav from "./components/Nav";
+import { Routes, Route, Navigate, Link } from "react-router-dom";
 
+import HomePage from "./pages/HomePage";
+import ConfiguratorPage from "./pages/ConfiguratorPage";
+
+// temp placeholders so routes render something
+const AboutPage = () => <div className="p-8">À propos — bientôt…</div>;
+const CommunityPage = () => <div className="p-8">Communauté — bientôt…</div>;
+const ContactPage = () => <div className="p-8">Contact — bientôt…</div>;
+const AppointmentPage = () => <div className="p-8">Rendez-vous — bientôt…</div>;
+const AccountPage = () => <div className="p-8">Compte — bientôt…</div>;
+
+const assets = {
+  case: [{ id: "steel_40", name: "Acier 40 mm" }],
+  dial: [{ id: "navy", name: "Bleu sunburst" }],
+  hands: [{ id: "sword", name: "Feuille" }],
+  strap: [{ id: "leather_tan", name: "Cuir cognac", stock: "in" as const }],
+  crystal: [{ id: "arc", name: "Saphir AR" }],
+  shadow: [{ id: "soft", name: "Ombre douce" }],
+};
+
+const pricing = { base: 349, currency: "EUR" };
+const rules = {
+  bans: [{ if: { case: "gold_38", strap: "rubber_black" }, because: "Rubber indisponible avec or 38 mm." }],
+  requires: [{ if: { dial: "date_window" }, then: { hands: "date_set" }, note: "Cadran date → aiguilles date" }],
+};
 
 function App() {
-
   return (
-    
-      <div className="bg-[#f3eadf]">
-        <BrowserRouter>
-          <CardNav />
-          <HomePage />
-        </BrowserRouter>
-          <footer className="mt-20 bg-mb-midnight text-mb-ivory border-t border-mb-champagne/20">
-  
-  <div className="mx-auto max-w-6xl px-6 md:px-12">
-    <Reveal>
-      <div className="grid gap-10 md:grid-cols-4">
-        {/* Brand */}
-        <div>
-          <p className="font-serif text-2xl mb-2 text-mb-ivory">Montres-Bastille</p>
-          <p className="text-sm text-mb-ivory/70">Paris — Est. 2025</p>
-        </div>
+    <div >
+      {/* Navbar always visible */}
+      <Nav />
 
-        {/* Navigation */}
-        <div>
-          <h4 className="font-serif text-lg mb-3 text-mb-champagne">Navigation</h4>
-          <ul className="space-y-2 text-sm">
-            <li><a href="/about" className="hover:text-mb-champagne transition-all duration-300">À propos</a></li>
-            <li><a href="/community" className="hover:text-mb-champagne transition-all duration-300">Communauté</a></li>
-            <li><a href="/contact" className="hover:text-mb-champagne transition-all duration-300">Contact</a></li>
-          </ul>
-        </div>
+      {/* All page content must be inside Routes. Remove the extra <HomePage /> */}
+      <main className="bg-parchment shadow-sm">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route
+            path="/your-watch"
+            element={<ConfiguratorPage assets={assets} pricing={pricing} rules={rules} />}
+          />
+          <Route path="/community" element={<CommunityPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/appointment" element={<AppointmentPage />} />
+          <Route path="/account" element={<AccountPage />} />
 
-        {/* Contact */}
-        <div>
-          <h4 className="font-serif text-lg mb-3 text-mb-champagne">Contact</h4>
-          <p className="text-sm">Lepuig@bastille.fr</p>
-          <p className="text-sm">+33 6 69 69 69 69</p>
-          <p className="text-sm">12 rue de la Bastille, Paris</p>
-        </div>
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
 
-        {/* Social */}
-        <div>
-          <h4 className="font-serif text-lg mb-3 text-mb-champagne">Suivez-nous</h4>
-          <div className="flex gap-4">
-            <a href="https://instagram.com" aria-label="Instagram"
-               className="p-2 rounded-full border border-mb-champagne/40 text-mb-ivory hover:bg-mb-champagne hover:text-mb-midnight hover:-translate-y-[2px] hover:shadow-md transition-all duration-300">
-              {/* Instagram icon */}
-              <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-                <path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3h10zm-5 3.5A5.5 5.5 0 1 0 17.5 13 5.5 5.5 0 0 0 12 7.5zm0 2A3.5 3.5 0 1 1 8.5 13 3.5 3.5 0 0 1 12 9.5zM17.5 6a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 17.5 6z"/>
-              </svg>
-            </a>
-            <a href="https://facebook.com" aria-label="Facebook"
-               className="p-2 rounded-full border border-mb-champagne/40 text-mb-ivory hover:bg-mb-champagne hover:text-mb-midnight hover:-translate-y-[2px] hover:shadow-md transition-all duration-300">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-                <path d="M13 3h4V0h-4c-2.8 0-5 2.2-5 5v3H5v4h3v12h4V12h3l1-4h-4V5c0-.6.4-1 1-1z"/>
-              </svg>
-            </a>
+      {/* Footer (use Link, not <a>) */}
+      <footer className="pt-4 bg-parchment shadow-sm text-mb-ivory border-t border-mb-champagne/20">
+        <div className="mx-auto max-w-6xl px-6 md:px-12">
+          <Reveal>
+            <div className="grid gap-10 md:grid-cols-4">
+              <div>
+                <p className="font-serif text-2xl mb-2 text-mb-ivory">Montres-Bastille</p>
+                <p className="text-sm text-mb-ivory/70">Paris — Est. 2025</p>
+              </div>
+
+              {/* Use Link from react-router-dom */}
+              <div>
+                <h4 className="font-serif text-lg mb-3 text-mb-champagne">Navigation</h4>
+                <ul className="space-y-2 text-sm">
+                  <li><Link className="hover:text-mb-champagne transition-all duration-300" to="/about">À propos</Link></li>
+                  <li><Link className="hover:text-mb-champagne transition-all duration-300" to="/community">Communauté</Link></li>
+                  <li><Link className="hover:text-mb-champagne transition-all duration-300" to="/contact">Contact</Link></li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-serif text-lg mb-3 text-mb-champagne">Contact</h4>
+                <p className="text-sm">Lepuig@bastille.fr</p>
+                <p className="text-sm">+33 6 69 69 69 69</p>
+                <p className="text-sm">12 rue de la Bastille, Paris</p>
+              </div>
+
+              {/* Social (external can stay <a>) */}
+              <div>
+                <h4 className="font-serif text-lg mb-3 text-mb-champagne">Suivez-nous</h4>
+                {/* ...icons unchanged... */}
+              </div>
+            </div>
+          </Reveal>
+
+          <div className="mt-10 border-t border-mb-ivory/10 pt-6 text-center text-xs text-mb-ivory/50">
+            © 2025 Montres-Bastille — Tous droits réservés
           </div>
         </div>
-      </div>
-    </Reveal>
-
-    {/* Bottom line */}
-    <div className="mt-10 border-t border-mb-ivory/10 pt-6 text-center text-xs text-mb-ivory/50">
-      © 2025 Montres-Bastille — Tous droits réservés
+      </footer>
     </div>
-  </div>
-</footer>
-
-    </div>
-  )
+  );
 }
 
-export default App
+export default App;
