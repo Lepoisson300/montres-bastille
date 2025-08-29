@@ -3,12 +3,12 @@ import "./App.css";
 import Reveal from "./Logic/Reveal";
 import Nav from "./components/Nav";
 import { Routes, Route, Navigate, Link } from "react-router-dom";
-
 import HomePage from "./pages/HomePage";
 import ConfiguratorPage from "./pages/ConfiguratorPage";
+import AboutPage from "./pages/AboutPage";
+
 
 // temp placeholders so routes render something
-const AboutPage = () => <div className="p-8">À propos — bientôt…</div>;
 const CommunityPage = () => <div className="p-8">Communauté — bientôt…</div>;
 const ContactPage = () => <div className="p-8">Contact — bientôt…</div>;
 const AppointmentPage = () => <div className="p-8">Rendez-vous — bientôt…</div>;
