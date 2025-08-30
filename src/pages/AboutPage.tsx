@@ -23,7 +23,7 @@ export default function AboutPage() {
               <div className="pb-14 text-ivory">
                 <p className="tracking-[.25em] text-xs uppercase text-champagne/90 font-sans">Paris — Est. 2025</p>
                 <h1 className="mt-4 text-4xl md:text-6xl font-serif leading-tight tracking-tight">L'histoire de <span className="text-champagne">Montres‑Bastille</span></h1>
-                <p className="mt-4 max-w-2xl text-ivory/90">Une maison née de l'amour de son pays et la fascination des mecanismes. Nous créons des montres que l'on garde, que l'on transmet, qui nous rappelle et nous unis à une histoire.</p>
+                <p className="mt-4 max-w-2xl text-ivory/90">Si vous etes arrivé là c'est que vous êtes curieux de savoir comment sont fabriqué nos montres et ce que nous faisons ? Alors allons-y</p>
                 <div className="mt-6">
                   <Link to="/your-watch" className="inline-flex items-center gap-2 rounded-full bg-champagne text-midnight font-sans px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all duration-300 shadow-md hover:bg-champagne/90 hover:-translate-y-[2px]">
                     Créer votre montres-bastille
@@ -42,9 +42,14 @@ export default function AboutPage() {
           <Reveal>
             <div className="grid gap-10 md:grid-cols-12 items-start">
               <div className="md:col-span-7">
-                <h2 className="font-serif text-3xl md:text-4xl tracking-tight">Le temps, sans détour</h2>
-                <p className="mt-4 leading-relaxed text-ink/80">Au cœur de la ville de Bordeaux, nous assemblons chaque pièce à la main. Nos boîtiers acier sont fabriqué par des machines de précision chez ... puis brossé et miroir ches nous. Les cadrans sont fabriqués avec des matériaux raffinés qui proviennes directement des régions de France, cela permet de créer des détails qui se découvrent au second regard.</p>
-                <p className="mt-4 leading-relaxed text-ink/80">Dès l'origine, nous avons voulu une montre honnête: mouvement éprouvé, composants interchangeables, service simple. Pas d'esbroufe : du beau, du fiable, du durable et de l'histoire.</p>
+                <h2 className="font-serif text-3xl md:text-4xl tracking-tight">La France dans un raffinement absolu</h2>
+                <p className="mt-4 leading-relaxed text-ink/80">Une marque crée par deux passionné de mechanisme et amoureux de leurs pays, pour des gens qui désire un bout de cette passion à leurs poignets.</p>
+                <p className="mt-4 leading-relaxed text-ink/80">Nous nous déplacons dans les régions de France pour discuter, comprendre avec les locaux ce qui caractérise le mieux leurs régions. Les matériaux sont ensuite choisis et sont retravaillés par des artisans. </p>
+
+                <h2 className="font-serif text-3xl md:text-4xl tracking-tight mt-3">Pas seulement une montre</h2>
+                <p className="mt-4 leading-relaxed text-ink/80">Quand on parle de montre, on parle souvent d'un endroit précis, une manière de faire. Nous vous proposons une montres unique qui se base sur
+                l'essence même de la France. </p>
+                <p className="mt-4 leading-relaxed text-ink/80">Chaque montre raconte une histoire, et cette histoire c'est vous qui la Créez, de son lieu d'origine et des matériaux qui la composent.</p>
               </div>
               <div className="md:col-span-5">
                 <div className="rounded-2xl border border-wheat-500/40 bg-white/50 p-2 shadow-sm">
@@ -97,14 +102,13 @@ export default function AboutPage() {
           <Reveal>
             <div className="grid gap-12 md:grid-cols-2 items-center">
               <div>
-                <h3 className="font-serif text-3xl md:text-4xl tracking-tight">Un morceau d'histoire à votre poignet</h3>
-                <p className="mt-4 text-ivory/80 leading-relaxed">Nous limitons le superflu pour sublimer l'essentiel : une lecture claire, une présence au poignet, une lumière qui glisse sur l'acier. Chaque décision — de la typographie du cadran aux aiguilles — répond à une logique d'usage avant tout.</p>
-                <ul className="mt-6 space-y-2 text-sm text-ivory/80">
-                  <li>• Acier 316L brossé / poli au grain fin</li>
-                  <li>• Verre saphir double traitement anti‑reflet</li>
-                  <li>• Étanchéité réelle testée pièce par pièce</li>
-                  <li>• Bracelets interchangeables en 10 secondes</li>
-                </ul>
+                <h3 className="font-serif text-3xl md:text-4xl tracking-tight">Pourquoi faire ce projet ?</h3>
+                <p className="mt-4 text-ivory/80 leading-relaxed">Tout est partie d'une simple idée d'avoir une montre personnalisé crée par nous. Nous nous sommes rendu compte que pour les modèle haut de gamme nous n'avions pas beaucoups de diversité de
+                pièce ou encore que le prix était bien trop élevé.
+                </p>
+                <p className="mt-4 text-ivory/80 leading-relaxed">
+                  Chez Montres-Bastille, nous voulons rendre les montres de haut standing accessibles à tous avec de larges possibilités de personnalisations.
+                </p>
                 <div className="mt-8 flex flex-wrap gap-3">
                   <Link to="/your-watch" className="inline-flex items-center gap-2 rounded-full bg-champagne text-midnight font-sans px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all hover:-translate-y-[2px] hover:shadow-md">Configurer la vôtre</Link>
                   <Link to="/contact" className="inline-flex items-center gap-2 rounded-full border border-champagne/50 px-6 py-3 text-sm uppercase tracking-[0.2em] text-ivory transition-all hover:bg-white/5 hover:-translate-y-[2px]">Nous écrire</Link>
@@ -114,7 +118,7 @@ export default function AboutPage() {
                 <div className="absolute -inset-6 -z-10 rounded-3xl bg-gradient-to-tr from-champagne/10 to-transparent blur-2xl" />
                 <div className="rounded-2xl border border-champagne/30 bg-midnight/60 p-2 shadow-[0_10px_40px_rgba(0,0,0,0.45)]">
                   <div className="aspect-[4/3] rounded-xl bg-gradient-to-b from-slate-900/40 to-slate-900/70 flex items-center justify-center text-ivory/60">
-                    <span className="text-sm">Vidéo / image macro de cadran (placeholder)</span>
+                    <img src="./src/assets/nh35.png " alt="" className="h-[90%] w-[50%]" />
                   </div>
                 </div>
               </div>

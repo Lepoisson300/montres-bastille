@@ -1,9 +1,8 @@
 import React, { useRef, useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
-import arcClean from "../assets/arcClean.png";
-import nh35 from "../assets/nh35.png";
-import france from "../assets/france.png";
-import watch1 from "../assets/watch1.png";
+import arcClean from "../assets/arcClean.jpg";
+import nh35 from "../assets/37.jpg";
+import france from "../assets/france.jpg";
 import watch2 from "../assets/watch2.png";
 import HeroCarousel from "../components/Carousel";
 
@@ -71,21 +70,21 @@ export default function HomePage() {
         <HeroCarousel images={[arcClean, france, nh35]}>
           <div className="max-w-2xl">
             <p className="tracking-[.25em] text-xs uppercase text-amber-50 font-sans">
-              Inspiré par le patrimoine français
+              Un bout d'histoire française au poignet
             </p>
             <h1 className="mt-4 mb-6 text-5xl md:text-7xl font-serif text-amber-50 leading-tight tracking-tight">
-              Montres <span className="block">Personnalisées</span>
+              Montres-Bastille
             </h1>
             <div className="flex flex-wrap justify-center gap-4">
               <a
-                href="#custom"
+                href="/montres-bastille/your-watch"
                 className="inline-flex rounded-2xl items-center gap-2 bg-amber-50 text-midnight font-sans px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all duration-300 shadow-md hover:bg-wheat-600 hover:-translate-y-[2px] hover:shadow-lg"
               >
                 <GoArrowUpRight />
                 Personnaliser
               </a>
               <a
-                href="#collection"
+                href="/about"
                 className="inline-flex items-center gap-2 rounded-full border border-amber-50 text-amber-50 font-sans px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all duration-300 hover:bg-champagne hover:text-midnight hover:-translate-y-[2px] hover:shadow-lg"
               >
                 <GoArrowUpRight />
@@ -104,7 +103,7 @@ export default function HomePage() {
             <img
               src={nh35}
               alt=""
-              className="w-full h-full object-cover object-center scale-110 -rotate-12"
+              className="w-full h-full object-cover object-center scale-110"
             />
           </div>
 
@@ -117,9 +116,8 @@ export default function HomePage() {
                     Découvrez la Collection
                   </h2>
                   <p className="text-lg text-ivory/80 leading-relaxed mb-10">
-                    Créez votre montre unique avec des éléments évoquant le
-                    patrimoine et les paysages de France. Assemblées à la main,
-                    nos pièces incarnent précision et élégance.
+                    Découvrez les pièces de notre collection, choisis pour représenter au mieux les régions françaises et leur patrimoine.
+                    Créez votre bout d'histoire unique.
                   </p>
                   <a
                     href="#models"
@@ -233,7 +231,7 @@ export default function HomePage() {
                 </div>
 
                 <a
-                  href="#configurator"
+                  href="/montres-bastille/your-watch"
                   className="inline-flex items-center gap-2 rounded-full bg-champagne text-midnight font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
                              transition-all duration-300 shadow-md
                              hover:bg-wheat-600 hover:-translate-y-[2px] hover:shadow-lg"
