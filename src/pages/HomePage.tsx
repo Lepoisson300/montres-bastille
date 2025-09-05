@@ -84,7 +84,7 @@ export default function HomePage() {
                 Personnaliser
               </a>
               <a
-                href="/about"
+                href="/montres-bastille/about"
                 className="inline-flex items-center gap-2 rounded-full border border-amber-50 text-amber-50 font-sans px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all duration-300 hover:bg-champagne hover:text-midnight hover:-translate-y-[2px] hover:shadow-lg"
               >
                 <GoArrowUpRight />
