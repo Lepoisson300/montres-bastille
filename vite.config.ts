@@ -4,6 +4,9 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-    base: '/montres-bastille/',
+    base: '/montres-bastille/', 
+  build: {
+    outDir: 'dist',
+  },
     plugins: [react(), tailwindcss()],
 })

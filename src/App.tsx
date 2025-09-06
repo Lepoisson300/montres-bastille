@@ -6,11 +6,11 @@ import { Routes, Route, Navigate, Link } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import ConfiguratorPage from "./pages/ConfiguratorPage";
 import AboutPage from "./pages/AboutPage";
+import CommunityPage from "./pages/CommunityPage";
+import ContactPage from "./pages/ContactPage";
 
 
 // temp placeholders so routes render something
-const CommunityPage = () => <div className="p-8">Communauté — bientôt…</div>;
-const ContactPage = () => <div className="p-8">Contact — bientôt…</div>;
 const AppointmentPage = () => <div className="p-8">Rendez-vous — bientôt…</div>;
 const AccountPage = () => <div className="p-8">Compte — bientôt…</div>;
 
