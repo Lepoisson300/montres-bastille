@@ -77,14 +77,14 @@ export default function HomePage() {
             </h1>
             <div className="flex flex-wrap justify-center gap-4">
               <a
-                href="/montres-bastille/your-watch"
+                href="/your-watch"
                 className="inline-flex rounded-2xl items-center gap-2 bg-amber-50 text-midnight font-sans px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all duration-300 shadow-md hover:bg-wheat-600 hover:-translate-y-[2px] hover:shadow-lg"
               >
                 <GoArrowUpRight />
                 Personnaliser
               </a>
               <a
-                href="/montres-bastille/about"
+                href="/about"
                 className="inline-flex items-center gap-2 rounded-full border border-amber-50 text-amber-50 font-sans px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all duration-300 hover:bg-champagne hover:text-midnight hover:-translate-y-[2px] hover:shadow-lg"
               >
                 <GoArrowUpRight />
@@ -178,7 +178,7 @@ export default function HomePage() {
                         À partir de {model.price}
                       </div>
                       <a
-                        href="#custom"
+                        href="/your-watch"
                         className="inline-flex items-center gap-2 text-sm uppercase font-sans tracking-[0.15em] text-champagne 
                                    transition-all duration-300 hover:text-wheat-600 hover:-translate-y-[2px]"
                       >
@@ -231,7 +231,7 @@ export default function HomePage() {
                 </div>
 
                 <a
-                  href="/montres-bastille/your-watch"
+                  href="/your-watch"
                   className="inline-flex items-center gap-2 rounded-full bg-champagne text-midnight font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
                              transition-all duration-300 shadow-md
                              hover:bg-wheat-600 hover:-translate-y-[2px] hover:shadow-lg"
