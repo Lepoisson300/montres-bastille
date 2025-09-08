@@ -5,7 +5,7 @@ import nh35 from "../assets/37.jpg";
 import france from "../assets/france.jpg";
 import watch2 from "../assets/watch2.png";
 import HeroCarousel from "../components/Carousel";
-import { Link } from "lucide-react";
+import { Link } from "react-router-dom";
 
 // Background grain
 const Grain = () => (

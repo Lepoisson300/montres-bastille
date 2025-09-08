@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import React, { useState, useRef } from "react";
 import { GoArrowUpRight, GoHeart, GoHeartFill } from "react-icons/go";
 
@@ -190,15 +191,15 @@ export default function CommunityPage() {
               <p className="text-lg text-ivory/80 leading-relaxed mb-10">
                 Découvrez les créations uniques de notre communauté et participez au choix des prochaines régions qui inspireront nos collections futures.
               </p>
-              <a
-                href="/montres-bastille/your-watch"
-                 className="inline-flex items-center gap-2 rounded-full bg-champagne text-midnight font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
+              <Link
+                to="/your-watch"
+                className="inline-flex items-center gap-2 rounded-full bg-champagne text-midnight font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
                              transition-all duration-300 shadow-md
                              hover:bg-wheat-600 hover:-translate-y-[2px] hover:shadow-lg"
               >
                 <GoArrowUpRight />
                 Créer la Vôtre
-              </a>
+              </Link>
             </div>
           </Reveal>
         </div>
@@ -356,15 +357,15 @@ export default function CommunityPage() {
               <p className="text-ivory/60 font-sans text-sm mb-6">
                 Le vote se termine le 31 octobre 2025
               </p>
-              <a
-                href="/montres-bastille/your-watch"
-                 className="inline-flex items-center gap-2 rounded-full bg-champagne text-midnight font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
+              <Link
+                to="/your-watch"
+                className="inline-flex items-center gap-2 rounded-full bg-champagne text-midnight font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
                              transition-all duration-300 shadow-md
                              hover:bg-wheat-600 hover:-translate-y-[2px] hover:shadow-lg"
               >
                 <GoArrowUpRight />
                 Créer avec les Inspirations Actuelles
-              </a>
+              </Link>
             </div>
           </Reveal>
         </div>
@@ -381,15 +382,15 @@ export default function CommunityPage() {
               Partagez vos créations uniques, découvrez l'inspiration des autres membres, et participez à l'évolution de Montres-Bastille.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <a
-                href="/montres-bastille/your-watch"
+              <Link
+                to="/your-watch"
                 className="inline-flex items-center gap-2 rounded-full bg-champagne text-midnight font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
                            transition-all duration-300 shadow-md
                            hover:bg-wheat-600 hover:-translate-y-[2px] hover:shadow-lg"
               >
                 <GoArrowUpRight />
                 Créer Ma Montre
-              </a>
+              </Link>
               <button className="inline-flex items-center gap-2 rounded-full border border-champagne text-champagne font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
                                 transition-all duration-300
                                 hover:bg-champagne hover:text-midnight hover:-translate-y-[2px] hover:shadow-lg">
