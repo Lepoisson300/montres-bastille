@@ -2,7 +2,7 @@
   "name": "montres-bastillewebsite",
   "private": true,
   "version": "0.0.0",
-  "homepage": "https://lepoisson300.github.io/montres-bastille/",
+  "homepage": "http://montres-bastille.fr",
   "type": "module",
   "scripts": {
     "dev": "vite",
