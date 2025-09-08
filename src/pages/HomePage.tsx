@@ -121,7 +121,7 @@ export default function HomePage() {
                     Créez votre bout d'histoire unique.
                   </p>
                   <Link
-                    to="#models"
+                    to="/community"
                     className="inline-flex items-center gap-2 rounded-full 
                                border border-champagne px-6 py-3 text-sm font-sans uppercase tracking-[0.2em] 
                                text-champagne transition-all duration-300
