@@ -5,6 +5,7 @@ import nh35 from "../assets/37.jpg";
 import france from "../assets/france.jpg";
 import watch2 from "../assets/watch2.png";
 import HeroCarousel from "../components/Carousel";
+import { Link } from "lucide-react";
 
 // Background grain
 const Grain = () => (
@@ -76,20 +77,20 @@ export default function HomePage() {
               Montres-Bastille
             </h1>
             <div className="flex flex-wrap justify-center gap-4">
-              <a
-                href="/your-watch"
+              <Link
+                to="/your-watch"
                 className="inline-flex rounded-2xl items-center gap-2 bg-amber-50 text-midnight font-sans px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all duration-300 shadow-md hover:bg-wheat-600 hover:-translate-y-[2px] hover:shadow-lg"
               >
                 <GoArrowUpRight />
                 Personnaliser
-              </a>
-              <a
-                href="/about"
+              </Link>
+              <Link
+                to="/about"
                 className="inline-flex items-center gap-2 rounded-full border border-amber-50 text-amber-50 font-sans px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all duration-300 hover:bg-champagne hover:text-midnight hover:-translate-y-[2px] hover:shadow-lg"
               >
                 <GoArrowUpRight />
                 Découvrir
-              </a>
+              </Link>
             </div>
           </div>
         </HeroCarousel>
@@ -119,8 +120,8 @@ export default function HomePage() {
                     Découvrez les pièces de notre collection, choisis pour représenter au mieux les régions françaises et leur patrimoine.
                     Créez votre bout d'histoire unique.
                   </p>
-                  <a
-                    href="#models"
+                  <Link
+                    to="#models"
                     className="inline-flex items-center gap-2 rounded-full 
                                border border-champagne px-6 py-3 text-sm font-sans uppercase tracking-[0.2em] 
                                text-champagne transition-all duration-300
@@ -128,7 +129,7 @@ export default function HomePage() {
                   >
                     <GoArrowUpRight />
                     Explorer
-                  </a>
+                  </Link>
                 </div>
 
                 <div className="mx-auto max-w-sm">
@@ -177,14 +178,14 @@ export default function HomePage() {
                       <div className="text-sm text-ink/70 mb-4">
                         À partir de {model.price}
                       </div>
-                      <a
-                        href="/your-watch"
+                      <Link
+                        to="/your-watch"
                         className="inline-flex items-center gap-2 text-sm uppercase font-sans tracking-[0.15em] text-champagne 
                                    transition-all duration-300 hover:text-wheat-600 hover:-translate-y-[2px]"
                       >
                         <GoArrowUpRight />
                         Personnaliser
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </Reveal>
@@ -230,15 +231,15 @@ export default function HomePage() {
                   ))}
                 </div>
 
-                <a
-                  href="/your-watch"
+                <Link
+                  to="/your-watch"
                   className="inline-flex items-center gap-2 rounded-full bg-champagne text-midnight font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
                              transition-all duration-300 shadow-md
                              hover:bg-wheat-600 hover:-translate-y-[2px] hover:shadow-lg"
                 >
                   <GoArrowUpRight />
                   Commencer la Personnalisation
-                </a>
+                </Link>
               </div>
             </Reveal>
           </div>
