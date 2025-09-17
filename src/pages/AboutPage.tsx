@@ -5,6 +5,7 @@ import atelier1 from "../assets/atelier1.png";       // replace with real image
 import atelier2 from "../assets/atelier2.png";       // replace with real image
 import atelier3 from "../assets/watch1.png";       // replace with real image
 import texture from "../assets/paper_texture.png";    // optional subtle texture
+import nh35 from "../assets/nh35.png";               // movement image
 
 export default function AboutPage() {
   return (
@@ -113,7 +114,7 @@ export default function AboutPage() {
                 <div className="absolute -inset-6 -z-10 rounded-3xl bg-gradient-to-tr from-primary/10 to-transparent blur-2xl" />
                 <div className="rounded-2xl border border-primary/30 bg-surface p-2 shadow-[0_10px_40px_rgba(0,0,0,0.45)]">
                   <div className="aspect-[4/3] rounded-xl bg-gradient-to-b from-surface-hover to-surface-active flex items-center justify-center text-text-muted">
-                    <img src="./src/assets/nh35.png " alt="" className="h-[90%] w-[50%]" />
+                    <img src={nh35} alt="" className="h-[90%] w-[50%]" />
                   </div>
                 </div>
               </div>
