@@ -127,19 +127,19 @@ export default function ContactPage() {
   ];
 
   return (
-    <div className="font-serif min-h-screen bg-parchment text-ink">
+    <div className="font-sans min-h-screen bg-background text-text-secondary">
       <Grain />
 
       {/* HERO SECTION */}
-      <section className="bg-midnight text-ivory pt-24 pb-20">
+      <section className="bg-dark text-text-primary pt-24 pb-20">
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
           <Reveal>
             <div className="text-center max-w-4xl mx-auto">
-              <div className="h-px w-32 bg-gradient-to-r from-transparent via-champagne to-transparent mb-8 mx-auto" />
-              <h1 className="font-serif text-4xl md:text-6xl tracking-tight mb-6">
+              <div className="h-px w-32 bg-gradient-to-r from-transparent via-primary to-transparent mb-8 mx-auto" />
+              <h1 className="font-serif text-4xl md:text-6xl tracking-tight mb-6 text-text-primary">
                 Contactez-Nous
               </h1>
-              <p className="text-lg text-ivory/80 leading-relaxed mb-10">
+              <p className="text-lg text-text-muted leading-relaxed mb-10 font-sans">
                 Notre équipe d'artisans horlogers est à votre disposition pour vous accompagner dans votre quête de la montre parfaite, reflet du patrimoine français.
               </p>
             </div>
@@ -148,14 +148,14 @@ export default function ContactPage() {
       </section>
 
       {/* CONTACT INFO CARDS */}
-      <section className="py-20 bg-parchment">
+      <section className="py-20 bg-background">
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
           <Reveal>
             <div className="text-center mb-16">
-              <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6">
+              <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-text-primary">
                 Nos Coordonnées
               </h2>
-              <p className="text-lg text-ink/70 leading-relaxed max-w-2xl mx-auto">
+              <p className="text-lg text-text-muted leading-relaxed max-w-2xl mx-auto font-sans">
                 Plusieurs moyens pour nous joindre et découvrir l'univers Montres-Bastille.
               </p>
             </div>
@@ -164,15 +164,15 @@ export default function ContactPage() {
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             {contactInfo.map((info, index) => (
               <Reveal key={info.title} delay={index + 1}>
-                <div className="bg-white rounded-2xl shadow-sm border border-wheat-200 p-8 text-center transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                  <div className="w-16 h-16 rounded-full bg-champagne/10 flex items-center justify-center mx-auto mb-6">
-                    <info.icon className="w-8 h-8 text-champagne" />
+                <div className="bg-surface rounded-2xl shadow-lg border border-border/20 p-8 text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:bg-surface-hover">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
+                    <info.icon className="w-8 h-8 text-primary" />
                   </div>
-                  <h3 className="font-serif text-xl mb-2">{info.title}</h3>
-                  <div className="text-sm text-ink/60 mb-4 font-sans">{info.subtitle}</div>
+                  <h3 className="font-serif text-xl mb-2 text-text-primary">{info.title}</h3>
+                  <div className="text-sm text-text-subtle mb-4 font-sans">{info.subtitle}</div>
                   <div className="space-y-1">
                     {info.details.map((detail, i) => (
-                      <div key={i} className="text-sm font-sans font-medium text-ink/80">
+                      <div key={i} className="text-sm font-sans font-medium text-text-secondary">
                         {detail}
                       </div>
                     ))}
@@ -185,28 +185,28 @@ export default function ContactPage() {
       </section>
 
       {/* CONTACT FORM SECTION */}
-      <section className="py-20 bg-midnight text-ivory">
+      <section className="py-20 bg-dark text-text-primary">
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
           <div className="grid gap-16 lg:grid-cols-2 items-start">
             
             {/* Form */}
             <Reveal>
               <div>
-                <div className="h-px w-24 bg-gradient-to-r from-transparent via-champagne to-transparent mb-8" />
-                <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6">
+                <div className="h-px w-24 bg-gradient-to-r from-transparent via-primary to-transparent mb-8" />
+                <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-text-primary">
                   Envoyez-nous un Message
                 </h2>
-                <p className="text-lg text-ivory/80 leading-relaxed mb-10">
+                <p className="text-lg text-text-muted leading-relaxed mb-10 font-sans">
                   Que ce soit pour une question technique, une demande de personnalisation ou simplement pour découvrir notre savoir-faire, nous sommes là pour vous répondre.
                 </p>
 
                 {isSubmitted ? (
-                  <div className="bg-champagne/20 border border-champagne/40 rounded-2xl p-8 text-center">
-                    <div className="w-16 h-16 rounded-full bg-champagne/20 flex items-center justify-center mx-auto mb-4">
-                      <GoMail className="w-8 h-8 text-champagne" />
+                  <div className="bg-primary/20 border border-primary/40 rounded-2xl p-8 text-center">
+                    <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
+                      <GoMail className="w-8 h-8 text-primary" />
                     </div>
-                    <h3 className="font-serif text-xl mb-2 text-champagne">Message Envoyé</h3>
-                    <p className="text-ivory/80 font-sans">
+                    <h3 className="font-serif text-xl mb-2 text-primary">Message Envoyé</h3>
+                    <p className="text-text-muted font-sans">
                       Merci pour votre message. Notre équipe vous répondra dans les plus brefs délais.
                     </p>
                   </div>
@@ -214,7 +214,7 @@ export default function ContactPage() {
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid gap-4 md:grid-cols-2">
                       <div>
-                        <label className="block text-sm font-sans uppercase tracking-wider text-ivory/70 mb-2">
+                        <label className="block text-sm font-sans uppercase tracking-wider text-text-muted mb-2">
                           Prénom
                         </label>
                         <input
@@ -223,12 +223,12 @@ export default function ContactPage() {
                           value={formData.firstName}
                           onChange={handleInputChange}
                           required
-                          className="w-full px-4 py-3 bg-midnight/60 border border-champagne/40 rounded-xl text-ivory placeholder-ivory/40 font-sans focus:border-champagne focus:outline-none transition-colors"
+                          className="w-full px-4 py-3 bg-surface border border-primary/40 rounded-xl text-text-primary placeholder-text-subtle font-sans focus:border-primary focus:outline-none transition-colors"
                           placeholder="Votre prénom"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-sans uppercase tracking-wider text-ivory/70 mb-2">
+                        <label className="block text-sm font-sans uppercase tracking-wider text-text-muted mb-2">
                           Nom
                         </label>
                         <input
@@ -237,7 +237,7 @@ export default function ContactPage() {
                           value={formData.lastName}
                           onChange={handleInputChange}
                           required
-                          className="w-full px-4 py-3 bg-midnight/60 border border-champagne/40 rounded-xl text-ivory placeholder-ivory/40 font-sans focus:border-champagne focus:outline-none transition-colors"
+                          className="w-full px-4 py-3 bg-surface border border-primary/40 rounded-xl text-text-primary placeholder-text-subtle font-sans focus:border-primary focus:outline-none transition-colors"
                           placeholder="Votre nom"
                         />
                       </div>
@@ -245,7 +245,7 @@ export default function ContactPage() {
 
                     <div className="grid gap-4 md:grid-cols-2">
                       <div>
-                        <label className="block text-sm font-sans uppercase tracking-wider text-ivory/70 mb-2">
+                        <label className="block text-sm font-sans uppercase tracking-wider text-text-muted mb-2">
                           Email
                         </label>
                         <input
@@ -254,12 +254,12 @@ export default function ContactPage() {
                           value={formData.email}
                           onChange={handleInputChange}
                           required
-                          className="w-full px-4 py-3 bg-midnight/60 border border-champagne/40 rounded-xl text-ivory placeholder-ivory/40 font-sans focus:border-champagne focus:outline-none transition-colors"
+                          className="w-full px-4 py-3 bg-surface border border-primary/40 rounded-xl text-text-primary placeholder-text-subtle font-sans focus:border-primary focus:outline-none transition-colors"
                           placeholder="votre@email.fr"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-sans uppercase tracking-wider text-ivory/70 mb-2">
+                        <label className="block text-sm font-sans uppercase tracking-wider text-text-muted mb-2">
                           Téléphone
                         </label>
                         <input
@@ -267,24 +267,24 @@ export default function ContactPage() {
                           name="phone"
                           value={formData.phone}
                           onChange={handleInputChange}
-                          className="w-full px-4 py-3 bg-midnight/60 border border-champagne/40 rounded-xl text-ivory placeholder-ivory/40 font-sans focus:border-champagne focus:outline-none transition-colors"
+                          className="w-full px-4 py-3 bg-surface border border-primary/40 rounded-xl text-text-primary placeholder-text-subtle font-sans focus:border-primary focus:outline-none transition-colors"
                           placeholder="+33 1 23 45 67 89"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-sans uppercase tracking-wider text-ivory/70 mb-2">
+                      <label className="block text-sm font-sans uppercase tracking-wider text-text-muted mb-2">
                         Sujet
                       </label>
                       <select
                         name="subject"
                         value={formData.subject}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 bg-midnight/60 border border-champagne/40 rounded-xl text-ivory font-sans focus:border-champagne focus:outline-none transition-colors"
+                        className="w-full px-4 py-3 bg-surface border border-primary/40 rounded-xl text-text-primary font-sans focus:border-primary focus:outline-none transition-colors"
                       >
                         {subjects.map(subject => (
-                          <option key={subject.value} value={subject.value} className="bg-midnight">
+                          <option key={subject.value} value={subject.value} className="bg-surface">
                             {subject.label}
                           </option>
                         ))}
@@ -292,7 +292,7 @@ export default function ContactPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-sans uppercase tracking-wider text-ivory/70 mb-2">
+                      <label className="block text-sm font-sans uppercase tracking-wider text-text-muted mb-2">
                         Message
                       </label>
                       <textarea
@@ -301,16 +301,16 @@ export default function ContactPage() {
                         onChange={handleInputChange}
                         required
                         rows={6}
-                        className="w-full px-4 py-3 bg-midnight/60 border border-champagne/40 rounded-xl text-ivory placeholder-ivory/40 font-sans focus:border-champagne focus:outline-none transition-colors resize-none"
+                        className="w-full px-4 py-3 bg-surface border border-primary/40 rounded-xl text-text-primary placeholder-text-subtle font-sans focus:border-primary focus:outline-none transition-colors resize-none"
                         placeholder="Décrivez votre demande..."
                       />
                     </div>
 
                     <button
                       type="submit"
-                      className="inline-flex items-center gap-2 rounded-full bg-champagne text-midnight font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
-                                 transition-all duration-300 shadow-md
-                                 hover:bg-amber-200 hover:-translate-y-[2px] hover:shadow-lg"
+                      className="inline-flex items-center gap-2 rounded-full bg-primary text-dark font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
+                                 transition-all duration-300 shadow-md font-medium
+                                 hover:bg-primary-dark hover:-translate-y-[2px] hover:shadow-lg"
                     >
                       <GoArrowUpRight />
                       Envoyer le Message
@@ -324,44 +324,44 @@ export default function ContactPage() {
             <Reveal delay={1}>
               <div className="space-y-8">
                 {/* Map Placeholder */}
-                <div className="bg-midnight/60 border border-champagne/40 rounded-2xl p-8">
-                  <h3 className="font-serif text-xl mb-4">Notre Atelier</h3>
-                  <div className="aspect-video bg-gradient-to-br from-champagne/20 to-champagne/5 rounded-xl flex items-center justify-center mb-4">
+                <div className="bg-surface border border-primary/40 rounded-2xl p-8">
+                  <h3 className="font-serif text-xl mb-4 text-text-primary">Notre Atelier</h3>
+                  <div className="aspect-video bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl flex items-center justify-center mb-4">
                     <div className="text-center">
-                      <GoLocation className="w-12 h-12 text-champagne mx-auto mb-2" />
-                      <div className="text-champagne font-sans text-sm">15 Place Vendôme</div>
-                      <div className="text-ivory/60 font-sans text-xs">Paris 1er</div>
+                      <GoLocation className="w-12 h-12 text-primary mx-auto mb-2" />
+                      <div className="text-primary font-sans text-sm">15 Place Vendôme</div>
+                      <div className="text-text-subtle font-sans text-xs">Paris 1er</div>
                     </div>
                   </div>
-                  <p className="text-ivory/80 font-sans text-sm">
+                  <p className="text-text-muted font-sans text-sm">
                     Situé au cœur du quartier de la haute horlogerie parisienne, notre atelier vous accueille pour découvrir l'artisanat français d'exception.
                   </p>
                 </div>
 
                 {/* Visit Info */}
-                <div className="bg-midnight/60 border border-champagne/40 rounded-2xl p-8">
-                  <h3 className="font-serif text-xl mb-4">Prendre Rendez-vous</h3>
-                  <p className="text-ivory/80 font-sans text-sm mb-6">
+                <div className="bg-surface border border-primary/40 rounded-2xl p-8">
+                  <h3 className="font-serif text-xl mb-4 text-text-primary">Prendre Rendez-vous</h3>
+                  <p className="text-text-muted font-sans text-sm mb-6">
                     Venez découvrir nos créations et rencontrer nos maîtres horlogers. Sur rendez-vous uniquement pour une expérience personnalisée.
                   </p>
-                  <button className="inline-flex items-center gap-2 rounded-full border border-champagne text-champagne font-sans px-6 py-3 text-sm uppercase tracking-[0.2em] 
+                  <button className="inline-flex items-center gap-2 rounded-full border border-primary text-primary font-sans px-6 py-3 text-sm uppercase tracking-[0.2em] 
                                      transition-all duration-300
-                                     hover:bg-champagne hover:text-midnight hover:-translate-y-[2px] hover:shadow-lg">
+                                     hover:bg-primary hover:text-dark hover:-translate-y-[2px] hover:shadow-lg">
                     <GoClock />
                     Réserver un Créneau
                   </button>
                 </div>
 
                 {/* FAQ Link */}
-                <div className="bg-midnight/60 border border-champagne/40 rounded-2xl p-8">
-                  <h3 className="font-serif text-xl mb-4">Questions Fréquentes</h3>
-                  <p className="text-ivory/80 font-sans text-sm mb-6">
+                <div className="bg-surface border border-primary/40 rounded-2xl p-8">
+                  <h3 className="font-serif text-xl mb-4 text-text-primary">Questions Fréquentes</h3>
+                  <p className="text-text-muted font-sans text-sm mb-6">
                     Consultez notre FAQ pour trouver rapidement les réponses aux questions les plus courantes.
                   </p>
                   <a
                     href="/montres-bastille/faq"
-                    className="inline-flex items-center gap-2 text-sm font-sans uppercase tracking-[0.15em] text-champagne 
-                               transition-all duration-300 hover:text-amber-200 hover:-translate-y-[2px]"
+                    className="inline-flex items-center gap-2 text-sm font-sans uppercase tracking-[0.15em] text-primary 
+                               transition-all duration-300 hover:text-primary-dark hover:-translate-y-[2px]"
                   >
                     <GoArrowUpRight />
                     Voir la FAQ
@@ -374,11 +374,11 @@ export default function ContactPage() {
       </section>
 
       {/* SOCIAL PROOF / TESTIMONIALS */}
-      <section className="py-20 bg-parchment">
+      <section className="py-20 bg-background">
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
           <Reveal>
             <div className="text-center mb-16">
-              <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6">
+              <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-text-primary">
                 Ce Que Disent Nos Clients
               </h2>
             </div>
@@ -403,13 +403,13 @@ export default function ContactPage() {
               }
             ].map((testimonial, index) => (
               <Reveal key={index} delay={index + 1}>
-                <div className="bg-white rounded-2xl shadow-sm border border-wheat-200 p-8 text-center">
-                  <div className="text-champagne text-4xl mb-4 font-serif">"</div>
-                  <p className="text-ink/80 font-sans leading-relaxed mb-6">
+                <div className="bg-surface rounded-2xl shadow-lg border border-border/20 p-8 text-center hover:bg-surface-hover transition-colors duration-300">
+                  <div className="text-primary text-4xl mb-4 font-serif">"</div>
+                  <p className="text-text-secondary font-sans leading-relaxed mb-6">
                     {testimonial.text}
                   </p>
-                  <div className="font-serif text-lg">{testimonial.author}</div>
-                  <div className="text-ink/60 font-sans text-sm">{testimonial.location}</div>
+                  <div className="font-serif text-lg text-text-primary">{testimonial.author}</div>
+                  <div className="text-text-subtle font-sans text-sm">{testimonial.location}</div>
                 </div>
               </Reveal>
             ))}

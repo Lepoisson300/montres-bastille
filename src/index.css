@@ -1,22 +1,52 @@
 /* src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #2B2723;
-  --color-ink2: #463F38;
-  --color-parchment: #F3EADF;
+  /* Base Colors */
+  --color-background: #1E1E1E;
+  --color-surface: #2A2A2A;
+  --color-surface-hover: #363636;
+  --color-surface-active: #424242;
+  --color-border: #6B6B6B;
 
-  --color-sand-200: #EFE6DA;
-  --color-sand-300: #E6DCCF;
-  --color-sand-400: #DDD3C6;
+  /* Text Colors */
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #E5E5E5;
+  --color-text-muted: #B8B8B8;
+  --color-text-subtle: #808080;
 
-  --color-wheat-500: #CDBFAE;
-  --color-wheat-600: #AD9F8C;
+  /* Brand Colors */
+  --color-primary: #C9A96E;
+  --color-primary-dark: #A68B5B;
+  --color-primary-darker: #8B6914;
 
-  --color-champagne: #C1A36B;
-  --color-midnight: #0F1A24;
-  --color-racing: #0E3B2E;
-  --color-bordeaux: #5E2A2B;
-  --color-slate: #2A2F36;
-  --color-ivory: #F6F1E9;
+  /* Accent Colors */
+  --color-accent: #C9A96E;
+  --color-accent-light: #F5F0E8;
+  
+  /* Status Colors */
+  --color-dark: #0A0A0A;
+  --color-dark-alt: #3D2817;
+  --color-dark-secondary: #5D4037;
+
+  /* Legacy Support (for gradual migration) */
+  --color-ink: #E5E5E5;
+  --color-ink2: #B8B8B8;
+  --color-parchment: #1E1E1E;
+  --color-sand-200: #2A2A2A;
+  --color-sand-300: #363636;
+  --color-sand-400: #424242;
+  --color-wheat-500: #A68B5B;
+  --color-wheat-600: #8B6914;
+  --color-champagne: #C9A96E;
+  --color-midnight: #0A0A0A;
+  --color-racing: #3D2817;
+  --color-bordeaux: #5D4037;
+  --color-slate: #6B6B6B;
+  --color-ivory: #F5F0E8;
+
+  /* Fonts */
+  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Inter', sans-serif;
 }

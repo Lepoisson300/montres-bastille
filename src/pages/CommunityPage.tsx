@@ -176,44 +176,36 @@ export default function CommunityPage() {
   };
 
   return (
-    <div className="font-serif min-h-screen bg-parchment text-ink">
+    <div className="font-sans min-h-screen bg-background text-text-secondary">
       <Grain />
 
       {/* HERO SECTION */}
-      <section className="bg-midnight text-ivory pt-24 pb-20">
+      <section className="bg-dark text-text-primary pt-24 pb-20">
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
           <Reveal>
             <div className="text-center max-w-4xl mx-auto">
-              <div className="h-px w-32 bg-gradient-to-r from-transparent via-champagne to-transparent mb-8 mx-auto" />
-              <h1 className="font-serif text-4xl md:text-6xl tracking-tight mb-6">
+              <div className="h-px w-32 bg-gradient-to-r from-transparent via-primary to-transparent mb-8 mx-auto" />
+              <h1 className="font-serif text-4xl md:text-6xl tracking-tight mb-6 text-text-primary">
                 Communauté Montres-Bastille
               </h1>
-              <p className="text-lg text-ivory/80 leading-relaxed mb-10">
+              <p className="text-lg text-text-muted leading-relaxed mb-10 font-sans">
                 Découvrez les créations uniques de notre communauté et participez au choix des prochaines régions qui inspireront nos collections futures.
               </p>
-              <Link
-                to="/your-watch"
-                className="inline-flex items-center gap-2 rounded-full bg-champagne text-midnight font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
-                             transition-all duration-300 shadow-md
-                             hover:bg-wheat-600 hover:-translate-y-[2px] hover:shadow-lg"
-              >
-                <GoArrowUpRight />
-                Créer la Vôtre
-              </Link>
+              
             </div>
           </Reveal>
         </div>
       </section>
 
       {/* USER CREATIONS SECTION */}
-      <section className="py-20 bg-parchment">
+      <section className="py-20 bg-background">
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
           <Reveal>
             <div className="text-center mb-16">
-              <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6">
+              <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-text-primary">
                 Dernières Créations
               </h2>
-              <p className="text-lg text-ink/70 leading-relaxed max-w-2xl mx-auto">
+              <p className="text-lg text-text-muted leading-relaxed max-w-2xl mx-auto font-sans">
                 Explorez les montres uniques créées par notre communauté d'amateurs de patrimoine français.
               </p>
             </div>
@@ -222,10 +214,10 @@ export default function CommunityPage() {
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {currentCreations.map((creation, index) => (
               <Reveal key={creation.id} delay={index + 1}>
-                <div className="bg-white rounded-2xl shadow-sm border border-wheat-200 overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+                <div className="bg-surface rounded-2xl shadow-lg border border-border/20 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:bg-surface-hover">
                   {/* Watch Preview */}
-                  <div className="p-8 bg-gradient-to-br from-sand-100 to-sand-200">
-                    <div className="w-40 h-40 mx-auto mb-4 rounded-full border-4 border-sand-300 shadow-lg flex items-center justify-center">
+                  <div className="p-8 bg-gradient-to-br from-surface-hover to-surface-active">
+                    <div className="w-40 h-40 mx-auto mb-4 rounded-full border-4 border-primary/30 shadow-lg flex items-center justify-center">
                       <div className={`w-32 h-32 rounded-full ${creation.image} shadow-inner flex items-center justify-center relative`}>
                         {/* Watch hands */}
                         <div className="absolute w-1 h-12 bg-white rounded-full opacity-90"></div>
@@ -238,10 +230,10 @@ export default function CommunityPage() {
                   {/* Creation Details */}
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-serif text-xl">{creation.name}</h3>
+                      <h3 className="font-serif text-xl text-text-primary">{creation.name}</h3>
                       <button
                         onClick={() => toggleLike(creation.id)}
-                        className="flex items-center gap-2 text-sm text-ink/60 transition-colors hover:text-red-500"
+                        className="flex items-center gap-2 text-sm text-text-subtle transition-colors hover:text-red-500"
                       >
                         {likedCreations.has(creation.id) ? (
                           <GoHeartFill className="text-red-500" />
@@ -252,30 +244,30 @@ export default function CommunityPage() {
                       </button>
                     </div>
                     
-                    <div className="text-sm text-ink/60 mb-4">
-                      Par <span className="font-sans font-medium">{creation.creator}</span>
+                    <div className="text-sm text-text-subtle mb-4 font-sans">
+                      Par <span className="font-sans font-medium text-text-secondary">{creation.creator}</span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 text-xs font-sans">
                       <div>
-                        <div className="text-ink/50 uppercase tracking-wider">Cadran</div>
-                        <div className="font-medium">{creation.dial}</div>
+                        <div className="text-text-subtle uppercase tracking-wider">Cadran</div>
+                        <div className="font-medium text-text-secondary">{creation.dial}</div>
                       </div>
                       <div>
-                        <div className="text-ink/50 uppercase tracking-wider">Aiguilles</div>
-                        <div className="font-medium">{creation.hands}</div>
+                        <div className="text-text-subtle uppercase tracking-wider">Aiguilles</div>
+                        <div className="font-medium text-text-secondary">{creation.hands}</div>
                       </div>
                       <div>
-                        <div className="text-ink/50 uppercase tracking-wider">Boîtier</div>
-                        <div className="font-medium">{creation.case}</div>
+                        <div className="text-text-subtle uppercase tracking-wider">Boîtier</div>
+                        <div className="font-medium text-text-secondary">{creation.case}</div>
                       </div>
                       <div>
-                        <div className="text-ink/50 uppercase tracking-wider">Bracelet</div>
-                        <div className="font-medium">{creation.strap}</div>
+                        <div className="text-text-subtle uppercase tracking-wider">Bracelet</div>
+                        <div className="font-medium text-text-secondary">{creation.strap}</div>
                       </div>
                     </div>
 
-                    <button className="w-full mt-6 py-3 border border-champagne text-champagne rounded-full text-sm font-sans uppercase tracking-wider transition-all duration-300 hover:bg-champagne hover:text-midnight">
+                    <button className="w-full mt-6 py-3 border border-primary text-primary rounded-full text-sm font-sans uppercase tracking-wider transition-all duration-300 hover:bg-primary hover:text-dark">
                       Voir les Détails
                     </button>
                   </div>
@@ -286,9 +278,9 @@ export default function CommunityPage() {
 
           <Reveal delay={7}>
             <div className="text-center mt-16">
-              <button className="inline-flex items-center gap-2 rounded-full border border-champagne text-champagne font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
+              <button className="inline-flex items-center gap-2 rounded-full border border-primary text-primary font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
                                  transition-all duration-300
-                                 hover:bg-champagne hover:text-midnight hover:-translate-y-[2px] hover:shadow-lg">
+                                 hover:bg-primary hover:text-dark hover:-translate-y-[2px] hover:shadow-lg">
                 <GoArrowUpRight />
                 Voir Plus de Créations
               </button>
@@ -298,15 +290,15 @@ export default function CommunityPage() {
       </section>
 
       {/* VOTING SECTION */}
-      <section className="py-20 bg-midnight text-ivory">
+      <section className="py-20 bg-dark text-text-primary">
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
           <Reveal>
             <div className="text-center mb-16">
-              <div className="h-px w-32 bg-gradient-to-r from-transparent via-champagne to-transparent mb-8 mx-auto" />
-              <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6">
+              <div className="h-px w-32 bg-gradient-to-r from-transparent via-primary to-transparent mb-8 mx-auto" />
+              <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-text-primary">
                 Prochaines Inspirations
               </h2>
-              <p className="text-lg text-ivory/80 leading-relaxed max-w-2xl mx-auto">
+              <p className="text-lg text-text-muted leading-relaxed max-w-2xl mx-auto font-sans">
                 Votez pour les régions françaises qui inspireront nos prochaines collections de cadrans, aiguilles et bracelets.
               </p>
             </div>
@@ -315,22 +307,22 @@ export default function CommunityPage() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
             {currentRegions.map((region, index) => (
               <Reveal key={region.name} delay={index + 1}>
-                <div className="bg-midnight/60 border border-champagne/40 rounded-xl p-6 transition-all duration-300 hover:bg-midnight/80 hover:-translate-y-1">
+                <div className="bg-surface border border-primary/40 rounded-xl p-6 transition-all duration-300 hover:bg-surface-hover hover:-translate-y-1">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-serif text-xl">{region.name}</h3>
-                    <div className="text-champagne font-sans text-sm">
+                    <h3 className="font-serif text-xl text-text-primary">{region.name}</h3>
+                    <div className="text-primary font-sans text-sm">
                       {region.votes} votes
                     </div>
                   </div>
                   
-                  <p className="text-ivory/70 text-sm mb-6 font-sans">
+                  <p className="text-text-muted text-sm mb-6 font-sans">
                     {region.description}
                   </p>
                   
                   <div className="mb-4">
-                    <div className="w-full bg-midnight/60 rounded-full h-2">
+                    <div className="w-full bg-surface-active rounded-full h-2">
                       <div 
-                        className="bg-gradient-to-r from-champagne to-amber-300 h-2 rounded-full transition-all duration-500"
+                        className="bg-gradient-to-r from-primary to-primary-dark h-2 rounded-full transition-all duration-500"
                         style={{ width: `${Math.min((region.votes / 250) * 100, 100)}%` }}
                       />
                     </div>
@@ -341,8 +333,8 @@ export default function CommunityPage() {
                     disabled={votedRegions.has(region.name)}
                     className={`w-full py-3 rounded-full text-sm font-sans uppercase tracking-wider transition-all duration-300 ${
                       votedRegions.has(region.name)
-                        ? 'bg-champagne/20 text-champagne/50 cursor-not-allowed'
-                        : 'border border-champagne text-champagne hover:bg-champagne hover:text-midnight'
+                        ? 'bg-primary/20 text-primary/50 cursor-not-allowed'
+                        : 'border border-primary text-primary hover:bg-primary hover:text-dark'
                     }`}
                   >
                     {votedRegions.has(region.name) ? 'Vote Enregistré' : 'Voter'}
@@ -354,14 +346,14 @@ export default function CommunityPage() {
 
           <Reveal delay={7}>
             <div className="text-center mt-16">
-              <p className="text-ivory/60 font-sans text-sm mb-6">
+              <p className="text-text-subtle font-sans text-sm mb-6">
                 Le vote se termine le 31 octobre 2025
               </p>
               <Link
                 to="/your-watch"
-                className="inline-flex items-center gap-2 rounded-full bg-champagne text-midnight font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
-                             transition-all duration-300 shadow-md
-                             hover:bg-wheat-600 hover:-translate-y-[2px] hover:shadow-lg"
+                className="inline-flex items-center gap-2 rounded-full bg-primary text-dark font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
+                             transition-all duration-300 shadow-md font-medium
+                             hover:bg-primary-dark hover:-translate-y-[2px] hover:shadow-lg"
               >
                 <GoArrowUpRight />
                 Créer avec les Inspirations Actuelles
@@ -372,28 +364,28 @@ export default function CommunityPage() {
       </section>
 
       {/* CALL TO ACTION */}
-      <section className="py-20 bg-parchment">
+      <section className="py-20 bg-background">
         <div className="px-6 md:px-12 max-w-4xl mx-auto text-center">
           <Reveal>
-            <h3 className="font-serif text-3xl md:text-4xl tracking-tight mb-6">
+            <h3 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-text-primary">
               Rejoignez Notre Communauté
             </h3>
-            <p className="text-lg text-ink/70 leading-relaxed mb-10">
+            <p className="text-lg text-text-muted leading-relaxed mb-10 font-sans">
               Partagez vos créations uniques, découvrez l'inspiration des autres membres, et participez à l'évolution de Montres-Bastille.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
                 to="/your-watch"
-                className="inline-flex items-center gap-2 rounded-full bg-champagne text-midnight font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
-                           transition-all duration-300 shadow-md
-                           hover:bg-wheat-600 hover:-translate-y-[2px] hover:shadow-lg"
+                className="inline-flex items-center gap-2 rounded-full bg-primary text-dark font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
+                           transition-all duration-300 shadow-md font-medium
+                           hover:bg-primary-dark hover:-translate-y-[2px] hover:shadow-lg"
               >
                 <GoArrowUpRight />
                 Créer Ma Montre
               </Link>
-              <button className="inline-flex items-center gap-2 rounded-full border border-champagne text-champagne font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
+              <button className="inline-flex items-center gap-2 rounded-full border border-primary text-primary font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
                                 transition-all duration-300
-                                hover:bg-champagne hover:text-midnight hover:-translate-y-[2px] hover:shadow-lg">
+                                hover:bg-primary hover:text-dark hover:-translate-y-[2px] hover:shadow-lg">
                 <GoArrowUpRight />
                 S'inscrire à la Newsletter
               </button>
