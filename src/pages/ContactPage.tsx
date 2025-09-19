@@ -92,30 +92,18 @@ export default function ContactPage() {
   };
 
   const contactInfo = [
-    {
-      icon: GoLocation,
-      title: "Atelier Parisien",
-      details: ["15 Place Vendôme", "75001 Paris", "France"],
-      subtitle: "Siège social & Atelier"
-    },
+
     {
       icon: GoDeviceMobile,
       title: "Téléphone",
-      details: ["+33 1 42 60 38 15"],
-      subtitle: "Lun-Ven 9h-18h"
-    },
+      details: ["+33 6 23 25 65 46"],    },
     {
       icon: GoMail,
       title: "Email",
-      details: ["contact@montres-bastille.fr"],
+      details: ["boguiste@montres-bastille.fr"],
       subtitle: "Réponse sous 24h"
     },
-    {
-      icon: GoClock,
-      title: "Horaires d'Ouverture",
-      details: ["Lun-Ven: 9h-18h", "Sam: 10h-17h", "Dim: Fermé"],
-      subtitle: "Atelier & Showroom"
-    }
+  
   ];
 
   const subjects = [
@@ -151,35 +139,37 @@ export default function ContactPage() {
       <section className="py-20 bg-background">
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
           <Reveal>
-            <div className="text-center mb-16">
-              <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-text-primary">
-                Nos Coordonnées
-              </h2>
-              <p className="text-lg text-text-muted leading-relaxed max-w-2xl mx-auto font-sans">
-                Plusieurs moyens pour nous joindre et découvrir l'univers Montres-Bastille.
-              </p>
-            </div>
+        <div className="text-center mb-16">
+          <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-text-primary">
+            Nos Coordonnées
+          </h2>
+          <p className="text-lg text-text-muted leading-relaxed max-w-2xl mx-auto font-sans">
+            Plusieurs moyens pour nous joindre et découvrir l'univers Montres-Bastille.
+          </p>
+        </div>
           </Reveal>
 
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {contactInfo.map((info, index) => (
-              <Reveal key={info.title} delay={index + 1}>
-                <div className="bg-surface rounded-2xl shadow-lg border border-border/20 p-8 text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:bg-surface-hover">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                    <info.icon className="w-8 h-8 text-primary" />
-                  </div>
-                  <h3 className="font-serif text-xl mb-2 text-text-primary">{info.title}</h3>
-                  <div className="text-sm text-text-subtle mb-4 font-sans">{info.subtitle}</div>
-                  <div className="space-y-1">
-                    {info.details.map((detail, i) => (
-                      <div key={i} className="text-sm font-sans font-medium text-text-secondary">
-                        {detail}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </Reveal>
-            ))}
+          <div className="flex justify-center">
+        <div className="grid gap-8 md:grid-cols-2 max-w-2xl">
+          {contactInfo.map((info, index) => (
+            <Reveal key={info.title} delay={index + 1}>
+          <div className="bg-surface rounded-2xl shadow-lg border border-border/20 p-8 text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:bg-surface-hover h-full flex flex-col">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
+              <info.icon className="w-8 h-8 text-primary" />
+            </div>
+            <h3 className="font-serif text-xl mb-2 text-text-primary">{info.title}</h3>
+            <div className="text-sm text-text-subtle mb-4 font-sans">{info.subtitle}</div>
+            <div className="space-y-1 mt-auto">
+              {info.details.map((detail, i) => (
+            <div key={i} className="text-sm font-sans font-medium text-text-secondary">
+              {detail}
+            </div>
+              ))}
+            </div>
+          </div>
+            </Reveal>
+          ))}
+        </div>
           </div>
         </div>
       </section>
@@ -309,8 +299,20 @@ export default function ContactPage() {
                     <button
                       type="submit"
                       className="inline-flex items-center gap-2 rounded-full bg-primary text-dark font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
-                                 transition-all duration-300 shadow-md font-medium
-                                 hover:bg-primary-dark hover:-translate-y-[2px] hover:shadow-lg"
+                           transition-all duration-300 shadow-md font-medium
+                           hover:bg-primary-dark hover:-translate-y-[2px] hover:shadow-lg"
+                      onClick={() => {
+                      const emailSubject = encodeURIComponent(`Contact: ${subjects.find(s => s.value === formData.subject)?.label || 'Message'}`);
+                      const emailBody = encodeURIComponent(
+                        `Prénom: ${formData.firstName}\n` +
+                        `Nom: ${formData.lastName}\n` +
+                        `Email: ${formData.email}\n` +
+                        `Téléphone: ${formData.phone}\n` +
+                        `Sujet: ${subjects.find(s => s.value === formData.subject)?.label || 'N/A'}\n\n` +
+                        `Message:\n${formData.message}`
+                      );
+                      window.location.href = `mailto:boguiste@montres-bastille.fr?subject=${emailSubject}&body=${emailBody}`;
+                      }}
                     >
                       <GoArrowUpRight />
                       Envoyer le Message
@@ -324,19 +326,7 @@ export default function ContactPage() {
             <Reveal delay={1}>
               <div className="space-y-8">
                 {/* Map Placeholder */}
-                <div className="bg-surface border border-primary/40 rounded-2xl p-8">
-                  <h3 className="font-serif text-xl mb-4 text-text-primary">Notre Atelier</h3>
-                  <div className="aspect-video bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl flex items-center justify-center mb-4">
-                    <div className="text-center">
-                      <GoLocation className="w-12 h-12 text-primary mx-auto mb-2" />
-                      <div className="text-primary font-sans text-sm">15 Place Vendôme</div>
-                      <div className="text-text-subtle font-sans text-xs">Paris 1er</div>
-                    </div>
-                  </div>
-                  <p className="text-text-muted font-sans text-sm">
-                    Situé au cœur du quartier de la haute horlogerie parisienne, notre atelier vous accueille pour découvrir l'artisanat français d'exception.
-                  </p>
-                </div>
+                
 
                 {/* Visit Info */}
                 <div className="bg-surface border border-primary/40 rounded-2xl p-8">
@@ -353,69 +343,14 @@ export default function ContactPage() {
                 </div>
 
                 {/* FAQ Link */}
-                <div className="bg-surface border border-primary/40 rounded-2xl p-8">
-                  <h3 className="font-serif text-xl mb-4 text-text-primary">Questions Fréquentes</h3>
-                  <p className="text-text-muted font-sans text-sm mb-6">
-                    Consultez notre FAQ pour trouver rapidement les réponses aux questions les plus courantes.
-                  </p>
-                  <a
-                    href="/montres-bastille/faq"
-                    className="inline-flex items-center gap-2 text-sm font-sans uppercase tracking-[0.15em] text-primary 
-                               transition-all duration-300 hover:text-primary-dark hover:-translate-y-[2px]"
-                  >
-                    <GoArrowUpRight />
-                    Voir la FAQ
-                  </a>
-                </div>
+                
               </div>
             </Reveal>
           </div>
         </div>
       </section>
 
-      {/* SOCIAL PROOF / TESTIMONIALS */}
-      <section className="py-20 bg-background">
-        <div className="px-6 md:px-12 max-w-7xl mx-auto">
-          <Reveal>
-            <div className="text-center mb-16">
-              <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-text-primary">
-                Ce Que Disent Nos Clients
-              </h2>
-            </div>
-          </Reveal>
-
-          <div className="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto">
-            {[
-              {
-                text: "Un service client exceptionnel et une attention aux détails remarquable. Ma montre Normandie est exactement ce que j'espérais.",
-                author: "Marie Dubois",
-                location: "Lyon"
-              },
-              {
-                text: "L'équipe a su comprendre ma vision et créer une pièce unique qui reflète parfaitement mes origines provençales.",
-                author: "Jean-Pierre Martin",
-                location: "Marseille"
-              },
-              {
-                text: "Un véritable savoir-faire artisanal. Chaque détail de ma montre raconte une histoire du patrimoine français.",
-                author: "Sophie Laurent",
-                location: "Bordeaux"
-              }
-            ].map((testimonial, index) => (
-              <Reveal key={index} delay={index + 1}>
-                <div className="bg-surface rounded-2xl shadow-lg border border-border/20 p-8 text-center hover:bg-surface-hover transition-colors duration-300">
-                  <div className="text-primary text-4xl mb-4 font-serif">"</div>
-                  <p className="text-text-secondary font-sans leading-relaxed mb-6">
-                    {testimonial.text}
-                  </p>
-                  <div className="font-serif text-lg text-text-primary">{testimonial.author}</div>
-                  <div className="text-text-subtle font-sans text-sm">{testimonial.location}</div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      
     </div>
   );
 }
