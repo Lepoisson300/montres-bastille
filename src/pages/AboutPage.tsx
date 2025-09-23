@@ -162,52 +162,7 @@ export default function AboutPage() {
       </section>
 
       {/* SOCIAL PROOF / TESTIMONIALS */}
-      <section className="py-20 bg-background">
-        <div className="px-6 md:px-12 max-w-7xl mx-auto">
-          <Reveal>
-            <div className="text-center mb-16">
-              <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-text-primary">
-                Ce Que Disent Nos Clients
-              </h2>
-            </div>
-          </Reveal>
-
-          <div className="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto">
-            {[
-              {
-                text: "Un service client exceptionnel et une attention aux détails remarquable. Ma montre Normandie est exactement ce que j'espérais.",
-                author: "Marie Dubois",
-                location: "Lyon"
-              },
-              {
-                text: "L'équipe a su comprendre ma vision et créer une pièce unique qui reflète parfaitement mes origines provençales.",
-                author: "Jean-Pierre Martin",
-                location: "Marseille"
-              },
-              {
-                text: "Un véritable savoir-faire artisanal. Chaque détail de ma montre raconte une histoire du patrimoine français.",
-                author: "Sophie Laurent",
-                location: "Bordeaux"
-              }
-            ].map((testimonial, index) => (
-              <Reveal key={index} delay={index + 1}>
-                <div className="bg-surface rounded-2xl shadow-lg border border-border/20 p-8 text-center hover:bg-surface-hover transition-colors duration-300 h-full min-h-[400px] flex flex-col justify-between">
-                  <div>
-                    <div className="text-primary text-4xl mb-4 font-serif">"</div>
-                    <p className="text-text-secondary font-sans leading-relaxed mb-6">
-                      {testimonial.text}
-                    </p>
-                  </div>
-                  <div>
-                    <div className="font-serif text-lg text-text-primary">{testimonial.author}</div>
-                    <div className="text-text-subtle font-sans text-sm">{testimonial.location}</div>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      
 
       {/* CTA BANNER */}
       <section className="relative overflow-hidden">
