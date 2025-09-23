@@ -24,7 +24,7 @@ export default function AboutPage() {
               <div className="pb-14 text-text-primary">
                 <p className="tracking-[.25em] text-xs uppercase text-primary font-sans opacity-90">Paris — Est. 2025</p>
                 <h1 className="mt-4 text-4xl md:text-6xl font-serif leading-tight tracking-tight text-text-primary">L'histoire de <span className="text-primary">Montres‑Bastille</span></h1>
-                <p className="mt-4 max-w-2xl text-text-muted font-sans">Si vous êtes arrivé là c'est que vous êtes curieux de savoir comment sont fabriquées nos montres et ce que nous faisons ? Alors allons-y</p>
+                <p className="mt-4 max-w-2xl text-text-muted font-sans">Si vous êtes arrivé là, c'est que vous êtes curieux de savoir comment sont fabriquées nos montres et ce que nous faisons. Alors allons-y</p>
               </div>
             </Reveal>
           </div>
@@ -38,12 +38,12 @@ export default function AboutPage() {
             <div className="grid gap-10 md:grid-cols-12 items-start">
               <div className="md:col-span-7">
                 <h2 className="font-serif text-3xl md:text-4xl tracking-tight text-text-primary">La France dans un raffinement absolu</h2>
-                <p className="mt-4 leading-relaxed text-text-muted font-sans">Une marque créée par deux passionnés de mécanisme et amoureux de leur pays, pour des gens qui désirent un bout de cette passion à leur poignet.</p>
-                <p className="mt-4 leading-relaxed text-text-muted font-sans">Nous nous déplaçons dans les régions de France pour discuter, comprendre avec les locaux ce qui caractérise le mieux leur région. Les matériaux sont ensuite choisis et sont retravaillés par des artisans.</p>
+                <p className="mt-4 leading-relaxed text-text-muted font-sans">Une marque créée par deux passionnés de mécanisme et amoureux de leur pays, pour des gens qui désirent un morceau de cette passion à leur poignet.</p>
+                <p className="mt-4 leading-relaxed text-text-muted font-sans">Nous nous déplaçons dans les régions de France pour discuter et comprendre avec les locaux ce qui caractérise le mieux leur région. Les matériaux sont ensuite choisis puis retravaillés par des artisans.</p>
 
                 <h2 className="font-serif text-3xl md:text-4xl tracking-tight mt-8 text-text-primary">Pas seulement une montre</h2>
-                <p className="mt-4 leading-relaxed text-text-muted font-sans">Quand on parle de montre, on parle souvent d'un endroit précis, une manière de faire. Nous vous proposons une montre unique qui se base sur l'essence même de la France.</p>
-                <p className="mt-4 leading-relaxed text-text-muted font-sans">Chaque montre raconte une histoire, et cette histoire c'est vous qui la créez, de son lieu d'origine et des matériaux qui la composent.</p>
+                <p className="mt-4 leading-relaxed text-text-muted font-sans">Quand on parle de montre, on parle souvent d'un lieu précis, une manière de faire. Nous vous proposons une montre unique qui se base sur l'essence même de la France.</p>
+                <p className="mt-4 leading-relaxed text-text-muted font-sans">Chaque montre raconte une histoire, et cette histoire c'est vous qui la créez, à partir de son lieu d'origine et des matériaux qui la composent.</p>
               </div>
               <div className="md:col-span-5">
                 <div className="rounded-2xl border border-primary/40 bg-surface p-2 shadow-lg">
@@ -97,7 +97,7 @@ export default function AboutPage() {
             <div className="grid gap-12 md:grid-cols-2 items-center">
               <div>
                 <h3 className="font-serif text-3xl md:text-4xl tracking-tight text-text-primary">Pourquoi faire ce projet ?</h3>
-                <p className="mt-4 text-text-muted leading-relaxed font-sans">Tout est parti d'une simple idée d'avoir une montre personnalisée créée par nous. Nous nous sommes rendu compte que pour les modèles haut de gamme nous n'avions pas beaucoup de diversité de pièces ou que la montre ne créait pas vraiment de lien.</p>
+                <p className="mt-4 text-text-muted leading-relaxed font-sans">Tout est parti d'une simple idée d'avoir une montre personnalisée créée par nous. Nous nous sommes rendus compte que pour les modèles haut de gamme nous n'avions pas beaucoup de diversité de pièces ou que la montre ne créait pas vraiment de lien.</p>
                 <p className="mt-4 text-text-muted leading-relaxed font-sans">
                   Chez Montres-Bastille, nous voulons faire des montres d'exception une aventure unique pleine d'émotions.
                 </p>
@@ -158,6 +158,54 @@ export default function AboutPage() {
                 <figcaption className="mt-4 text-sm text-text-subtle font-sans">— Le fondateur</figcaption>
             </figure>
           </Reveal>
+        </div>
+      </section>
+
+      {/* SOCIAL PROOF / TESTIMONIALS */}
+      <section className="py-20 bg-background">
+        <div className="px-6 md:px-12 max-w-7xl mx-auto">
+          <Reveal>
+            <div className="text-center mb-16">
+              <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-text-primary">
+                Ce Que Disent Nos Clients
+              </h2>
+            </div>
+          </Reveal>
+
+          <div className="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto">
+            {[
+              {
+                text: "Un service client exceptionnel et une attention aux détails remarquable. Ma montre Normandie est exactement ce que j'espérais.",
+                author: "Marie Dubois",
+                location: "Lyon"
+              },
+              {
+                text: "L'équipe a su comprendre ma vision et créer une pièce unique qui reflète parfaitement mes origines provençales.",
+                author: "Jean-Pierre Martin",
+                location: "Marseille"
+              },
+              {
+                text: "Un véritable savoir-faire artisanal. Chaque détail de ma montre raconte une histoire du patrimoine français.",
+                author: "Sophie Laurent",
+                location: "Bordeaux"
+              }
+            ].map((testimonial, index) => (
+              <Reveal key={index} delay={index + 1}>
+                <div className="bg-surface rounded-2xl shadow-lg border border-border/20 p-8 text-center hover:bg-surface-hover transition-colors duration-300 h-full min-h-[400px] flex flex-col justify-between">
+                  <div>
+                    <div className="text-primary text-4xl mb-4 font-serif">"</div>
+                    <p className="text-text-secondary font-sans leading-relaxed mb-6">
+                      {testimonial.text}
+                    </p>
+                  </div>
+                  <div>
+                    <div className="font-serif text-lg text-text-primary">{testimonial.author}</div>
+                    <div className="text-text-subtle font-sans text-sm">{testimonial.location}</div>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 

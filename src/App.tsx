@@ -134,7 +134,7 @@ function App() {
                       href="mailto:lepuig@bastille.fr" 
                       className="hover:text-primary transition-colors duration-300"
                     >
-                      lepuig@bastille.fr
+                      boguiste@montres-bastille.fr
                     </a>
                   </p>
                   <p>
@@ -142,10 +142,9 @@ function App() {
                       href="tel:+33669696969" 
                       className="hover:text-primary transition-colors duration-300"
                     >
-                      +33 6 69 69 69 69
+                      +33 6 23 25 65 46
                     </a>
                   </p>
-                  <p>12 rue de la Bastille, Bordeaux</p>
                 </div>
               </div>
 

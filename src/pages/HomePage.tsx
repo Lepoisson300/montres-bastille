@@ -70,7 +70,7 @@ export default function HomePage() {
         <HeroCarousel images={[arcClean, france, nh35]}>
           <div className="max-w-2xl">
             <p className="tracking-[.25em] text-xs uppercase text-text-primary font-sans opacity-90">
-              Un bout d'histoire française au poignet
+              Un morceau d'histoire française au poignet
             </p>
             <h1 className="mt-4 mb-6 text-5xl md:text-7xl font-serif text-text-primary leading-tight tracking-tight">
               Montres-Bastille
@@ -117,7 +117,7 @@ export default function HomePage() {
                   </h2>
                   <p className="text-lg text-text-muted leading-relaxed mb-10 font-sans">
                     Découvrez les pièces de notre collection, choisies pour représenter au mieux les régions françaises et leur patrimoine.
-                    Créez votre bout d'histoire unique.
+                    Créez votre morceau d'histoire unique.
                   </p>
                   <Link
                     to="/community"
