@@ -8,6 +8,7 @@ import ConfiguratorPage from "./pages/ConfiguratorPage";
 import AboutPage from "./pages/AboutPage";
 import CommunityPage from "./pages/CommunityPage";
 import ContactPage from "./pages/ContactPage";
+import NotImplementedPage from "./pages/NotImplementedPage";
 
 
 // temp placeholders so routes render something
@@ -55,10 +56,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
-          <Route
-            path="/your-watch"
-            element={<ConfiguratorPage assets={assets} pricing={pricing} rules={rules} />}
-          />
+          <Route path="/not-implemented" element={<NotImplementedPage />} />
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/appointment" element={<AppointmentPage />} />
@@ -94,7 +92,7 @@ function App() {
                   <li>
                     <Link 
                       className="text-text-muted hover:text-primary transition-all duration-300" 
-                      to="/your-watch"
+                      to="/not-implemented"
                     >
                       Personnaliser
                     </Link>
