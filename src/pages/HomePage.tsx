@@ -231,7 +231,7 @@ export default function HomePage() {
                 </div>
 
                 <Link
-                  to="/your-watch"
+                  to="/not-implemented"
                   className="inline-flex items-center gap-2 rounded-full bg-primary text-dark font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
                              transition-all duration-300 shadow-md font-medium
                              hover:bg-primary-dark hover:-translate-y-[2px] hover:shadow-lg"

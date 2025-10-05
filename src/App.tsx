@@ -31,12 +31,11 @@ const AccountPage = () => (
 );
 
 const assets = {
-  case: [{ id: "steel_40", name: "Acier 40 mm" }],
-  dial: [{ id: "navy", name: "Bleu sunburst" }],
+  case: [{ id: "steel_40", name: "Acier 40 mm", image: "/assets/case.png" }],
+  dial: [{ id: "navy", name: "Bleu sunburst", image: "/assets/dial.png" }],
   hands: [{ id: "sword", name: "Feuille" }],
-  strap: [{ id: "leather_tan", name: "Cuir cognac", stock: "in" as const }],
-  crystal: [{ id: "arc", name: "Saphir AR" }],
-  shadow: [{ id: "soft", name: "Ombre douce" }],
+  strap: [{ id: "leather_tan", name: "Cuir cognac", image: "/assets/strap/leather_tan.png" }],
+  crystal: [{ id: "arc", name: "Saphir AR", image: "/assets/crystal.png" }],
 };
 
 const pricing = { base: 349, currency: "EUR" };
@@ -57,6 +56,18 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/not-implemented" element={<NotImplementedPage />} />
+          <Route
+            path="/your-watch"
+            element={<ConfiguratorPage assets={{
+              case: [
+          { id: "steel_40", name: "Acier 40 mm", thumbnail: "./src/assets/thumbs/case.png", image: "./src/assets/layers/case.png", price: 0, stock: "in" },
+              ],
+              strap: [
+          { id: "leather_tan", name: "Cuir fauve", thumbnail: "./src/assets/thumbs/strap2.png", image: "./src/assets/layers/strap2.png", price: 0, stock: "in" },
+              ],
+              crystal: [ { id: "sapphire", name: "Saphir", image: "./src/assets/layers/crystal.png" } ],
+            }} pricing={pricing} />}
+          />
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/appointment" element={<AppointmentPage />} />

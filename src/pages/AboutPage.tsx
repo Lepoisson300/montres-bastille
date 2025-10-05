@@ -161,8 +161,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      
-
       {/* CTA BANNER */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary/20 to-transparent" />
@@ -174,7 +172,7 @@ export default function AboutPage() {
                 <p className="mt-2 text-text-muted font-sans">Configurez votre Montres‑Bastille en quelques clics. Assemblée à Bordeaux, pour vous.</p>
               </div>
               <Link 
-                to="/your-watch" 
+                to="/not-implemented" 
                 className="inline-flex items-center gap-2 rounded-full bg-primary text-dark font-sans px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all hover:-translate-y-[2px] hover:shadow-md hover:bg-primary-dark"
               >
                 Commencer

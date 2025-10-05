@@ -1,169 +1,132 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
-import type {PartOption, PartsCatalog, Rules, Pricing, WatchConfiguratorProps} from "../types/Parts";
+
 /**
- * WatchConfigurator
- * 2D layer-based configurator that matches the serif/lux French aesthetic from your page.
- * - Tailwind utility classes aligned to your palette (parchment/midnight/champagne/etc.)
- * - URL permalinks (?case=steel_40&dial=navy&hands=sword&strap=leather_tan)
- * - Simple rule engine + live price + stock badge
- * - Keyboard & screen-reader friendly
- * - Optional engraving preview
- *
- * HOW TO USE
- * 1) Import and render <WatchConfigurator assets={...} pricing={...} rules={...} onCheckout={fn} />
- * 2) Provide PNG layers for each part (transparent background). Layers stack in this order:
- *        case -> dial -> hands -> strap (under-lug) -> glass/reflection -> shadow
- * 3) Drop the section into your #configurator anchor on the page.
+ * WatchConfiguratorLite
+ * Minimal 2D configurator focusing ONLY on CASE and STRAP selection.
+ * - Layer order: shadow -> strap -> case -> crystal (optional)
+ * - URL permalinks (?case=steel_40&strap=leather_tan)
+ * - Live price / stock badges
+ * - Accessible & keyboard zoom (+ / -)
+ * - Self-contained types (no external ../types dependency)
  */
+
+// ---------- Types (self‑contained) ----------
+export type Stock = "in" | "low" | "oos" | undefined;
+export type PartOption = {
+  id: string;
+  name: string;
+  thumbnail?: string; // small icon for the selector
+  image: string; // 4000x4000 transparent PNG layer
+  price?: number; // surcharge
+  stock?: Stock;
+};
+
+export type PartsCatalog = {
+  case: PartOption[];
+  strap: PartOption[];
+  crystal?: PartOption[]; // optional on/off or variants
+  shadow?: PartOption[];  // optional soft shadow
+};
+
+export type Pricing = { base: number; currency: string };
+
+export type WatchConfiguratorLiteProps = {
+  brand?: string;
+  assets: PartsCatalog;
+  pricing: Pricing;
+  defaultChoice?: Partial<Record<keyof PartsCatalog, string>>; // default IDs
+  onCheckout?: (payload: {
+    sku: string;
+    price: number;
+    config: Record<string, string>;
+  }) => void;
+};
+
+// ---------- Utils ----------
 const cx = (...classes: Array<string | false | undefined>) => classes.filter(Boolean).join(" ");
+const fmt = (v: number, ccy: string) => new Intl.NumberFormat("fr-FR", { style: "currency", currency: ccy }).format(v);
+const findOpt = (list: PartOption[] | undefined, id?: string) => (list?.find(o => o.id === id) || list?.[0]);
 
-function formatPrice(value: number, currency: string) {
-  return new Intl.NumberFormat("fr-FR", { style: "currency", currency }).format(value);
-}
-
-function toQuery(config: Record<string, string>, engraving?: string) {
-  const p = new URLSearchParams(config);
-  if (engraving) p.set("engraving", engraving);
-  return `?${p.toString()}`;
-}
-
-function fromQuery(): Record<string, string> {
-  const p = new URLSearchParams(window.location.search);
-  const out: Record<string, string> = {};
-  p.forEach((v, k) => (out[k] = v));
-  return out;
-}
-
-function usePermalink(config: Record<string, string>, engraving?: string) {
-  const href = useMemo(() => toQuery(config, engraving), [config, engraving]);
-  useEffect(() => {
-    const url = `${window.location.pathname}${href}`;
-    window.history.replaceState(null, "", url);
-  }, [href]);
-  return href;
-}
-
-function findOption(list: PartOption[] | undefined, id: string | undefined) {
-  if (!list || !id) return undefined;
-  return list.find((o) => o.id === id) || list[0];
-}
-
-// Very small rule engine
-function validate(rules: Rules | undefined, config: Record<string, string>) {
-  const issues: string[] = [];
-  if (!rules) return issues;
-
-  rules.bans?.forEach((rule) => {
-    const matches = Object.entries(rule.if).every(([k, v]) => config[k] === v);
-    if (matches) issues.push(rule.because);
-  });
-
-  rules.requires?.forEach((rule) => {
-    const matches = Object.entries(rule.if).every(([k, v]) => config[k] === v);
-    if (matches) {
-      Object.entries(rule.then).forEach(([k, v]) => {
-        if (config[k] !== v) issues.push(rule.note || `Nécessite ${k}: ${v}`);
-      });
-    }
-  });
-
-  return issues;
-}
-
-function computePrice(pricing: Pricing, assets: PartsCatalog, config: Record<string, string>) {
-  let price = pricing.base;
-  (Object.keys(config) as Array<keyof PartsCatalog>).forEach((part) => {
-    const list = assets[part];
-    const opt = list?.find((o) => o.id === (config as any)[part]);
-    if (opt?.price) price += opt.price;
-  });
-  return price;
-}
+const toQuery = (conf: Record<string,string>) => `?${new URLSearchParams(conf).toString()}`;
+const fromQuery = (): Record<string,string> => {
+  const out: Record<string,string> = {}; const p = new URLSearchParams(window.location.search); p.forEach((v,k)=>out[k]=v); return out;
+};
 
 // ---------- Component ----------
-export default function WatchConfigurator({ assets, pricing, rules, defaultChoice, brand = "Montres Bastille", onCheckout, }: WatchConfiguratorProps) {
-  // derived defaults
-  const initial: Record<string, string> = useMemo(() => {
+export default function WatchConfiguratorLite({ assets, pricing, defaultChoice, brand = "Montres Bastille", onCheckout }: WatchConfiguratorLiteProps) {
+  // initial config from URL or defaults
+  const initial: Record<string,string> = useMemo(() => {
     const q = typeof window !== "undefined" ? fromQuery() : {};
     return {
       case: q.case || defaultChoice?.case || assets.case[0]?.id,
-      dial: q.dial || defaultChoice?.dial || assets.dial[0]?.id,
-      hands: q.hands || defaultChoice?.hands || assets.hands[0]?.id,
       strap: q.strap || defaultChoice?.strap || assets.strap[0]?.id,
-      crystal: q.crystal || defaultChoice?.crystal || assets.crystal?.[0]?.id,
-      shadow: q.shadow || defaultChoice?.shadow || assets.shadow?.[0]?.id,
-    } as any;
+      crystal: q.crystal || defaultChoice?.crystal || assets.crystal?.[0]?.id || "",
+      shadow: q.shadow || defaultChoice?.shadow || assets.shadow?.[0]?.id || "",
+    };
   }, [assets, defaultChoice]);
 
-  const [config, setConfig] = useState<Record<string, string>>(initial);
-  const [engraving, setEngraving] = useState<string>(new URLSearchParams(typeof window !== "undefined" ? window.location.search : "").get("engraving") || "");
+  const [config, setConfig] = useState<Record<string,string>>(initial);
   const [zoom, setZoom] = useState(1);
 
-  // Update permalink on change
-  usePermalink(config, engraving);
+  // permalink
+  const href = useMemo(() => toQuery(config), [config]);
+  useEffect(() => { const url = `${window.location.pathname}${href}`; window.history.replaceState(null, "", url); }, [href]);
 
-  const total = computePrice(pricing, assets, config);
-  const issues = validate(rules, config);
-
-  const viewerRef = useRef<HTMLDivElement | null>(null);
-
-  // Accessibility: focus outline for keyboard users
+  // keyboard zoom
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "+") setZoom((z) => Math.min(2, z + 0.1));
-      if (e.key === "-") setZoom((z) => Math.max(0.8, z - 0.1));
-    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "+") setZoom(z=>Math.min(2, +(z+0.1).toFixed(2))); if (e.key === "-") setZoom(z=>Math.max(0.8, +(z-0.1).toFixed(2))); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const layers: Array<{ key: string; src?: string }>
-    = [
-      { key: "shadow"},
-      { key: "strap"},
-      { key: "case"},
-      { key: "dial"},
-      { key: "hands"},
-      { key: "crystal"},
-    ];
+  const price = useMemo(() => {
+    let p = pricing.base;
+    const add = (part: keyof PartsCatalog) => { const id = config[part as string]; const opt = (assets[part]||[]).find(o=>o.id===id); if (opt?.price) p += opt.price; };
+    add("case"); add("strap"); add("crystal");
+    return p;
+  }, [config, pricing, assets]);
 
-  const sku = useMemo(() => [config.case, config.dial, config.hands, config.strap].filter(Boolean).join("-"), [config]);
+  const sku = useMemo(() => [config.case, config.strap, config.crystal].filter(Boolean).join("-"), [config]);
 
-  function SelectGrid<T extends keyof PartsCatalog>({ part, title }: { part: T; title: string }) {
+  // build layer srcs (only those that exist)
+  const layers: Array<{ key: string; src?: string }> = [
+    { key: "shadow",  src: findOpt(assets.shadow,  config.shadow)?.image },
+    { key: "strap",   src: findOpt(assets.strap,   config.strap)?.image },
+    { key: "case",    src: findOpt(assets.case,    config.case)?.image },
+    { key: "crystal", src: findOpt(assets.crystal, config.crystal)?.image },
+  ];
+
+  function SelectGrid({ part, title }: { part: keyof PartsCatalog; title: string }) {
     const options = (assets[part] || []) as PartOption[];
-    const current = (config as any)[part] as string;
+    const current = config[part as string];
 
     return (
       <div>
         <div className="flex items-center justify-between mb-3">
           <h4 className="font-serif text-lg">{title}</h4>
-          {options.length > 6 && (
-            <span className="text-xs text-ink/60">{options.length} options</span>
-          )}
+          {options.length > 6 && <span className="text-xs text-ink/60">{options.length} options</span>}
         </div>
         <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
-          {options.map((o) => (
+          {options.map(o => (
             <button
               key={o.id}
               aria-pressed={current === o.id}
-              onClick={() => setConfig((c) => ({ ...c, [part]: o.id }))}
+              onClick={() => setConfig(c => ({ ...c, [part]: o.id }))}
               className={cx(
                 "group relative rounded-xl border p-2 transition-all duration-300",
                 "bg-parchment/80 backdrop-blur hover:-translate-y-[2px] hover:shadow",
                 current === o.id ? "border-champagne ring-1 ring-champagne" : "border-wheat-400/50"
               )}
             >
-              {!!o.thumbnail ? (
+              {o.thumbnail ? (
                 <img src={o.thumbnail} alt={o.name} className="mx-auto h-14 w-14 object-contain" />
               ) : (
                 <span className="block text-xs text-center py-6">{o.name}</span>
               )}
               <div className="mt-1 text-center text-xs">
                 <span className="font-medium">{o.name}</span>
-                {o.price ? (
-                  <span className="ml-1 text-ink/60">+{formatPrice(o.price, pricing.currency)}</span>
-                ) : null}
+                {o.price ? <span className="ml-1 text-ink/60">+{fmt(o.price, pricing.currency)}</span> : null}
               </div>
               {o.stock && (
                 <span className={cx(
@@ -184,67 +147,42 @@ export default function WatchConfigurator({ assets, pricing, rules, defaultChoic
 
   return (
     <section id="configurator" className="bg-midnight text-ivory">
-      <div className="px-6 md:px-12 py-20">
-        <div className="text-center max-w-4xl mx-auto mb-12">
-          <h3 className="font-serif text-3xl md:text-4xl tracking-tight mb-4">Configurez votre montre</h3>
-          <p className="text-ivory/80">Choisissez les éléments, visualisez en temps réel, enregistrez un lien ou commandez.</p>
+      <div className="px-6 md:px-12 py-16">
+        <div className="text-center max-w-3xl mx-auto mb-10">
+          <h3 className="font-serif text-3xl md:text-4xl tracking-tight mb-2">Sélectionnez votre boîtier & bracelet</h3>
+          <p className="text-ivory/80">Visualisation en temps réel • Lien partageable • Prix mis à jour</p>
         </div>
 
-        {/* Viewer */}
         <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] items-start">
+          {/* Viewer */}
           <div className="bg-midnight/60 rounded-2xl border border-champagne/30 p-4 shadow-xl">
             <div
-              ref={viewerRef}
               className="relative mx-auto aspect-square max-w-[560px] select-none overflow-hidden rounded-xl bg-gradient-to-b from-slate-900/20 to-slate-900/40"
               style={{ transform: `scale(${zoom})`, transformOrigin: "center" }}
               aria-label="Aperçu de la montre personnalisée"
               role="img"
             >
-              {layers.map((l) => (
+              {layers.map(l => (
                 l.src ? (
                   <img key={l.key} src={l.src} alt="" className="pointer-events-none absolute inset-0 h-full w-full object-contain" />
                 ) : null
               ))}
-
-              {/* Engraving preview (simple lower arc) */}
-              {engraving && (
-                <div className="absolute inset-x-0 bottom-6 text-center">
-                  <span className="font-serif text-xs tracking-[0.25em] text-ivory/80">{engraving}</span>
-                </div>
-              )}
             </div>
 
-            {/* Controls below viewer */}
+            {/* Viewer controls */}
             <div className="mt-4 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2 text-sm">
-                <button
-                  className="rounded-full border border-champagne/50 px-3 py-1 hover:-translate-y-[1px] transition"
-                  onClick={() => setZoom((z) => Math.max(0.8, +(z - 0.1).toFixed(2)))}
-                  aria-label="Zoom out"
-                >
-                  –
-                </button>
-                <div className="min-w-16 text-center text-xs">Zoom {Math.round(zoom * 100)}%</div>
-                <button
-                  className="rounded-full border border-champagne/50 px-3 py-1 hover:-translate-y-[1px] transition"
-                  onClick={() => setZoom((z) => Math.min(2, +(z + 0.1).toFixed(2)))}
-                  aria-label="Zoom in"
-                >
-                  +
-                </button>
+                <button className="rounded-full border border-champagne/50 px-3 py-1 transition" onClick={() => setZoom(z=>Math.max(0.8, +(z-0.1).toFixed(2)))} aria-label="Zoom out">–</button>
+                <div className="min-w-16 text-center text-xs">Zoom {Math.round(zoom*100)}%</div>
+                <button className="rounded-full border border-champagne/50 px-3 py-1 transition" onClick={() => setZoom(z=>Math.min(2, +(z+0.1).toFixed(2)))} aria-label="Zoom in">+</button>
               </div>
-
-              <a
-                href={toQuery(config, engraving)}
-                className="inline-flex items-center gap-2 rounded-full bg-champagne text-midnight font-sans px-4 py-2 text-xs uppercase tracking-[0.2em] transition-all hover:-translate-y-[1px] hover:shadow"
-                title="Copier le lien de cette configuration"
-              >
+              <a href={href} className="inline-flex items-center gap-2 rounded-full bg-champagne text-midnight font-sans px-4 py-2 text-xs uppercase tracking-[0.2em] transition-all hover:-translate-y-[1px] hover:shadow" title="Lien permanent de cette configuration">
                 <GoArrowUpRight /> Lien
               </a>
             </div>
           </div>
 
-          {/* Right rail: options */}
+          {/* Options */}
           <div className="space-y-8">
             <div className="rounded-2xl border border-champagne/40 bg-midnight/60 p-5">
               <div className="flex items-baseline justify-between">
@@ -252,34 +190,24 @@ export default function WatchConfigurator({ assets, pricing, rules, defaultChoic
                 <div className="text-sm text-ivory/80">SKU: {sku}</div>
               </div>
               <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-ivory/80">
-                <div>Boîtier</div><div className="text-right">{findOption(assets.case, config.case)?.name}</div>
-                <div>Cadran</div><div className="text-right">{findOption(assets.dial, config.dial)?.name}</div>
-                <div>Aiguilles</div><div className="text-right">{findOption(assets.hands, config.hands)?.name}</div>
-                <div>Bracelet</div><div className="text-right">{findOption(assets.strap, config.strap)?.name}</div>
+                <div>Boîtier</div><div className="text-right">{findOpt(assets.case, config.case)?.name}</div>
+                <div>Bracelet</div><div className="text-right">{findOpt(assets.strap, config.strap)?.name}</div>
               </div>
               <div className="mt-4 h-px w-full bg-gradient-to-r from-transparent via-champagne/60 to-transparent" />
               <div className="mt-4 flex items-center justify-between">
                 <div className="text-sm text-ivory/80">Prix</div>
-                <div className="text-2xl font-serif">{formatPrice(total, pricing.currency)}</div>
+                <div className="text-2xl font-serif">{fmt(price, pricing.currency)}</div>
               </div>
-              {issues.length > 0 && (
-                <div className="mt-3 rounded-lg border border-rose-600/40 bg-rose-900/30 p-3 text-sm">
-                  {issues.map((msg, i) => (
-                    <div key={i}>• {msg}</div>
-                  ))}
-                </div>
-              )}
               <div className="mt-4 flex flex-col sm:flex-row gap-3">
                 <button
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-champagne text-midnight font-sans px-5 py-3 text-sm uppercase tracking-[0.2em] transition-all hover:-translate-y-[2px] hover:shadow disabled:opacity-50"
-                  disabled={issues.length > 0}
-                  onClick={() => onCheckout?.({ sku, price: total, config, engraving })}
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-champagne text-midnight font-sans px-5 py-3 text-sm uppercase tracking-[0.2em] transition-all hover:-translate-y-[2px] hover:shadow"
+                  onClick={() => onCheckout?.({ sku, price, config })}
                 >
                   <GoArrowUpRight /> Commander
                 </button>
                 <button
-                  className="rounded-full border border-champagne/50 px-5 py-3 text-sm uppercase tracking-[0.2em] text-ivory/90 transition hover:-translate-y-[2px]"
-                  onClick={() => navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}${toQuery(config, engraving)}`)}
+                  className="rounded-full border border-champagne/50 px-5 py-3 text-sm uppercase tracking-[0.2em] text-ivory/90 transition"
+                  onClick={() => navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}${href}`)}
                 >
                   Copier le lien
                 </button>
@@ -288,30 +216,10 @@ export default function WatchConfigurator({ assets, pricing, rules, defaultChoic
 
             <div className="rounded-2xl border border-champagne/40 bg-midnight/60 p-5 space-y-8">
               <SelectGrid part="case" title="Boîtier" />
-              <SelectGrid part="dial" title="Cadran" />
-              <SelectGrid part="hands" title="Aiguilles" />
               <SelectGrid part="strap" title="Bracelet" />
-
-              {/* Engraving */}
-              <div>
-                <h4 className="font-serif text-lg mb-3">Gravure</h4>
-                <div className="flex gap-2">
-                  <input
-                    value={engraving}
-                    maxLength={24}
-                    onChange={(e) => setEngraving(e.target.value.toUpperCase())}
-                    placeholder="EX: POUR LUCIE 2025"
-                    className="flex-1 rounded-xl border border-champagne/40 bg-midnight/40 px-3 py-2 text-sm placeholder:text-ivory/40 focus:outline-none focus:ring-1 focus:ring-champagne"
-                  />
-                  <button
-                    className="rounded-xl border border-champagne/50 px-3 py-2 text-sm hover:shadow"
-                    onClick={() => setEngraving("")}
-                  >
-                    Effacer
-                  </button>
-                </div>
-                <div className="mt-2 text-xs text-ivory/70">24 caractères, capitales.</div>
-              </div>
+              {/* Optional toggles if you provided assets */}
+              {assets.crystal && assets.crystal.length > 0 && <SelectGrid part="crystal" title="Verre" />}
+              {assets.shadow && assets.shadow.length > 0 && <SelectGrid part="shadow" title="Ombre" />}
             </div>
           </div>
         </div>
@@ -319,3 +227,23 @@ export default function WatchConfigurator({ assets, pricing, rules, defaultChoic
     </section>
   );
 }
+
+/*
+USAGE EXAMPLE
+
+<WatchConfiguratorLite
+  pricing={{ base: 590, currency: "EUR" }}
+  assets={{
+    case: [
+      { id: "steel_40", name: "Acier 40 mm", thumbnail: "/thumbs/case_steel.png", image: "/layers/case_steel_40.png", price: 0, stock: "in" },
+      { id: "gold_40",  name: "Doré 40 mm",  thumbnail: "/thumbs/case_gold.png",  image: "/layers/case_gold_40.png",  price: 120, stock: "low" },
+    ],
+    strap: [
+      { id: "leather_tan", name: "Cuir fauve", thumbnail: "/thumbs/strap_tan.png", image: "/layers/strap_tan.png", price: 0, stock: "in" },
+      { id: "leather_black", name: "Cuir noir", thumbnail: "/thumbs/strap_black.png", image: "/layers/strap_black.png", price: 20, stock: "in" },
+    ],
+    crystal: [ { id: "sapphire", name: "Saphir", image: "/layers/crystal.png" } ],     // optional
+    shadow:  [ { id: "soft", name: "Ombre douce", image: "/layers/shadow.png" } ],    // optional
+  }}
+/>
+*/
