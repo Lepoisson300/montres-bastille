@@ -60,12 +60,13 @@ function App() {
             path="/your-watch"
             element={<ConfiguratorPage assets={{
               case: [
-          { id: "steel_40", name: "Acier 40 mm", thumbnail: "./src/assets/thumbs/case.png", image: "./src/assets/layers/case.png", price: 0, stock: "in" },
+          { id: "steel_40", name: "Acier 40 mm", thumbnail: "./src/assets/thumbnail/watchCase.png", image: "./src/assets/watchComponents/testMilieu.png", price: 250, stock: "in" },
               ],
               strap: [
-          { id: "leather_tan", name: "Cuir fauve", thumbnail: "./src/assets/thumbs/strap2.png", image: "./src/assets/layers/strap2.png", price: 0, stock: "in" },
+          { id: "leather_tan", name: "Cuir de crocro", thumbnail: "./src/assets/thumbnail/hautBracelet.png", image: "./src/assets/watchComponents/testBracelet.png", price: 150, stock: "in" },
+          { id: "leather_cream", name: "cuir de creme", thumbnail: "./src/assets/thumbnail/hautBracelet2.png", image: "./src/assets/watchComponents/testBracelet2.png", price: 159, stock: "in" },
               ],
-              crystal: [ { id: "sapphire", name: "Saphir", image: "./src/assets/layers/crystal.png" } ],
+              crystal: [],
             }} pricing={pricing} />}
           />
           <Route path="/community" element={<CommunityPage />} />
