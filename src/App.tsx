@@ -104,7 +104,7 @@ function App() {
                   <li>
                     <Link 
                       className="text-text-muted hover:text-primary transition-all duration-300" 
-                      to="/not-implemented"
+                      to="/your-watch"
                     >
                       Personnaliser
                     </Link>

@@ -10,7 +10,7 @@ type RouteItem = {
 
 const primaryRoutes: RouteItem[] = [
   { name: "À propos", to: "/about" },
-  { name: "Votre Montres-Bastille", to: "/not-implemented" },
+  { name: "Votre Montres-Bastille", to: "/your-watch" },
   { name: "Communauté", to: "/community" },
   { name: "Contact", to: "/contact" },
 ];
@@ -56,7 +56,7 @@ const Nav: React.FC = () => {
               <img
                 src={logo}
                 alt="Montres-Bastille"
-                className="h-12 w-12 "
+                className="h-12 w-16 "
               />
               <span className="font-serif text-lg tracking-wide text-ivory">
                 Montres-Bastille
