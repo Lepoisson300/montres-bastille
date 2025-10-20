@@ -9,7 +9,21 @@ import AboutPage from "./pages/AboutPage";
 import CommunityPage from "./pages/CommunityPage";
 import ContactPage from "./pages/ContactPage";
 import NotImplementedPage from "./pages/NotImplementedPage";
+import Map from "./components/Map";
 
+const assets = {
+  case: [{ id: "steel_40", name: "Acier 40 mm", image: "/assets/case.png" }],
+  dial: [{ id: "navy", name: "Bleu sunburst", image: "/assets/dial.png" }],
+  hands: [{ id: "sword", name: "Feuille" }],
+  strap: [{ id: "leather_tan", name: "Cuir cognac", image: "/assets/strap/leather_tan.png" }],
+  crystal: [{ id: "arc", name: "Saphir AR", image: "/assets/crystal.png" }],
+};
+
+const pricing = { base: 349, currency: "EUR" };
+const rules = {
+  bans: [{ if: { case: "gold_38", strap: "rubber_black" }, because: "Rubber indisponible avec or 38 mm." }],
+  requires: [{ if: { dial: "date_window" }, then: { hands: "date_set" }, note: "Cadran date → aiguilles date" }],
+};
 
 // temp placeholders so routes render something
 const AppointmentPage = () => (
@@ -30,19 +44,7 @@ const AccountPage = () => (
   </div>
 );
 
-const assets = {
-  case: [{ id: "steel_40", name: "Acier 40 mm", image: "/assets/case.png" }],
-  dial: [{ id: "navy", name: "Bleu sunburst", image: "/assets/dial.png" }],
-  hands: [{ id: "sword", name: "Feuille" }],
-  strap: [{ id: "leather_tan", name: "Cuir cognac", image: "/assets/strap/leather_tan.png" }],
-  crystal: [{ id: "arc", name: "Saphir AR", image: "/assets/crystal.png" }],
-};
 
-const pricing = { base: 349, currency: "EUR" };
-const rules = {
-  bans: [{ if: { case: "gold_38", strap: "rubber_black" }, because: "Rubber indisponible avec or 38 mm." }],
-  requires: [{ if: { dial: "date_window" }, then: { hands: "date_set" }, note: "Cadran date → aiguilles date" }],
-};
 
 function App() {
   return (
@@ -56,19 +58,8 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/not-implemented" element={<NotImplementedPage />} />
-          <Route
-            path="/your-watch"
-            element={<ConfiguratorPage assets={{
-              case: [
-          { id: "steel_40", name: "Acier 40 mm", thumbnail: "./src/assets/thumbnail/watchCase.png", image: "./src/assets/watchComponents/testMilieu.png", price: 250, stock: "in" },
-              ],
-              strap: [
-          { id: "leather_tan", name: "Cuir de crocro", thumbnail: "./src/assets/thumbnail/hautBracelet.png", image: "./src/assets/watchComponents/testBracelet.png", price: 150, stock: "in" },
-          { id: "leather_cream", name: "cuir de creme", thumbnail: "./src/assets/thumbnail/hautBracelet2.png", image: "./src/assets/watchComponents/testBracelet2.png", price: 159, stock: "in" },
-              ],
-              crystal: [],
-            }} pricing={pricing} />}
-          />
+          <Route path="/configurator" element={<ConfiguratorPage assets={assets} pricing={pricing} />} />
+          <Route path="/your-watch" element={<Map />} />
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/appointment" element={<AppointmentPage />} />
