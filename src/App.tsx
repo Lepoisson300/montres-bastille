@@ -19,7 +19,6 @@ const assets = {
   crystal: [{ id: "arc", name: "Saphir AR", image: "/assets/crystal.png" }],
 };
 
-const pricing = { base: 349, currency: "EUR" };
 const rules = {
   bans: [{ if: { case: "gold_38", strap: "rubber_black" }, because: "Rubber indisponible avec or 38 mm." }],
   requires: [{ if: { dial: "date_window" }, then: { hands: "date_set" }, note: "Cadran date → aiguilles date" }],
@@ -58,7 +57,6 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/not-implemented" element={<NotImplementedPage />} />
-          <Route path="/configurator" element={<ConfiguratorPage assets={assets} pricing={pricing} />} />
           <Route path="/your-watch" element={<Map />} />
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/contact" element={<ContactPage />} />
