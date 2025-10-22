@@ -1,8 +1,7 @@
 import React, { useMemo } from "react";
-import { Link, Route } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Watch } from "lucide-react";
-import configuratorPage from "../pages/ConfiguratorPage";
 
 interface WatchComponent {
   id: string;
@@ -35,6 +34,8 @@ export default function MapModal({
   RegionName,
   watchComponents 
 }: MapModalProps) {
+  const navigate = useNavigate();
+
   const selectedName = useMemo(() => {
     if (!selectedId) return null;
     const explicit = RegionName;
@@ -61,14 +62,23 @@ export default function MapModal({
     );
   }, [watchComponents]);
 
-
-
   // Check if any components are available
   const hasComponents = totalComponents > 0;
 
+  const handleConfigureClick = () => {
+    // Navigate to configurator with region and components data
+    navigate('/configurator', { 
+      state: { 
+        selectedRegion: selectedId,
+        regionName: selectedName,
+        watchComponents: watchComponents 
+      } 
+    });
+    onClose(); // Close the modal after navigation
+  };
+
   return (
     <AnimatePresence>
-      <Route path="/configurator" element={<ConfiguratorPage assets={assets} />} />
       {selectedId && (
         <>
           {/* Backdrop */}
@@ -284,15 +294,15 @@ export default function MapModal({
                         </div>
 
                         {/* CTA Button */}
-                        <Link 
-                          to={`/configurator?region=${selectedId}`}
-                          className="flex items-center justify-center gap-2 group rounded-xl bg-bastilleGold p-4 hover:bg-bastilleGold/90 transition-all hover:shadow-lg hover:shadow-bastilleGold/20 mt-6"
+                        <button
+                          onClick={handleConfigureClick}
+                          className="w-full flex items-center justify-center gap-2 group rounded-xl bg-bastilleGold p-4 hover:bg-bastilleGold/90 transition-all hover:shadow-lg hover:shadow-bastilleGold/20 mt-6"
                         >
                           <Watch className="w-5 h-5 text-neutral-900" />
                           <span className="font-serif text-lg tracking-wide text-neutral-900 font-semibold">
                             Configurer ma montre
                           </span>
-                        </Link>
+                        </button>
                       </div>
                     ) : (
                       <div className="text-center py-12">

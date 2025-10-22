@@ -58,6 +58,7 @@ function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/not-implemented" element={<NotImplementedPage />} />
           <Route path="/your-watch" element={<Map />} />
+          <Route path="/configurator" element={<ConfiguratorPage />} />
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/appointment" element={<AppointmentPage />} />

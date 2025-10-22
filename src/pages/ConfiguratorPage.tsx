@@ -12,31 +12,20 @@ import html2canvas from "html2canvas";
 // ---------- Types ----------
 export type Stock = "in" | "low" | "oos" | undefined;
 
-export type PartOption = {
+interface WatchComponent {
   id: string;
   name: string;
-  thumbnail?: string;
-  image: string;
-  price?: number;
-  stock?: Stock;
-  // Additional properties for watch components
-  material?: string;
-  size?: string;
-  finish?: string;
-  markers?: string;
-  style?: string;
-  luminous?: boolean;
-  color?: string;
-  clasp?: string;
-  regions?: string[];
-};
+  price: number;
+  regions: string[];
+  [key: string]: any; // For additional properties like material, size, etc.
+}
 
 export type PartsCatalog = {
-  case: PartOption[];
-  strap: PartOption[];
-  dial: PartOption[];
-  hands: PartOption[];
-  crystal?: PartOption[];
+  case: WatchComponent[];
+  strap: WatchComponent[];
+  dial: WatchComponent[];
+  hands: WatchComponent[];
+  crystal?: WatchComponent[];
 };
 
 interface WatchConfiguratorProps {
@@ -57,7 +46,7 @@ const fmt = (v: number, ccy: string) =>
     currency: ccy,
   }).format(v);
 
-const findOpt = (list: PartOption[] | undefined, id?: string) =>
+const findOpt = (list: WatchComponent[] | undefined, id?: string) =>
   list?.find((o) => o.id === id) || list?.[0];
 
 const toQuery = (conf: Record<string, string>) =>
@@ -186,7 +175,7 @@ export default function Configurator({
     part: keyof PartsCatalog;
     title: string;
   }) {
-    const options = (filteredAssets[part] || []) as PartOption[];
+    const options = (filteredAssets[part] || []) as WatchComponent[];
     const current = config[part as string];
 
     if (options.length === 0) {
