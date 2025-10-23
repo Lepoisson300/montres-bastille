@@ -13,10 +13,10 @@ export type PartOption = {
 };
 
 export type PartsCatalog = {
-  case: PartOption[];
-  dial: PartOption[];
+  cases: PartOption[];
+  dials: PartOption[];
   hands: PartOption[];
-  strap: PartOption[];
+  straps: PartOption[];
 };
 
 export type Rules = {

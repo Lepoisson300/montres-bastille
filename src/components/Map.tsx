@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import MapModal from "./MapModal"; // Import the modal
+import type { PartsCatalog } from "../types/Parts";
 
 /**
  * Official region names mapping (fill these using your SVG's labels).
@@ -32,31 +33,212 @@ const REGION_NAMES: Record<string, string> = {
 
 const WATCH_COMPONENTS = {
   cases: [
-    { id: 'c1', name: 'Classic Round', material: 'Stainless Steel', size: '40mm', regions: ['FR-E', 'FR-A', 'FR-U'], price: 2500 },
-    { id: 'c2', name: 'Sport Chronograph', material: 'Titanium', size: '42mm', regions: ['FR-E', 'FR-A', 'FR-U'], price: 3200 },
-    { id: 'c3', name: 'Dress Slim', material: '18K Gold', size: '38mm', regions: ['FR-A', 'FR-U'], price: 8500 },
-    { id: 'c4', name: 'Diver Pro', material: 'Ceramic', size: '44mm', regions: ['FR-E', 'FR-U'], price: 4100 },
-    { id: 'c5', name: 'Heritage Square', material: 'Rose Gold', size: '41mm', regions: ['FR-A'], price: 9200 },
+    { 
+      id: 'c1', 
+      name: 'Classic Round', 
+      price: 2500, 
+      thumbnail: '/images/cases/classic-round.jpg',
+      stock: 'in' as const,
+      material: 'Stainless Steel', 
+      size: '40mm', 
+      regions: ['FR-E', 'FR-A', 'FR-U']
+    },
+    { 
+      id: 'c2', 
+      name: 'Sport Chronograph', 
+      price: 3200, 
+      thumbnail: '/images/cases/sport-chronograph.jpg',
+      stock: 'low' as const,
+      material: 'Titanium', 
+      size: '42mm', 
+      regions: ['FR-E', 'FR-A', 'FR-U']
+    },
+    { 
+      id: 'c3', 
+      name: 'Dress Slim', 
+      price: 8500, 
+      thumbnail: '/images/cases/dress-slim.jpg',
+      stock: 'in' as const,
+      material: '18K Gold', 
+      size: '38mm', 
+      regions: ['FR-A', 'FR-U']
+    },
+    { 
+      id: 'c4', 
+      name: 'Diver Pro', 
+      price: 4100, 
+      thumbnail: '/images/cases/diver-pro.jpg',
+      stock: 'oos' as const,
+      material: 'Ceramic', 
+      size: '44mm', 
+      regions: ['FR-E', 'FR-U']
+    },
+    { 
+      id: 'c5', 
+      name: 'Heritage Square', 
+      price: 9200, 
+      thumbnail: '/images/cases/heritage-square.jpg',
+      stock: 'low' as const,
+      material: 'Rose Gold', 
+      size: '41mm', 
+      regions: ['FR-A']
+    },
   ],
   dials: [
-    { id: 'd1', name: 'Sunburst Blue', finish: 'Lacquer', markers: 'Roman', regions: ['FR-E', 'FR-A', 'FR-U'], price: 800 },
-    { id: 'd2', name: 'Black Carbon', finish: 'Carbon Fiber', markers: 'Index', regions: ['FR-E', 'FR-U'], price: 1200 },
-    { id: 'd3', name: 'Champagne Guilloché', finish: 'Hand-engraved', markers: 'Roman', regions: ['FR-A'], price: 2500 },
-    { id: 'd4', name: 'Silver Opaline', finish: 'Brushed', markers: 'Baton', regions: ['FR-E', 'FR-A', 'FR-U'], price: 900 },
-    { id: 'd5', name: 'Meteorite', finish: 'Natural Stone', markers: 'Diamond', regions: ['FR-A', 'FR-U'], price: 5500 },
+    { 
+      id: 'd1', 
+      name: 'Sunburst Blue', 
+      price: 800, 
+      thumbnail: '/images/dials/sunburst-blue.jpg',
+      stock: 'in' as const,
+      color: 'Blue',
+      finish: 'Lacquer', 
+      markers: 'Roman', 
+      regions: ['FR-E', 'FR-A', 'FR-U']
+    },
+    { 
+      id: 'd2', 
+      name: 'Black Carbon', 
+      price: 1200, 
+      thumbnail: '/images/dials/black-carbon.jpg',
+      stock: 'in' as const,
+      color: 'Black',
+      finish: 'Carbon Fiber', 
+      markers: 'Index', 
+      regions: ['FR-E', 'FR-U']
+    },
+    { 
+      id: 'd3', 
+      name: 'Champagne Guilloché', 
+      price: 2500, 
+      thumbnail: '/images/dials/champagne-guilloche.jpg',
+      stock: 'low' as const,
+      color: 'Champagne',
+      finish: 'Hand-engraved', 
+      markers: 'Roman', 
+      regions: ['FR-A']
+    },
+    { 
+      id: 'd4', 
+      name: 'Silver Opaline', 
+      price: 900, 
+      thumbnail: '/images/dials/silver-opaline.jpg',
+      stock: 'in' as const,
+      color: 'Silver',
+      finish: 'Brushed', 
+      markers: 'Baton', 
+      regions: ['FR-E', 'FR-A', 'FR-U']
+    },
+    { 
+      id: 'd5', 
+      name: 'Meteorite', 
+      price: 5500, 
+      thumbnail: '/images/dials/meteorite.jpg',
+      stock: 'oos' as const,
+      color: 'Gray',
+      finish: 'Natural Stone', 
+      markers: 'Diamond', 
+      regions: ['FR-A', 'FR-U']
+    },
   ],
   hands: [
-    { id: 'h1', name: 'Dauphine', style: 'Classic', luminous: true, regions: ['FR-E', 'FR-A', 'FR-U'], price: 200 },
-    { id: 'h2', name: 'Sword', style: 'Vintage', luminous: true, regions: ['FR-A', 'FR-U'], price: 250 },
-    { id: 'h3', name: 'Baton', style: 'Modern', luminous: false, regions: ['FR-E', 'FR-A', 'FR-U'], price: 180 },
-    { id: 'h4', name: 'Alpha', style: 'Sport', luminous: true, regions: ['FR-E', 'FR-U'], price: 220 },
+    { 
+      id: 'h1', 
+      name: 'Dauphine', 
+      price: 200, 
+      thumbnail: '/images/hands/dauphine.jpg',
+      stock: 'in' as const,
+      style: 'Classic', 
+      luminous: true, 
+      regions: ['FR-E', 'FR-A', 'FR-U']
+    },
+    { 
+      id: 'h2', 
+      name: 'Sword', 
+      price: 250, 
+      thumbnail: '/images/hands/sword.jpg',
+      stock: 'low' as const,
+      style: 'Vintage', 
+      luminous: true, 
+      regions: ['FR-A', 'FR-U']
+    },
+    { 
+      id: 'h3', 
+      name: 'Baton', 
+      price: 180, 
+      thumbnail: '/images/hands/baton.jpg',
+      stock: 'in' as const,
+      style: 'Modern', 
+      luminous: false, 
+      regions: ['FR-E', 'FR-A', 'FR-U']
+    },
+    { 
+      id: 'h4', 
+      name: 'Alpha', 
+      price: 220, 
+      thumbnail: '/images/hands/alpha.jpg',
+      stock: 'in' as const,
+      style: 'Sport', 
+      luminous: true, 
+      regions: ['FR-E', 'FR-U']
+    },
   ],
   straps: [
-    { id: 's1', name: 'Alligator Leather', color: 'Black', clasp: 'Deployant', regions: ['FR-E', 'FR-A', 'FR-U'], price: 600 },
-    { id: 's2', name: 'Steel Bracelet', color: 'Silver', clasp: 'Folding', regions: ['FR-E', 'FR-A', 'FR-U'], price: 800 },
-    { id: 's3', name: 'Rubber Sport', color: 'Blue', clasp: 'Tang', regions: ['FR-E', 'FR-U'], price: 350 },
-    { id: 's4', name: 'Gold Bracelet', color: 'Gold', clasp: 'Folding', regions: ['FR-A'], price: 3500 },
-    { id: 's5', name: 'Ostrich Leather', color: 'Brown', clasp: 'Pin', regions: ['FR-A'], price: 950 },
+    { 
+      id: 's1', 
+      name: 'Alligator Leather', 
+      price: 600, 
+      thumbnail: '/images/straps/alligator-leather.jpg',
+      stock: 'in' as const,
+      material: 'Alligator Leather',
+      color: 'Black', 
+      clasp: 'Deployant', 
+      regions: ['FR-E', 'FR-A', 'FR-U']
+    },
+    { 
+      id: 's2', 
+      name: 'Steel Bracelet', 
+      price: 800, 
+      thumbnail: '/images/straps/steel-bracelet.jpg',
+      stock: 'low' as const,
+      material: 'Steel',
+      color: 'Silver', 
+      clasp: 'Folding', 
+      regions: ['FR-E', 'FR-A', 'FR-U']
+    },
+    { 
+      id: 's3', 
+      name: 'Rubber Sport', 
+      price: 350, 
+      thumbnail: '/images/straps/rubber-sport.jpg',
+      stock: 'in' as const,
+      material: 'Rubber',
+      color: 'Blue', 
+      clasp: 'Tang', 
+      regions: ['FR-E', 'FR-U']
+    },
+    { 
+      id: 's4', 
+      name: 'Gold Bracelet', 
+      price: 3500, 
+      thumbnail: '/images/straps/gold-bracelet.jpg',
+      stock: 'oos' as const,
+      material: 'Gold',
+      color: 'Gold', 
+      clasp: 'Folding', 
+      regions: ['FR-A']
+    },
+    { 
+      id: 's5', 
+      name: 'Ostrich Leather', 
+      price: 950, 
+      thumbnail: '/images/straps/ostrich-leather.jpg',
+      stock: 'low' as const,
+      material: 'Ostrich Leather',
+      color: 'Brown', 
+      clasp: 'Pin', 
+      regions: ['FR-A']
+    },
   ],
 };
 
@@ -67,7 +249,7 @@ export default function FranceMap() {
   const svgRootRef = useRef<SVGSVGElement | null>(null);
 
   // Gold highlight style (Montres‑Bastille aesthetic)
-  const HIGHLIGHT_COLOR = "#f5c242"; // rich gold
+  const HIGHLIGHT_COLOR = " #1E1E1E"; // rich gold
 
   // Load SVG content on mount
   useEffect(() => {
@@ -155,8 +337,15 @@ export default function FranceMap() {
   }, [selectedId]);
 
   // Filter watch components by selected region
-  const filteredComponents = useMemo(() => {
-    if (!selectedId) return null;
+  const filteredComponents: PartsCatalog = useMemo(() => {
+    if (!selectedId) {
+      return {
+        cases: [],
+        dials: [],
+        hands: [],
+        straps: [],
+      };
+    }
     
     return {
       cases: WATCH_COMPONENTS.cases.filter(c => c.regions.includes(selectedId)),
@@ -173,10 +362,16 @@ export default function FranceMap() {
           .selected-region {
             stroke: ${HIGHLIGHT_COLOR};
             stroke-width: 2.5;
-            filter: drop-shadow(0 0 6px rgba(245,194,66,0.6));
             transition: all 0.3s ease;
           }
-          [id^='FR-']:hover { cursor: pointer; opacity: 0.9; }
+          [id^='FR-']:hover { 
+            cursor: pointer; 
+            fill: ${HIGHLIGHT_COLOR};
+            opacity: 0.2;
+            border-radius: 8px;
+            border: 2px solid ${HIGHLIGHT_COLOR};
+            transition: all 0.2s ease;
+          }
           svg {
             display: block;
             margin: 0 auto;

@@ -2,21 +2,10 @@ import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Watch } from "lucide-react";
+import type { PartsCatalog } from "../types/Parts";
 
-interface WatchComponent {
-  id: string;
-  name: string;
-  price: number;
-  regions: string[];
-  [key: string]: any; // For additional properties like material, size, etc.
-}
 
-interface FilteredComponents {
-  cases: WatchComponent[];
-  dials: WatchComponent[];
-  hands: WatchComponent[];
-  straps: WatchComponent[];
-}
+
 
 interface MapModalProps {
   selectedId: string | null;
@@ -24,7 +13,7 @@ interface MapModalProps {
   svgRootRef?: React.RefObject<SVGSVGElement | null>;
   RegionName: string;
   regions: { [key: string]: string };
-  watchComponents?: FilteredComponents | null;
+  watchComponents: PartsCatalog;
 }
 
 export default function MapModal({ 
