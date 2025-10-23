@@ -53,36 +53,8 @@ const WATCH_COMPONENTS = {
       size: '42mm', 
       regions: ['FR-E', 'FR-A', 'FR-U']
     },
-    { 
-      id: 'c3', 
-      name: 'Dress Slim', 
-      price: 8500, 
-      thumbnail: '/images/cases/dress-slim.jpg',
-      stock: 'in' as const,
-      material: '18K Gold', 
-      size: '38mm', 
-      regions: ['FR-A', 'FR-U']
-    },
-    { 
-      id: 'c4', 
-      name: 'Diver Pro', 
-      price: 4100, 
-      thumbnail: '/images/cases/diver-pro.jpg',
-      stock: 'oos' as const,
-      material: 'Ceramic', 
-      size: '44mm', 
-      regions: ['FR-E', 'FR-U']
-    },
-    { 
-      id: 'c5', 
-      name: 'Heritage Square', 
-      price: 9200, 
-      thumbnail: '/images/cases/heritage-square.jpg',
-      stock: 'low' as const,
-      material: 'Rose Gold', 
-      size: '41mm', 
-      regions: ['FR-A']
-    },
+
+
   ],
   dials: [
     { 
@@ -118,28 +90,7 @@ const WATCH_COMPONENTS = {
       markers: 'Roman', 
       regions: ['FR-A']
     },
-    { 
-      id: 'd4', 
-      name: 'Silver Opaline', 
-      price: 900, 
-      thumbnail: '/images/dials/silver-opaline.jpg',
-      stock: 'in' as const,
-      color: 'Silver',
-      finish: 'Brushed', 
-      markers: 'Baton', 
-      regions: ['FR-E', 'FR-A', 'FR-U']
-    },
-    { 
-      id: 'd5', 
-      name: 'Meteorite', 
-      price: 5500, 
-      thumbnail: '/images/dials/meteorite.jpg',
-      stock: 'oos' as const,
-      color: 'Gray',
-      finish: 'Natural Stone', 
-      markers: 'Diamond', 
-      regions: ['FR-A', 'FR-U']
-    },
+
   ],
   hands: [
     { 
@@ -162,83 +113,25 @@ const WATCH_COMPONENTS = {
       luminous: true, 
       regions: ['FR-A', 'FR-U']
     },
-    { 
-      id: 'h3', 
-      name: 'Baton', 
-      price: 180, 
-      thumbnail: '/images/hands/baton.jpg',
-      stock: 'in' as const,
-      style: 'Modern', 
-      luminous: false, 
-      regions: ['FR-E', 'FR-A', 'FR-U']
-    },
-    { 
-      id: 'h4', 
-      name: 'Alpha', 
-      price: 220, 
-      thumbnail: '/images/hands/alpha.jpg',
-      stock: 'in' as const,
-      style: 'Sport', 
-      luminous: true, 
-      regions: ['FR-E', 'FR-U']
-    },
+
   ],
   straps: [
     { 
-      id: 's1', 
-      name: 'Alligator Leather', 
-      price: 600, 
-      thumbnail: '/images/straps/alligator-leather.jpg',
-      stock: 'in' as const,
+      id: 's1', name: 'Alligator Leather', price: 600, thumbnail: '/images/straps/alligator-leather.jpg', stock: 'in' as const,
       material: 'Alligator Leather',
       color: 'Black', 
       clasp: 'Deployant', 
       regions: ['FR-E', 'FR-A', 'FR-U']
     },
     { 
-      id: 's2', 
-      name: 'Steel Bracelet', 
-      price: 800, 
-      thumbnail: '/images/straps/steel-bracelet.jpg',
-      stock: 'low' as const,
-      material: 'Steel',
-      color: 'Silver', 
-      clasp: 'Folding', 
-      regions: ['FR-E', 'FR-A', 'FR-U']
+      id: 's2', name: 'Steel Bracelet', price: 800, thumbnail: '/images/straps/steel-bracelet.jpg',stock: 'low' as const,material: 'Steel',color: 'Silver', 
+      clasp: 'Folding', regions: ['FR-E', 'FR-A', 'FR-U']
     },
     { 
-      id: 's3', 
-      name: 'Rubber Sport', 
-      price: 350, 
-      thumbnail: '/images/straps/rubber-sport.jpg',
-      stock: 'in' as const,
-      material: 'Rubber',
-      color: 'Blue', 
-      clasp: 'Tang', 
-      regions: ['FR-E', 'FR-U']
+      id: 's3', name: 'Rubber Sport', price: 350, thumbnail: '/images/straps/rubber-sport.jpg',stock: 'in' as const,material: 'Rubber',color: 'Blue', 
+      clasp: 'Tang', regions: ['FR-E', 'FR-U']
     },
-    { 
-      id: 's4', 
-      name: 'Gold Bracelet', 
-      price: 3500, 
-      thumbnail: '/images/straps/gold-bracelet.jpg',
-      stock: 'oos' as const,
-      material: 'Gold',
-      color: 'Gold', 
-      clasp: 'Folding', 
-      regions: ['FR-A']
-    },
-    { 
-      id: 's5', 
-      name: 'Ostrich Leather', 
-      price: 950, 
-      thumbnail: '/images/straps/ostrich-leather.jpg',
-      stock: 'low' as const,
-      material: 'Ostrich Leather',
-      color: 'Brown', 
-      clasp: 'Pin', 
-      regions: ['FR-A']
-    },
+
   ],
 };
 
