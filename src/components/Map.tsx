@@ -71,7 +71,7 @@ export default function FranceMap() {
 
   // Load SVG content on mount
   useEffect(() => {
-    fetch("/src/assets/france.svg")
+    fetch("/france.svg")
       .then((res) => {
         if (!res.ok) throw new Error("SVG not found");
         return res.text();
