@@ -296,10 +296,9 @@ export default function MapModal({
                         {/* CTA Button */}
                         <button
                           onClick={handleConfigureClick}
-                          className="w-full flex items-center justify-center gap-2 group rounded-xl bg-bastilleGold p-4 hover:bg-bastilleGold/90 transition-all hover:shadow-lg hover:shadow-bastilleGold/20 mt-6"
+                          className="w-full flex items-center justify-center gap-2 group rounded-xl bg-surface p-4 hover:bg-surface-hover transition-all hover:shadow-lg hover:shadow-surface-hover mt-6"
                         >
-                          <Watch className="w-5 h-5 text-neutral-900" />
-                          <span className="font-serif text-lg tracking-wide text-neutral-900 font-semibold">
+                          <span className="font-serif text-lg tracking-wide text-primary font-semibold">
                             Configurer ma montre
                           </span>
                         </button>
