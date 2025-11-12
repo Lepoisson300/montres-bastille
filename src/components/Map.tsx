@@ -13,6 +13,7 @@ export default function FranceMap() {
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const svgRootRef = useRef<SVGSVGElement | null>(null);
+  const nbRegions: string[] = [];
 
   // Gold highlight style (Montres‑Bastille aesthetic)
   const HIGHLIGHT_COLOR = " #1E1E1E"; // rich gold
@@ -147,25 +148,51 @@ export default function FranceMap() {
   };
 
   // Extract individual region from full SVG
+ // Extract individual region from full SVG
   const extractRegionSVG = (regionCode: string) => {
     if (!svgContent) return null;
+    
     const parser = new DOMParser();
     const doc = parser.parseFromString(svgContent, "image/svg+xml");
+    const svgElement = doc.querySelector("svg");
     const regionElement = doc.querySelector(`#${CSS.escape(regionCode)}`);
     
-    if (!regionElement) return null;
+    if (!regionElement || !svgElement) return null;
+    
+    // Create a temporary SVG to calculate bounding box
+    const tempDiv = document.createElement('div');
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.visibility = 'hidden';
+    document.body.appendChild(tempDiv);
+    
+    const tempSvg = svgElement.cloneNode(true) as SVGSVGElement;
+    tempDiv.appendChild(tempSvg);
+    
+    const tempPath = tempSvg.querySelector(`#${CSS.escape(regionCode)}`) as SVGGraphicsElement;
+    
+    if (!tempPath) {
+      document.body.removeChild(tempDiv);
+      return null;
+    }
+    
+    // Get bounding box
+    const bbox = tempPath.getBBox();
+    document.body.removeChild(tempDiv);
+    
+    // Create new SVG with just this region
+    const newSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    const padding = 10;
+    newSvg.setAttribute("viewBox", `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + padding * 2} ${bbox.height + padding * 2}`);
+    newSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    newSvg.setAttribute("width", "100%");
+    newSvg.setAttribute("height", "100%");
     
     const clone = regionElement.cloneNode(true) as SVGElement;
-    const bbox = (regionElement as SVGGraphicsElement).getBBox();
-    
-    const newSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    newSvg.setAttribute("viewBox", `${bbox.x - 10} ${bbox.y - 10} ${bbox.width + 20} ${bbox.height + 20}`);
-    newSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    newSvg.appendChild(clone);
-    
     clone.setAttribute("fill", "#f5c242");
-    clone.setAttribute("stroke", "#000");
-    clone.setAttribute("stroke-width", "2");
+    clone.setAttribute("stroke", "#1E1E1E");
+    clone.setAttribute("stroke-width", "3");
+    
+    newSvg.appendChild(clone);
     
     return new XMLSerializer().serializeToString(newSvg);
   };
@@ -257,8 +284,10 @@ export default function FranceMap() {
                 >
                   {regionCodes.map((code) => {
                     const regionSVG = extractRegionSVG(code);
+                    console.log(regionSVG);
                     const componentCount = getComponentCount(code);
-                    
+                    if (componentCount === 0) return null;
+                    nbRegions.push(code);
                     return (
                       <div key={code} className="w-full flex-shrink-0 px-2">
                         <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl border border-primary/30 p-6 shadow-xl">
@@ -269,7 +298,7 @@ export default function FranceMap() {
                           
                           {/* Region SVG preview */}
                           {regionSVG && (
-                            <div className="bg-neutral-100 rounded-xl p-8 mb-4 flex items-center justify-center min-h-[200px]">
+                            <div className="rounded-xl p-8 mb-4 flex items-center justify-center min-h-[200px]">
                               <div 
                                 dangerouslySetInnerHTML={{ __html: regionSVG }}
                                 className="w-full max-w-[200px]"
@@ -322,7 +351,7 @@ export default function FranceMap() {
 
               {/* Dots indicator */}
               <div className="flex justify-center gap-2 mt-6">
-                {regionCodes.map((_, index) => (
+                {nbRegions.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCarouselIndex(index)}
