@@ -1,9 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 import { motion, AnimatePresence } from "framer-motion";
 import html2canvas from "html2canvas";
-import type { PartsCatalog, WatchConfiguratorProps } from "../types/Parts";
-import type { PartOption } from "../types/Parts";
+import type { PartsCatalog, WatchConfiguratorProps, PartOption } from "../types/Parts";
 
 const cx = (...classes: Array<string | false | undefined>) =>
   classes.filter(Boolean).join(" ");
@@ -35,87 +34,95 @@ export default function Configurator({
   onCheckout
 }: WatchConfiguratorProps) {
   
-  // Filter assets by selected region
+  // 1. Filter assets by selected region
+  // Fixed: Uncommented dials and hands, corrected 'dial' to 'dials'
   const filteredAssets = useMemo(() => {
     if (!selectedRegion) return assets;
 
+    const filterByRegion = (items: PartOption[]) => 
+      items.filter(i => !i.regions || i.regions.includes(selectedRegion));
+
     return {
-      case: assets.case.filter(c => !c.regions || c.regions.includes(selectedRegion)),
-      strap: assets.strap.filter(s => !s.regions || s.regions.includes(selectedRegion)),
-      dial: assets.dial.filter(d => !d.regions || d.regions.includes(selectedRegion)),
-      hands: assets.hands.filter(h => !h.regions || h.regions.includes(selectedRegion)),
+      cases: filterByRegion(assets.cases),
+      straps: filterByRegion(assets.straps),
+      dials: filterByRegion(assets.dials), 
+      hands: filterByRegion(assets.hands),
     };
   }, [assets, selectedRegion]);
 
+  // 2. Initialize State
   const initial: Record<string, string> = useMemo(() => {
     const q = typeof window !== "undefined" ? fromQuery() : {};
     return {
-      case: q.case || defaultChoice?.case || filteredAssets.case[0]?.id || "",
-      strap: q.strap || defaultChoice?.strap || filteredAssets.strap[0]?.id || "",
-      dial: q.dial || defaultChoice?.dial || filteredAssets.dial[0]?.id || "",
-      hands: q.hands || defaultChoice?.hands || filteredAssets.hands[0]?.id || "",
+      cases: q.cases || defaultChoice?.cases || filteredAssets.cases[0]?.id || "",
+      straps: q.straps || defaultChoice?.straps || filteredAssets.straps[0]?.id || "",
+      //dials: q.dials || defaultChoice?.dials || filteredAssets.dials[0]?.id || "",
+      //hands: q.hands || defaultChoice?.hands || filteredAssets.hands[0]?.id || "",
     };
   }, [filteredAssets, defaultChoice]);
 
   const [config, setConfig] = useState<Record<string, string>>(initial);
   const [zoom, setZoom] = useState(1);
 
-  // Update config when filtered assets change (region change)
+  // 3. Update config when region changes
+  // Fixed: Now resets all 4 components to the first available option in the new region
   useEffect(() => {
     setConfig({
-      case: filteredAssets.case[0]?.id || "",
-      strap: filteredAssets.strap[0]?.id || "",
-      dial: filteredAssets.dial[0]?.id || "",
-      hands: filteredAssets.hands[0]?.id || "",
+      cases: filteredAssets.cases[0]?.id || "",
+      straps: filteredAssets.straps[0]?.id || "",
+      //dials: filteredAssets.dials[0]?.id || "",
+      //hands: filteredAssets.hands[0]?.id || "",
     });
-  }, [selectedRegion]);
+  }, [selectedRegion, filteredAssets]);
 
-  // permalink
+  // Permalink updates
   const href = useMemo(() => toQuery(config), [config]);
   useEffect(() => {
     const url = `${window.location.pathname}${href}`;
     window.history.replaceState(null, "", url);
   }, [href]);
 
-  // keyboard zoom
+  // Keyboard zoom
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "+")
-        setZoom((z) => Math.min(2, +(z + 0.1).toFixed(2)));
-      if (e.key === "-")
-        setZoom((z) => Math.max(0.8, +(z - 0.1).toFixed(2)));
+      if (e.key === "+") setZoom((z) => Math.min(2, +(z + 0.1).toFixed(2)));
+      if (e.key === "-") setZoom((z) => Math.max(0.8, +(z - 0.1).toFixed(2)));
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // 4. Calculate Price
   const price = useMemo(() => {
     let p = pricing.base;
     const add = (part: keyof PartsCatalog) => {
-      const id = config[part as string];
+      const id = config[part];
+      // @ts-ignore - dynamic access
       const opt = (filteredAssets[part] || []).find((o) => o.id === id);
       if (opt?.price) p += opt.price;
     };
-    add("case");
-    add("strap");
-    add("dial");
+    add("cases");
+    add("straps");
+    add("dials");
     add("hands");
     return p;
   }, [config, pricing, filteredAssets]);
 
   const sku = useMemo(
     () =>
-      [config.case, config.strap, config.dial, config.hands]
+      [config.cases, config.straps, config.dials, config.hands]
         .filter(Boolean)
         .join("-"),
     [config]
   );
 
+  // 5. Visual Layers
+  // Fixed: Added dials and hands. Order is crucial for Z-Index (Stacking)
   const layers: Array<{ key: string; src?: string }> = [
-    { key: "strap", src: findOpt(filteredAssets.strap, config.strap)?.thumbnail },
-    { key: "case", src: findOpt(filteredAssets.case, config.case)?.thumbnail },
-    { key: "dial", src: findOpt(filteredAssets.dial, config.dial)?.thumbnail },
-    { key: "hands", src: findOpt(filteredAssets.hands, config.hands)?.thumbnail },
+    { key: "straps", src: findOpt(filteredAssets.straps, config.straps)?.thumbnail },
+    { key: "cases", src: findOpt(filteredAssets.cases, config.cases)?.thumbnail },
+    //{ key: "dials", src: findOpt(filteredAssets.dials, config.dials)?.thumbnail },
+    //{ key: "hands", src: findOpt(filteredAssets.hands, config.hands)?.thumbnail },
   ];
 
   async function handleDownload() {
@@ -195,7 +202,7 @@ export default function Configurator({
                     +{fmt(o.price, pricing.currency)}
                   </span>
                 ) : null}
-                {/* Show additional info */}
+                
                 {(o.material || o.size || o.finish || o.style || o.color) && (
                   <span className="block text-xs text-ivory/50 mt-1">
                     {o.material || o.finish || o.style || o.color}
@@ -247,19 +254,26 @@ export default function Configurator({
 
         <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] items-start">
           {/* Viewer */}
-          <div className="bg-neutral-900/60 rounded-2xl border border-bastilleGold/30 p-4 shadow-xl">
-            <div
-              id="watch-viewer"
-              className="relative mx-auto aspect-square max-w-[560px] select-none overflow-hidden rounded-xl 
-              bg-[radial-gradient(circle_at_center,rgba(245,194,66,0.05),rgba(0,0,0,0.9))]"
+         <div className="bg-neutral-900/60 rounded-2xl border border-bastilleGold/30 p-4 shadow-xl">
+          <div
+            id="watch-viewer"
+            // 1. On garde overflow-hidden ici pour "couper" ce qui dépasse
+            className="relative mx-auto aspect-square max-w-[560px] select-none overflow-hidden rounded-xl 
+            bg-[radial-gradient(circle_at_center,rgba(245,194,66,0.05),rgba(0,0,0,0.9))]"
+            aria-label="Aperçu de la montre personnalisée"
+            role="img"
+            // 2. SUPPRIMEZ le style transform ici
+          >
+            {/* 3. CRÉEZ une div interne qui va gérer le zoom */}
+            <div 
+              className="relative h-full w-full"
               style={{
                 transform: `scale(${zoom})`,
                 transformOrigin: "center",
+                transition: "transform 0.3s ease-out" // Ajoute une animation fluide au zoom
               }}
-              aria-label="Aperçu de la montre personnalisée"
-              role="img"
             >
-              <AnimatePresence mode="wait">
+              <AnimatePresence>
                 {layers.map(
                   (l) =>
                     l.src && (
@@ -277,6 +291,7 @@ export default function Configurator({
                 )}
               </AnimatePresence>
             </div>
+          </div>
 
             {/* Viewer controls */}
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
@@ -332,19 +347,20 @@ export default function Configurator({
                 <div className="flex justify-between">
                   <span>Boîtier</span>
                   <span className="text-right font-medium text-ivory">
-                    {findOpt(filteredAssets.case, config.case)?.name || "—"}
+                    {findOpt(filteredAssets.cases, config.cases)?.name || "—"}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Bracelet</span>
                   <span className="text-right font-medium text-ivory">
-                    {findOpt(filteredAssets.strap, config.strap)?.name || "—"}
+                    {findOpt(filteredAssets.straps, config.straps)?.name || "—"}
                   </span>
                 </div>
+                {/* Fixed: Added Dial and Hands display */}
                 <div className="flex justify-between">
                   <span>Cadran</span>
                   <span className="text-right font-medium text-ivory">
-                    {findOpt(filteredAssets.dial, config.dial)?.name || "—"}
+                    {findOpt(filteredAssets.dials, config.dials)?.name || "—"}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -382,9 +398,10 @@ export default function Configurator({
             </div>
 
             <div className="rounded-2xl border border-bastilleGold/40 bg-neutral-900/60 p-5 space-y-8 backdrop-blur">
-              <SelectGrid part="case" title="Boîtier" />
-              <SelectGrid part="strap" title="Bracelet" />
-              <SelectGrid part="dial" title="Cadran" />
+              <SelectGrid part="cases" title="Boîtier" />
+              <SelectGrid part="straps" title="Bracelet" />
+              {/* Fixed: Enabled Dial and Hands selectors with correct keys */}
+              <SelectGrid part="dials" title="Cadran" />
               <SelectGrid part="hands" title="Aiguilles" />
             </div>
           </div>

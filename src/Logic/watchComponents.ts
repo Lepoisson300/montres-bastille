@@ -31,8 +31,8 @@ export const WATCH_COMPONENTS: PartsCatalog = {
     { 
       id: 'c1', 
       name: 'Classic Round', 
-      price: 2500, 
-      thumbnail: '/images/cases/classic-round.jpg',
+      price: 350, 
+      thumbnail: '/watchComponents/case/testMilieu.png',
       stock: 'in',
       material: 'Stainless Steel', 
       size: '40mm', 
@@ -40,11 +40,21 @@ export const WATCH_COMPONENTS: PartsCatalog = {
     },
     { 
       id: 'c2', 
-      name: 'Sport Chronograph', 
-      price: 3200, 
-      thumbnail: '/images/cases/sport-chronograph.jpg',
+      name: 'Sportivité hexagonale', 
+      price: 300, 
+      thumbnail: '/watchComponents/case/hexa.png',
       stock: 'low',
-      material: 'Titanium', 
+      material: 'Acier Inoxydable', 
+      size: '42mm', 
+      regions: ['FR-E', 'FR-A', 'FR-U']
+    },
+    { 
+      id: 'c3', 
+      name: 'Classique', 
+      price: 300, 
+      thumbnail: '/watchComponents/case/silver.png',
+      stock: 'low',
+      material: 'Acier Inoxydable', 
       size: '42mm', 
       regions: ['FR-E', 'FR-A', 'FR-U']
     },
@@ -112,18 +122,32 @@ export const WATCH_COMPONENTS: PartsCatalog = {
   ],
   straps: [
     { 
-      id: 's1', name: 'Alligator Leather', price: 600, thumbnail: '/images/straps/alligator-leather.jpg', stock: 'in',
-      material: 'Alligator Leather',
+      id: 's1', name: 'Bombe', price: 150, thumbnail: '/watchComponents/strap/Bombe.png', stock: 'in',
+      material: 'Leather',
+      color: 'Brown', 
+      clasp: 'Deployant', 
+      regions: ['FR-E', 'FR-A', 'FR-U']
+    },
+    { 
+      id: 's2', name: 'Chrono', price: 100, thumbnail: '/watchComponents/strap/chrono.png', stock: 'in',
+      material: 'plastic',
       color: 'Black', 
       clasp: 'Deployant', 
       regions: ['FR-E', 'FR-A', 'FR-U']
     },
     { 
-      id: 's2', name: 'Steel Bracelet', price: 800, thumbnail: '/images/straps/steel-bracelet.jpg', stock: 'low', material: 'Steel', color: 'Silver', 
+      id: 's3', name: 'Lezard', price: 150, thumbnail: '/watchComponents/strap/lezard.png', stock: 'in',
+      material: 'Leather',
+      color: 'Black', 
+      clasp: 'Deployant', 
+      regions: ['FR-E', 'FR-A', 'FR-U']
+    },
+    { 
+      id: 's4', name: 'Toile Militaire', price: 80, thumbnail: '/watchComponents/strap/toileMilitaire.png', stock: 'low', material: 'Steel', color: 'Silver', 
       clasp: 'Folding', regions: ['FR-E', 'FR-A', 'FR-U']
     },
     { 
-      id: 's3', name: 'Rubber Sport', price: 350, thumbnail: '/images/straps/rubber-sport.jpg', stock: 'in', material: 'Rubber', color: 'Blue', 
+      id: 's5', name: 'Classic', price: 100, thumbnail: '/watchComponents/strap/classic.png', stock: 'in', material: 'Rubber', color: 'Blue', 
       clasp: 'Tang', regions: ['FR-E', 'FR-U']
     },
 

@@ -4,7 +4,7 @@ import Reveal from "./Logic/Reveal";
 import Nav from "./components/Nav";
 import { Routes, Route, Navigate, Link } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import ConfiguratorPage from "./pages/ConfiguratorPage";
+import ConfiguratorPage from "./pages/RegionSelectionPage";
 import AboutPage from "./pages/AboutPage";
 import CommunityPage from "./pages/CommunityPage";
 import ContactPage from "./pages/ContactPage";
@@ -127,7 +127,7 @@ function App() {
                       href="mailto:lepuig@bastille.fr" 
                       className="hover:text-primary transition-colors duration-300"
                     >
-                      boguiste@montres-bastille.fr
+                      contact@montres-bastille.fr
                     </a>
                   </p>
                   <p>

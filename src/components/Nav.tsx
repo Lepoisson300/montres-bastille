@@ -1,7 +1,7 @@
 // NavbarLuxury.tsx
 import React, { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import logo from "../assets/logo.png";
+import logo from "/logo.png";
 
 type RouteItem = {
   name: string;

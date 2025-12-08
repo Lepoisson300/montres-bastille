@@ -1,11 +1,11 @@
 import Reveal from "../Logic/Reveal";
 import { Link } from "react-router-dom";
-import heroImg from "../assets/about_hero.png";      // replace with real image
-import atelier1 from "../assets/atelier1.png";       // replace with real image
-import atelier2 from "../assets/atelier2.png";       // replace with real image
-import atelier3 from "../assets/watch1.png";       // replace with real image
-import texture from "../assets/paper_texture.png";    // optional subtle texture
-import nh35 from "../assets/nh35.png";               // movement image
+import heroImg from "/about_hero.png";      // replace with real image
+import atelier1 from "/atelier1.png";       // replace with real image
+import atelier2 from "/atelier2.png";       // replace with real image
+import atelier3 from "/watch1.png";       // replace with real image
+import texture from "/paper_texture.png";    // optional subtle texture
+import nh35 from "/nh35.png";               // movement image
 
 export default function AboutPage() {
   return (

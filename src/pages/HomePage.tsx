@@ -1,9 +1,9 @@
 import React, { useRef, useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
-import arcClean from "../assets/arcClean.jpg";
-import nh35 from "../assets/37.jpg";
-import france from "../assets/france.jpg";
-import watch2 from "../assets/watch2.png";
+import arcClean from "/arcClean.png";
+import nh35 from "/37.jpg";
+import france from "/france.jpg";
+import watch2 from "/watch2.png";
 import HeroCarousel from "../components/Carousel";
 import { Link } from "react-router-dom";
 

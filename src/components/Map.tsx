@@ -4,22 +4,21 @@ import type { PartsCatalog } from "../types/Parts";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { WATCH_COMPONENTS, REGION_NAMES } from "../Logic/watchComponents";
 
-
 export default function FranceMap() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [svgContent, setSvgContent] = useState<string>("");
   const [isMobile, setIsMobile] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
+  
   const containerRef = useRef<HTMLDivElement | null>(null);
   const svgRootRef = useRef<SVGSVGElement | null>(null);
-  const nbRegions: string[] = [];
 
   // Gold highlight style (Montres‑Bastille aesthetic)
   const HIGHLIGHT_COLOR = " #1E1E1E"; // rich gold
 
-  // Get array of region codes for carousel
-  const regionCodes = useMemo(() => Object.keys(REGION_NAMES), []);
+  // Get array of ALL region codes (for Desktop reference)
+  const allRegionCodes = useMemo(() => Object.keys(REGION_NAMES), []);
 
   // Detect mobile
   useEffect(() => {
@@ -129,6 +128,7 @@ export default function FranceMap() {
   }, [selectedId]);
 
   // Count available components for a region
+  // Wrapped in function for reuse
   const getComponentCount = (regionCode: string) => {
     return (
       WATCH_COMPONENTS.cases.filter(c => c.regions?.includes(regionCode)).length +
@@ -138,17 +138,23 @@ export default function FranceMap() {
     );
   };
 
-  // Carousel navigation
+  /** * FILTERED REGIONS VARIABLE (Used only in Phone Mode)
+   * This creates an array containing ONLY region codes that have components > 0
+   */
+  const availableRegions = useMemo(() => {
+    return allRegionCodes.filter(code => getComponentCount(code) > 0);
+  }, [allRegionCodes]);
+
+  // Carousel navigation (Updated to use availableRegions length)
   const goToNext = () => {
-    setCarouselIndex((prev) => (prev + 1) % regionCodes.length);
+    setCarouselIndex((prev) => (prev + 1) % availableRegions.length);
   };
 
   const goToPrev = () => {
-    setCarouselIndex((prev) => (prev - 1 + regionCodes.length) % regionCodes.length);
+    setCarouselIndex((prev) => (prev - 1 + availableRegions.length) % availableRegions.length);
   };
 
   // Extract individual region from full SVG
- // Extract individual region from full SVG
   const extractRegionSVG = (regionCode: string) => {
     if (!svgContent) return null;
     
@@ -207,8 +213,8 @@ export default function FranceMap() {
             stroke-width: 2.5;
             transition: all 0.3s ease;
           }
-          [id^='FR-']:hover { 
-            cursor: pointer; 
+          [id^='FR-']:hover {
+            cursor: pointer;
             fill: ${HIGHLIGHT_COLOR};
             opacity: 0.2;
             border-radius: 8px;
@@ -253,7 +259,7 @@ export default function FranceMap() {
             ref={containerRef}
             className="relative flex items-center justify-center w-full max-w-6xl rounded-3xl
                        shadow-[0_0_35px_rgba(245,194,66,0.12)]
-                       bg-gradient-to-b from-neutral-100 to-primary/70 border border-primary/30 
+                       bg-gradient-to-b from-neutral-100 to-primary/70 border border-primary/30
                        p-6 overflow-hidden"
           >
             {svgContent ? (
@@ -272,22 +278,23 @@ export default function FranceMap() {
           </div>
         )}
 
-        {/* Mobile: Region Carousel */}
-        {isMobile && svgContent && (
+        {/* Mobile: Region Carousel - USING FILTERED availableRegions */}
+        {isMobile && svgContent && availableRegions.length > 0 && (
           <div className="w-full max-w-md px-4">
             <div className="relative">
               {/* Carousel container */}
               <div className="overflow-hidden">
-                <div 
+                <div
                   className="flex transition-transform duration-300 ease-out"
                   style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
                 >
-                  {regionCodes.map((code) => {
+                  {availableRegions.map((code) => {
                     const regionSVG = extractRegionSVG(code);
-                    console.log(regionSVG);
                     const componentCount = getComponentCount(code);
-                    if (componentCount === 0) return null;
-                    nbRegions.push(code);
+                    
+                    // Note: We don't need to check componentCount === 0 here anymore
+                    // because availableRegions is already filtered.
+
                     return (
                       <div key={code} className="w-full flex-shrink-0 px-2">
                         <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl border border-primary/30 p-6 shadow-xl">
@@ -299,7 +306,7 @@ export default function FranceMap() {
                           {/* Region SVG preview */}
                           {regionSVG && (
                             <div className="rounded-xl p-8 mb-4 flex items-center justify-center min-h-[200px]">
-                              <div 
+                              <div
                                 dangerouslySetInnerHTML={{ __html: regionSVG }}
                                 className="w-full max-w-[200px]"
                               />
@@ -317,7 +324,7 @@ export default function FranceMap() {
                               </div>
                             </div>
                           </div>
-                          
+
                           {/* Configure button */}
                           <button
                             onClick={() => setSelectedId(code)}
@@ -332,32 +339,36 @@ export default function FranceMap() {
                 </div>
               </div>
 
-              {/* Navigation arrows */}
-              <button
-                onClick={goToPrev}
-                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 bg-primary/10 backdrop-blur-sm border border-primary/30 rounded-full p-3 hover:bg-primary/20 transition-all shadow-lg z-10"
-                aria-label="Région précédente"
-              >
-                <ChevronLeft className="w-6 h-6 text-text-primary" />
-              </button>
-              
-              <button
-                onClick={goToNext}
-                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 bg-primary/10 backdrop-blur-sm border border-primary/30 rounded-full p-3 hover:bg-primary/20 transition-all shadow-lg z-10"
-                aria-label="Région suivante"
-              >
-                <ChevronRight className="w-6 h-6 text-text-primary" />
-              </button>
+              {/* Navigation arrows (Only if more than 1 region) */}
+              {availableRegions.length > 1 && (
+                <>
+                  <button
+                    onClick={goToPrev}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 bg-primary/10 backdrop-blur-sm border border-primary/30 rounded-full p-3 hover:bg-primary/20 transition-all shadow-lg z-10"
+                    aria-label="Région précédente"
+                  >
+                    <ChevronLeft className="w-6 h-6 text-text-primary" />
+                  </button>
+                  
+                  <button
+                    onClick={goToNext}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 bg-primary/10 backdrop-blur-sm border border-primary/30 rounded-full p-3 hover:bg-primary/20 transition-all shadow-lg z-10"
+                    aria-label="Région suivante"
+                  >
+                    <ChevronRight className="w-6 h-6 text-text-primary" />
+                  </button>
+                </>
+              )}
 
               {/* Dots indicator */}
               <div className="flex justify-center gap-2 mt-6">
-                {nbRegions.map((_, index) => (
+                {availableRegions.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCarouselIndex(index)}
                     className={`w-2 h-2 rounded-full transition-all ${
-                      index === carouselIndex 
-                        ? 'bg-primary-dark w-8' 
+                      index === carouselIndex
+                        ? 'bg-primary-dark w-8'
                         : 'bg-primary'
                     }`}
                     aria-label={`Aller à la région ${index + 1}`}
@@ -367,7 +378,7 @@ export default function FranceMap() {
 
               {/* Counter */}
               <div className="text-center mt-4 text-sm text-neutral-400">
-                {carouselIndex + 1} / {regionCodes.length}
+                {carouselIndex + 1} / {availableRegions.length}
               </div>
             </div>
           </div>

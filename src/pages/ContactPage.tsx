@@ -100,7 +100,7 @@ export default function ContactPage() {
     {
       icon: GoMail,
       title: "Email",
-      details: ["boguiste@montres-bastille.fr"],
+      details: ["contact@montres-bastille.fr"],
       subtitle: "Réponse sous 24h"
     },
   

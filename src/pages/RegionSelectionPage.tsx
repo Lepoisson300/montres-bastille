@@ -1,19 +1,13 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import Configurator from "../components/Configurator";
-import type { PartOption } from "../types/Parts";
+import type { PartOption, PartsCatalog } from "../types/Parts";
 
-interface FilteredComponents {
-  cases: PartOption[];
-  dials: PartOption[];
-  hands: PartOption[];
-  straps: PartOption[];
-}
 
 interface LocationState {
   selectedRegion?: string;
   regionName?: string;
-  watchComponents?: FilteredComponents;
+  watchComponents?: PartOption;
 }
 
 export default function ConfiguratorPage() {
@@ -22,12 +16,11 @@ export default function ConfiguratorPage() {
   const state = location.state as LocationState;
 
   // Transform the watch components to match the PartsCatalog format
-  const assets = {
-    case: state?.watchComponents?.cases || [],
-    strap: state?.watchComponents?.straps || [],
-    dial: state?.watchComponents?.dials || [],
+  const assets: PartsCatalog = {
+    cases: state?.watchComponents?.cases || [],
+    straps: state?.watchComponents?.straps || [],
+    dials: state?.watchComponents?.dials || [],
     hands: state?.watchComponents?.hands || [],
-    crystal: []
   };
 
   const pricing = {

@@ -1,11 +1,23 @@
 import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Watch } from "lucide-react";
+import { X } from "lucide-react";
 import type { PartsCatalog } from "../types/Parts";
+// 1. Import the new carousel
+import RegionWatchesCarousel from "./RegionWatchCarousel"; 
+import type { UserWatch } from "./RegionWatchCarousel";
 
-
-
+// --- MOCK DATA FOR USER WATCHES ---
+// You would usually fetch this from an API
+const MOCK_USER_WATCHES: UserWatch[] = [
+  { id: '1', name: 'L’Élégance Bretonne', creator: 'Arthur M.', regionId: 'FR-BRE', image: '/assets/watches/watch_bretagne.png' },
+  { id: '2', name: 'Le Phare Ouest', creator: 'Marie L.', regionId: 'FR-BRE', image: '/assets/watches/watch_bretagne_2.png' },
+  { id: '3', name: 'Azur Chrono', creator: 'Lucas P.', regionId: 'FR-PAC', image: '/assets/watches/watch_paca.png' },
+  { id: '4', name: 'Riviera Gold', creator: 'Sophie D.', regionId: 'FR-PAC', image: '/assets/watches/watch_paca_2.png' },
+  { id: '5', name: 'Alpiniste Acier', creator: 'Jean T.', regionId: 'FR-ARA', image: '/assets/watches/watch_rhone.png' },
+  { id: '6', name: 'Esprit Volcan', creator: 'Clara B.', regionId: 'FR-ARA', image: '/assets/watches/watch_rhone_2.png' },
+  // Add fallback/default images or more regions as needed
+];
 
 interface MapModalProps {
   selectedId: string | null;
@@ -25,37 +37,19 @@ export default function MapModal({
 }: MapModalProps) {
   const navigate = useNavigate();
 
+  // Get the display name of the region
   const selectedName = useMemo(() => {
     if (!selectedId) return null;
-    const explicit = RegionName;
-    if (explicit) return explicit;
-    // fallback: try reading from the SVG itself
-    const svg = svgRootRef?.current;
-    const node = svg?.querySelector(`#${CSS.escape(selectedId)}`);
-    const title = 
-      node?.querySelector("title")?.textContent || 
-      node?.getAttribute("data-name") || 
-      node?.getAttribute("name") || 
-      node?.getAttribute("inkscape:label");
-    return title || selectedId;
-  }, [selectedId, svgRootRef, RegionName]);
+    return RegionName || selectedId;
+  }, [selectedId, RegionName]);
 
-  // Calculate total available components
-  const totalComponents = useMemo(() => {
-    if (!watchComponents) return 0;
-    return (
-      watchComponents.cases.length +
-      watchComponents.dials.length +
-      watchComponents.hands.length +
-      watchComponents.straps.length
-    );
-  }, [watchComponents]);
-
-  // Check if any components are available
-  const hasComponents = totalComponents > 0;
+  // 2. FILTER USER WATCHES BY REGION
+  const regionWatches = useMemo(() => {
+    if (!selectedId) return [];
+    return MOCK_USER_WATCHES.filter(w => w.regionId === selectedId);
+  }, [selectedId]);
 
   const handleConfigureClick = () => {
-    // Navigate to configurator with region and components data
     navigate('/configurator', { 
       state: { 
         selectedRegion: selectedId,
@@ -63,7 +57,7 @@ export default function MapModal({
         watchComponents: watchComponents 
       } 
     });
-    onClose(); // Close the modal after navigation
+    onClose();
   };
 
   return (
@@ -88,7 +82,8 @@ export default function MapModal({
             className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl mx-4 z-50"
           >
             <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl shadow-2xl border border-bastilleGold/30 p-6 max-h-[85vh] overflow-y-auto relative">
-              {/* Close button */}
+              
+              {/* Close Button */}
               <button
                 onClick={onClose}
                 className="absolute top-4 right-4 p-2 hover:bg-bastilleGold/20 rounded-full transition-colors z-10"
@@ -99,214 +94,59 @@ export default function MapModal({
 
               {/* Content */}
               <AnimatePresence mode="wait">
-                {selectedId ? (
-                  <motion.div
-                    key={selectedId}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    className="text-neutral-100"
-                  >
-                    {/* Header */}
-                    <div className="mb-6 pr-10">
-                      <h2 className="text-3xl font-serif font-semibold text-bastilleGold mb-2">
-                        {selectedName}
-                      </h2>
-                      <p className="text-neutral-300 text-sm">
-                        Composants disponibles pour cette région
-                      </p>
+                <motion.div
+                  key={selectedId}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="text-neutral-100"
+                >
+                  {/* Header */}
+                  <div className="mb-6 pr-10 text-center sm:text-left">
+                    <h2 className="text-3xl font-serif font-semibold text-bastilleGold mb-2">
+                      {selectedName}
+                    </h2>
+                    <p className="text-neutral-300 text-sm">
+                      Découvrez les créations de notre communauté
+                    </p>
+                  </div>
+
+                  {/* 3. DISPLAY THE WATCHES CAROUSEL */}
+                  <div className="mb-8">
+                     <RegionWatchesCarousel watches={regionWatches} />
+                  </div>
+
+                  {/* Components Stats (Optional - kept for info) */}
+                  <div className="grid grid-cols-4 gap-2 mb-6 border-t border-white/5 pt-6">
+                    <div className="text-center">
+                        <span className="block text-xl font-bold text-bastilleGold">{watchComponents?.cases?.length || 0}</span>
+                        <span className="text-[10px] uppercase text-neutral-500">Boîtiers</span>
                     </div>
+                    <div className="text-center">
+                        <span className="block text-xl font-bold text-bastilleGold">{watchComponents?.dials?.length || 0}</span>
+                        <span className="text-[10px] uppercase text-neutral-500">Cadrans</span>
+                    </div>
+                    <div className="text-center">
+                        <span className="block text-xl font-bold text-bastilleGold">{watchComponents?.hands?.length || 0}</span>
+                        <span className="text-[10px] uppercase text-neutral-500">Aiguilles</span>
+                    </div>
+                    <div className="text-center">
+                        <span className="block text-xl font-bold text-bastilleGold">{watchComponents?.straps?.length || 0}</span>
+                        <span className="text-[10px] uppercase text-neutral-500">Bracelets</span>
+                    </div>
+                  </div>
 
-                    {hasComponents && watchComponents ? (
-                      <div className="space-y-6">
-                        {/* Components Summary */}
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-                          <div className="bg-neutral-800/50 rounded-lg p-3 border border-bastilleGold/20">
-                            <div className="text-2xl font-bold text-bastilleGold">
-                              {watchComponents.cases.length}
-                            </div>
-                            <div className="text-xs text-neutral-400 uppercase tracking-wider">
-                              Boîtiers
-                            </div>
-                          </div>
-                          <div className="bg-neutral-800/50 rounded-lg p-3 border border-bastilleGold/20">
-                            <div className="text-2xl font-bold text-bastilleGold">
-                              {watchComponents.dials.length}
-                            </div>
-                            <div className="text-xs text-neutral-400 uppercase tracking-wider">
-                              Cadrans
-                            </div>
-                          </div>
-                          <div className="bg-neutral-800/50 rounded-lg p-3 border border-bastilleGold/20">
-                            <div className="text-2xl font-bold text-bastilleGold">
-                              {watchComponents.hands.length}
-                            </div>
-                            <div className="text-xs text-neutral-400 uppercase tracking-wider">
-                              Aiguilles
-                            </div>
-                          </div>
-                          <div className="bg-neutral-800/50 rounded-lg p-3 border border-bastilleGold/20">
-                            <div className="text-2xl font-bold text-bastilleGold">
-                              {watchComponents.straps.length}
-                            </div>
-                            <div className="text-xs text-neutral-400 uppercase tracking-wider">
-                              Bracelets
-                            </div>
-                          </div>
-                        </div>
+                  {/* CTA Button */}
+                  <button
+                    onClick={handleConfigureClick}
+                    className="w-full flex items-center justify-center gap-2 group rounded-xl bg-surface p-4 hover:bg-surface-hover transition-all hover:shadow-lg hover:shadow-surface-hover mt-6"
+                  >
+                    <span className="font-serif text-lg tracking-wide text-primary font-semibold">
+                      Configurer ma montre
+                    </span>
+                  </button>
 
-                        {/* Component Details */}
-                        <div className="space-y-4">
-                          {/* Cases */}
-                          {watchComponents.cases.length > 0 && (
-                            <div>
-                              <h3 className="text-lg font-semibold text-bastilleGold mb-3">
-                                Boîtiers ({watchComponents.cases.length})
-                              </h3>
-                              <div className="grid gap-2">
-                                {watchComponents.cases.map((component) => (
-                                  <div
-                                    key={component.id}
-                                    className="bg-neutral-800/30 rounded-lg p-3 border border-neutral-700 hover:border-bastilleGold/40 transition"
-                                  >
-                                    <div className="flex justify-between items-start">
-                                      <div>
-                                        <div className="font-medium text-neutral-100">
-                                          {component.name}
-                                        </div>
-                                        <div className="text-sm text-neutral-400 mt-1">
-                                          {component.material} • {component.size}
-                                        </div>
-                                      </div>
-                                      <div className="text-bastilleGold font-semibold">
-                                        {component.price.toLocaleString()}€
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Dials */}
-                          {watchComponents.dials.length > 0 && (
-                            <div>
-                              <h3 className="text-lg font-semibold text-bastilleGold mb-3">
-                                Cadrans ({watchComponents.dials.length})
-                              </h3>
-                              <div className="grid gap-2">
-                                {watchComponents.dials.map((component) => (
-                                  <div
-                                    key={component.id}
-                                    className="bg-neutral-800/30 rounded-lg p-3 border border-neutral-700 hover:border-bastilleGold/40 transition"
-                                  >
-                                    <div className="flex justify-between items-start">
-                                      <div>
-                                        <div className="font-medium text-neutral-100">
-                                          {component.name}
-                                        </div>
-                                        <div className="text-sm text-neutral-400 mt-1">
-                                          {component.finish} • {component.markers}
-                                        </div>
-                                      </div>
-                                      <div className="text-bastilleGold font-semibold">
-                                        {component.price.toLocaleString()}€
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Hands */}
-                          {watchComponents.hands.length > 0 && (
-                            <div>
-                              <h3 className="text-lg font-semibold text-bastilleGold mb-3">
-                                Aiguilles ({watchComponents.hands.length})
-                              </h3>
-                              <div className="grid gap-2">
-                                {watchComponents.hands.map((component) => (
-                                  <div
-                                    key={component.id}
-                                    className="bg-neutral-800/30 rounded-lg p-3 border border-neutral-700 hover:border-bastilleGold/40 transition"
-                                  >
-                                    <div className="flex justify-between items-start">
-                                      <div>
-                                        <div className="font-medium text-neutral-100">
-                                          {component.name}
-                                        </div>
-                                        <div className="text-sm text-neutral-400 mt-1">
-                                          {component.style} • {component.luminous ? 'Lumineux' : 'Non lumineux'}
-                                        </div>
-                                      </div>
-                                      <div className="text-bastilleGold font-semibold">
-                                        {component.price.toLocaleString()}€
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Straps */}
-                          {watchComponents.straps.length > 0 && (
-                            <div>
-                              <h3 className="text-lg font-semibold text-bastilleGold mb-3">
-                                Bracelets ({watchComponents.straps.length})
-                              </h3>
-                              <div className="grid gap-2">
-                                {watchComponents.straps.map((component) => (
-                                  <div
-                                    key={component.id}
-                                    className="bg-neutral-800/30 rounded-lg p-3 border border-neutral-700 hover:border-bastilleGold/40 transition"
-                                  >
-                                    <div className="flex justify-between items-start">
-                                      <div>
-                                        <div className="font-medium text-neutral-100">
-                                          {component.name}
-                                        </div>
-                                        <div className="text-sm text-neutral-400 mt-1">
-                                          {component.color} • {component.clasp}
-                                        </div>
-                                      </div>
-                                      <div className="text-bastilleGold font-semibold">
-                                        {component.price.toLocaleString()}€
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* CTA Button */}
-                        <button
-                          onClick={handleConfigureClick}
-                          className="w-full flex items-center justify-center gap-2 group rounded-xl bg-surface p-4 hover:bg-surface-hover transition-all hover:shadow-lg hover:shadow-surface-hover mt-6"
-                        >
-                          <span className="font-serif text-lg tracking-wide text-primary font-semibold">
-                            Configurer ma montre
-                          </span>
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="text-center py-12">
-                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-neutral-800 mb-4">
-                          <Watch className="w-8 h-8 text-neutral-500" />
-                        </div>
-                        <p className="text-neutral-400 italic text-lg">
-                          Aucun composant disponible pour cette région
-                        </p>
-                        <p className="text-neutral-500 text-sm mt-2">
-                          Veuillez sélectionner une autre région
-                        </p>
-                      </div>
-                    )}
-                  </motion.div>
-                ) : null}
+                </motion.div>
               </AnimatePresence>
             </div>
           </motion.div>
