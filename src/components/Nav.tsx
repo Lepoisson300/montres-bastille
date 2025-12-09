@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import logo from "/logo.png";
+import ConnectionModal from "./ConnectionModal";
 
 type RouteItem = {
   name: string;
@@ -19,6 +20,7 @@ const Nav: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { pathname } = useLocation();
+  const [showModal, setShowModal] = useState(false);
 
 
   useEffect(() => {
@@ -108,8 +110,10 @@ const Nav: React.FC = () => {
               </Link>
 
               {/* Account */}
+              <ConnectionModal isOpen={showModal} onClose={() => setShowModal(false)} />
               <Link
-                to="/account"
+                onClick={() => setShowModal(true)}
+                to="#"
                 aria-label="Compte"
                 className="hidden sm:inline-flex p-2 rounded-full text-ivory/70 
                            transition-all duration-300

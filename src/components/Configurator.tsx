@@ -160,14 +160,7 @@ export default function Configurator({
 
     return (
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <h4 className="font-serif text-lg text-ivory">{title}</h4>
-          {options.length > 6 && (
-            <span className="text-xs text-ivory/60">
-              {options.length} options
-            </span>
-          )}
-        </div>
+        
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {options.map((o) => (
             <button

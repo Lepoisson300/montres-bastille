@@ -3,6 +3,8 @@ import "./App.css";
 import Reveal from "./Logic/Reveal";
 import Nav from "./components/Nav";
 import { Routes, Route, Navigate, Link } from "react-router-dom";
+import { Auth0Provider, useAuth0, withAuthenticationRequired } from "@auth0/auth0-react"; // Import Auth0 hooks
+
 import HomePage from "./pages/HomePage";
 import ConfiguratorPage from "./pages/RegionSelectionPage";
 import AboutPage from "./pages/AboutPage";
@@ -11,20 +13,13 @@ import ContactPage from "./pages/ContactPage";
 import NotImplementedPage from "./pages/NotImplementedPage";
 import Map from "./components/Map";
 
-const assets = {
-  case: [{ id: "steel_40", name: "Acier 40 mm", image: "/assets/case.png" }],
-  dial: [{ id: "navy", name: "Bleu sunburst", image: "/assets/dial.png" }],
-  hands: [{ id: "sword", name: "Feuille" }],
-  strap: [{ id: "leather_tan", name: "Cuir cognac", image: "/assets/strap/leather_tan.png" }],
-  crystal: [{ id: "arc", name: "Saphir AR", image: "/assets/crystal.png" }],
-};
-
 const rules = {
   bans: [{ if: { case: "gold_38", strap: "rubber_black" }, because: "Rubber indisponible avec or 38 mm." }],
   requires: [{ if: { dial: "date_window" }, then: { hands: "date_set" }, note: "Cadran date → aiguilles date" }],
 };
 
-// temp placeholders so routes render something
+// --- Placeholders ---
+
 const AppointmentPage = () => (
   <div className="p-8 bg-background text-text-secondary font-sans min-h-screen">
     <div className="max-w-2xl mx-auto pt-20">
@@ -34,25 +29,88 @@ const AppointmentPage = () => (
   </div>
 );
 
-const AccountPage = () => (
-  <div className="p-8 bg-background text-text-secondary font-sans min-h-screen">
-    <div className="max-w-2xl mx-auto pt-20">
-      <h1 className="font-serif text-4xl text-text-primary mb-4">Mon Compte</h1>
-      <p className="text-text-muted">Cette fonctionnalité arrive bientôt...</p>
+// --- Account Page (User Profile) ---
+
+const AccountPage = () => {
+  const { user, logout } = useAuth0();
+
+  return (
+    <div className="p-8 bg-background text-text-secondary font-sans min-h-screen">
+      <div className="max-w-2xl mx-auto pt-20">
+        <h1 className="font-serif text-4xl text-text-primary mb-8 border-b border-white/10 pb-4">
+          Mon Compte
+        </h1>
+        
+        <div className="bg-surface p-6 rounded-lg border border-white/5 shadow-xl">
+          <div className="flex items-center gap-6 mb-8">
+            {user?.picture ? (
+              <img 
+                src={user.picture} 
+                alt={user.name} 
+                className="w-20 h-20 rounded-full border-2 border-primary"
+              />
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center text-primary text-2xl font-serif">
+                {user?.name?.charAt(0)}
+              </div>
+            )}
+            
+            <div>
+              <h2 className="text-xl text-text-primary font-medium">{user?.name}</h2>
+              <p className="text-text-muted text-sm">{user?.email}</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="p-4 bg-background/50 rounded border border-white/5">
+              <h3 className="text-primary text-sm uppercase tracking-wider mb-1">Statut</h3>
+              <p className="text-text-secondary">Membre Montres-Bastille</p>
+            </div>
+          </div>
+
+          <button 
+            onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+            className="mt-8 px-6 py-2 border border-primary text-primary hover:bg-primary hover:text-dark transition-all duration-300 rounded-full text-sm font-medium"
+          >
+            Se déconnecter
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
+// --- Auth Guard Wrapper ---
 
+const ProtectedAccountPage = withAuthenticationRequired(AccountPage, {
+  onRedirecting: () => (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-12 h-12 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-primary font-serif tracking-widest animate-pulse">AUTHENTIFICATION</p>
+      </div>
+    </div>
+  ),
+});
+
+// --- Main App Component ---
 
 function App() {
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-background min-h-screen flex flex-col">
       {/* Navbar always visible */}
-      <Nav />
+      <Auth0Provider
+        domain={import.meta.env.VITE_AUTH0_DOMAIN || ""}
+        clientId={import.meta.env.VITE_AUTH0_CLIENT_ID || ""}
+        authorizationParams={{
+          redirect_uri: window.location.origin
+        }}
+      >
+        <Nav />
+      </Auth0Provider>
 
-      {/* All page content must be inside Routes. Remove the extra <HomePage /> */}
-      <main className="bg-background">
+      {/* Main Content */}
+      <main className="flex-grow bg-background">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
@@ -62,7 +120,9 @@ function App() {
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/appointment" element={<AppointmentPage />} />
-          <Route path="/account" element={<AccountPage />} />
+          
+          {/* Protected Route */}
+          <Route path="/account" element={<ProtectedAccountPage />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
