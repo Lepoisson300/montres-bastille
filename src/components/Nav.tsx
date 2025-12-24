@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import logo from "/logo.png";
-import ConnectionModal from "./ConnectionModal";
+import { useAuth0 } from '@auth0/auth0-react';
+
 
 type RouteItem = {
   name: string;
@@ -20,7 +21,8 @@ const Nav: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { pathname } = useLocation();
-  const [showModal, setShowModal] = useState(false);
+  const { isAuthenticated } = useAuth0();
+  const { loginWithRedirect } = useAuth0();
 
 
   useEffect(() => {
@@ -30,6 +32,8 @@ const Nav: React.FC = () => {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [pathname]);
+
+
 
   return (
     <header
@@ -99,21 +103,34 @@ const Nav: React.FC = () => {
 
             {/* Right side */}
             <div className="flex items-center gap-2">
-              {/* CTA */}
-              <Link
-                to="/appointment"
-                className="hidden md:inline-flex items-center rounded-full border border-champagne/50 px-4 py-2 text-sm text-ivory 
-                           transition-all duration-300
-                           hover:border-champagne hover:bg-champagne/10 hover:-translate-y-[2px] hover:shadow-md"
-              >
-                Prendre rendez-vous
-              </Link>
+              
 
               {/* Account */}
-              <ConnectionModal isOpen={showModal} onClose={() => setShowModal(false)} />
-              <Link
-                onClick={() => setShowModal(true)}
-                to="#"
+              {isAuthenticated === false ? <>
+                    <Link
+                  onClick={() =>loginWithRedirect()}
+                  to="#"
+                  aria-label="Compte"
+                  className="hidden sm:inline-flex p-2 rounded-full text-ivory/70 
+                            transition-all duration-300
+                            hover:text-ivory hover:bg-white/5 hover:-translate-y-[2px] hover:shadow-md"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    className="h-5 w-5"
+                  >
+                    <path
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5Z"
+                    />
+                  </svg>
+                </Link>
+              </> : <Link
+                to="/account"
                 aria-label="Compte"
                 className="hidden sm:inline-flex p-2 rounded-full text-ivory/70 
                            transition-all duration-300
@@ -132,7 +149,8 @@ const Nav: React.FC = () => {
                     d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5Z"
                   />
                 </svg>
-              </Link>
+              </Link>}
+              
 
               {/* Mobile toggle */}
               <button
