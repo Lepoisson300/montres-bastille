@@ -224,12 +224,12 @@ const Nav: React.FC = () => {
                 ))}
                 <li>
                   <Link
-                    to="/appointment"
+                    to="/account"
                     onClick={() => setOpen(false)}
                     className="block px-4 py-3 text-sm tracking-wide text-ivory 
                                bg-champagne/20 hover:bg-champagne/30 hover:-translate-y-[2px] hover:shadow-md transition-all duration-300"
                   >
-                    Prendre rendez-vous
+                    Mon Compte
                   </Link>
                 </li>
               </ul>
