@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { GoArrowUpRight, GoHeart, GoHeartFill } from "react-icons/go";
+import {useAuth0} from "@auth0/auth0-react";
+import Alert from '../components/Alert'; 
+import type { AlertType } from '../components/Alert';
+import type { Region, Watch } from "../types/Parts";
 
 // Background grain effect
 const Grain = () => (
@@ -56,127 +60,74 @@ const Reveal = ({
   );
 };
 
-// Mock data for user creations
-const userCreations = [
-  {
-    id: 1,
-    name: "Provence Sunset",
-    creator: "Marie L.",
-    likes: 142,
-    image: "bg-gradient-to-br from-amber-300 to-orange-500",
-    dial: "Lavande",
-    hands: "Or Rose",
-    case: "Acier Brossé",
-    strap: "Cuir Provence"
-  },
-  {
-    id: 2,
-    name: "Normandie Marine",
-    creator: "Pierre D.",
-    likes: 98,
-    image: "bg-gradient-to-br from-blue-400 to-slate-600",
-    dial: "Bleu Océan",
-    hands: "Acier Poli",
-    case: "Titane",
-    strap: "Nato Bleu"
-  },
-  {
-    id: 3,
-    name: "Alsace Tradition",
-    creator: "Sophie M.",
-    likes: 176,
-    image: "bg-gradient-to-br from-red-400 to-yellow-500",
-    dial: "Rouge Colombage",
-    hands: "Laiton Vintage",
-    case: "Or Jaune",
-    strap: "Cuir Bordeaux"
-  },
-  {
-    id: 4,
-    name: "Bretagne Mystique",
-    creator: "Yann K.",
-    likes: 89,
-    image: "bg-gradient-to-br from-emerald-400 to-slate-700",
-    dial: "Vert Forêt",
-    hands: "Argenté",
-    case: "Acier Noir",
-    strap: "Silicone Gris"
-  },
-  {
-    id: 5,
-    name: "Côte d'Opale",
-    creator: "Emma B.",
-    likes: 134,
-    image: "bg-gradient-to-br from-sky-300 to-emerald-400",
-    dial: "Bleu Nacré",
-    hands: "Platine",
-    case: "Acier Poli",
-    strap: "Maille Milanaise"
-  },
-  {
-    id: 6,
-    name: "Auvergne Volcanique",
-    creator: "Lucas R.",
-    likes: 67,
-    image: "bg-gradient-to-br from-stone-600 to-red-700",
-    dial: "Anthracite",
-    hands: "Rouge Magma",
-    case: "Carbone",
-    strap: "Cuir Noir"
-  }
-];
-
-// French regions for voting
-const regions = [
-  { name: "Corse", votes: 234, description: "L'île de beauté" },
-  { name: "Occitanie", votes: 198, description: "Terre de contrastes" },
-  { name: "Bourgogne", votes: 176, description: "Vignobles ancestraux" },
-  { name: "Limousin", votes: 145, description: "Artisanat d'excellence" },
-  { name: "Champagne", votes: 134, description: "Bulles et tradition" },
-  { name: "Jura", votes: 89, description: "Montagne sauvage" }
-];
-
 export default function CommunityPage() {
   const [likedCreations, setLikedCreations] = useState(new Set());
   const [votedRegions, setVotedRegions] = useState(new Set());
-  const [currentCreations, setCurrentCreations] = useState(userCreations);
-  const [currentRegions, setCurrentRegions] = useState(regions);
+  const { user,isAuthenticated } = useAuth0();
+  const [alert, setAlert] = useState<{ type: AlertType; message: string } | null>(null);
+  const [regionsVotes, setRegionsVotes] = React.useState<Region[]>([]);
+  const [watches,setWatches] = React.useState<Watch[]>([]);
 
-  const toggleLike = (creationId) => {
-    const newLiked = new Set(likedCreations);
-    const newCreations = [...currentCreations];
-    const creation = newCreations.find(c => c.id === creationId);
+  useEffect(() => {
+    fetch('https://montre-bastille-api.onrender.com/api/votes', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        setRegionsVotes(data.regions);
+        console.log('Vote get successfully:', data);
+      })
+      .catch((error) => {
+        console.error('Error updating vote:', error);
+      });
+
     
-    if (newLiked.has(creationId)) {
-      newLiked.delete(creationId);
-      creation.likes -= 1;
-    } else {
-      newLiked.add(creationId);
-      creation.likes += 1;
+  },[])
+  
+  const LikeRegion = (regionName: string) => {
+    console.log("Liking region with name:", regionName);
+    const region = regionsVotes.find(r => r.name === regionName);
+    if(isAuthenticated === false){//test if the user is authenticated
+      console.log("User must be authenticated to like creations");
+      setAlert({ type: 'warning', message: 'Vous devez être connecté pour aimer une création.' });
+      return;
     }
-    
-    setLikedCreations(newLiked);
-    setCurrentCreations(newCreations);
-  };
-
-  const voteForRegion = (regionName) => {
-    if (votedRegions.has(regionName)) return;
-    
-    const newVoted = new Set(votedRegions);
-    newVoted.add(regionName);
-    
-    const newRegions = currentRegions.map(region => 
-      region.name === regionName 
-        ? { ...region, votes: region.votes + 1 }
-        : region
-    ).sort((a, b) => b.votes - a.votes);
-    
-    setVotedRegions(newVoted);
-    setCurrentRegions(newRegions);
+    if (!region){
+      console.log("Region not found");
+      return;
+    };
+    const voteData = {
+      email: user?.email,
+      region: region.name // Using region name as region for demo purposes
+    };
+    fetch('https://montre-bastille-api.onrender.com/api/users/vote', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(voteData)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Vote updated successfully:', data);
+    })
+    .catch((error) => {
+      console.error('Error updating vote:', error);
+    });
   };
 
   return (
     <div className="font-sans min-h-screen bg-background text-text-secondary">
+      {alert && (
+        <Alert
+          type={alert.type}
+          message={alert.message}
+          onClose={() => setAlert(null)} // This cleans up the state when timer ends
+        />
+      )}
       <Grain />
 
       {/* HERO SECTION */}
@@ -184,7 +135,7 @@ export default function CommunityPage() {
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
           <Reveal>
             <div className="text-center max-w-4xl mx-auto">
-              <div className="h-px w-32 bg-gradient-to-r from-transparent via-primary to-transparent mb-8 mx-auto" />
+              <div className="h-px w-32  from-transparent via-primary to-transparent mb-8 mx-auto" />
               <h1 className="font-serif text-4xl md:text-6xl tracking-tight mb-6 text-text-primary">
                 Communauté Montres-Bastille
               </h1>
@@ -212,11 +163,11 @@ export default function CommunityPage() {
           </Reveal>
 
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {currentCreations.map((creation, index) => (
+            {watches.map((creation: Watch, index) => (
               <Reveal key={creation.id} delay={index + 1}>
                 <div className="bg-surface rounded-2xl shadow-lg border border-border/20 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:bg-surface-hover">
                   {/* Watch Preview */}
-                  <div className="p-8 bg-gradient-to-br from-surface-hover to-surface-active">
+                  <div className="p-8  from-surface-hover to-surface-active">
                     <div className="w-40 h-40 mx-auto mb-4 rounded-full border-4 border-primary/30 shadow-lg flex items-center justify-center">
                       <div className={`w-32 h-32 rounded-full ${creation.image} shadow-inner flex items-center justify-center relative`}>
                         {/* Watch hands */}
@@ -232,7 +183,7 @@ export default function CommunityPage() {
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-serif text-xl text-text-primary">{creation.name}</h3>
                       <button
-                        onClick={() => toggleLike(creation.id)}
+                      //ajouter le onclick pour liker une création
                         className="flex items-center gap-2 text-sm text-text-subtle transition-colors hover:text-red-500"
                       >
                         {likedCreations.has(creation.id) ? (
@@ -240,7 +191,7 @@ export default function CommunityPage() {
                         ) : (
                           <GoHeart />
                         )}
-                        {creation.likes}
+                        {creation.votes}
                       </button>
                     </div>
                     
@@ -251,19 +202,19 @@ export default function CommunityPage() {
                     <div className="grid grid-cols-2 gap-3 text-xs font-sans">
                       <div>
                         <div className="text-text-subtle uppercase tracking-wider">Cadran</div>
-                        <div className="font-medium text-text-secondary">{creation.dial}</div>
+                        <div className="font-medium text-text-secondary">{creation.components[0].name}</div>
                       </div>
                       <div>
                         <div className="text-text-subtle uppercase tracking-wider">Aiguilles</div>
-                        <div className="font-medium text-text-secondary">{creation.hands}</div>
+                        <div className="font-medium text-text-secondary">{creation.components[1].name}</div>
                       </div>
                       <div>
                         <div className="text-text-subtle uppercase tracking-wider">Boîtier</div>
-                        <div className="font-medium text-text-secondary">{creation.case}</div>
+                        <div className="font-medium text-text-secondary">{creation.components[2].name}</div>
                       </div>
                       <div>
                         <div className="text-text-subtle uppercase tracking-wider">Bracelet</div>
-                        <div className="font-medium text-text-secondary">{creation.strap}</div>
+                        <div className="font-medium text-text-secondary">{creation.components[3].name}</div>
                       </div>
                     </div>
 
@@ -280,7 +231,7 @@ export default function CommunityPage() {
             <div className="text-center mt-16">
               <button className="inline-flex items-center gap-2 rounded-full border border-primary text-primary font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
                                  transition-all duration-300
-                                 hover:bg-primary hover:text-dark hover:-translate-y-[2px] hover:shadow-lg">
+                                 hover:bg-primary hover:text-dark hover:shadow-lg">
                 <GoArrowUpRight />
                 Voir Plus de Créations
               </button>
@@ -294,7 +245,7 @@ export default function CommunityPage() {
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
           <Reveal>
             <div className="text-center mb-16">
-              <div className="h-px w-32 bg-gradient-to-r from-transparent via-primary to-transparent mb-8 mx-auto" />
+              <div className="h-px w-32 from-transparent via-primary to-transparent mb-8 mx-auto" />
               <h2 className="font-serif text-3xl md:text-4xl tracking-tight mb-6 text-text-primary">
                 Prochaines Inspirations
               </h2>
@@ -305,7 +256,7 @@ export default function CommunityPage() {
           </Reveal>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
-            {currentRegions.map((region, index) => (
+            {regionsVotes.map((region, index) => (
               <Reveal key={region.name} delay={index + 1}>
                 <div className="bg-surface border border-primary/40 rounded-xl p-6 transition-all duration-300 hover:bg-surface-hover hover:-translate-y-1">
                   <div className="flex items-center justify-between mb-4">
@@ -315,21 +266,17 @@ export default function CommunityPage() {
                     </div>
                   </div>
                   
-                  <p className="text-text-muted text-sm mb-6 font-sans">
-                    {region.description}
-                  </p>
-                  
                   <div className="mb-4">
                     <div className="w-full bg-surface-active rounded-full h-2">
                       <div 
-                        className="bg-gradient-to-r from-primary to-primary-dark h-2 rounded-full transition-all duration-500"
+                        className="from-primary to-primary-dark h-2 rounded-full transition-all duration-500"
                         style={{ width: `${Math.min((region.votes / 250) * 100, 100)}%` }}
                       />
                     </div>
                   </div>
 
                   <button
-                    onClick={() => voteForRegion(region.name)}
+                    onClick={() => LikeRegion(region.name)}
                     disabled={votedRegions.has(region.name)}
                     className={`w-full py-3 rounded-full text-sm font-sans uppercase tracking-wider transition-all duration-300 ${
                       votedRegions.has(region.name)
@@ -353,7 +300,7 @@ export default function CommunityPage() {
                 to="/your-watch"
                 className="inline-flex items-center gap-2 rounded-full bg-primary text-dark font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
                              transition-all duration-300 shadow-md font-medium
-                             hover:bg-primary-dark hover:-translate-y-[2px] hover:shadow-lg"
+                             hover:bg-primary-dark hover:shadow-lg"
               >
                 <GoArrowUpRight />
                 Créer avec les Inspirations Actuelles
@@ -378,14 +325,14 @@ export default function CommunityPage() {
                 to="/your-watch"
                 className="inline-flex items-center gap-2 rounded-full bg-primary text-dark font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
                            transition-all duration-300 shadow-md font-medium
-                           hover:bg-primary-dark hover:-translate-y-[2px] hover:shadow-lg"
+                           hover:bg-primary-dark hover:shadow-lg"
               >
                 <GoArrowUpRight />
                 Créer Ma Montre
               </Link>
               <button className="inline-flex items-center gap-2 rounded-full border border-primary text-primary font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
                                 transition-all duration-300
-                                hover:bg-primary hover:text-dark hover:-translate-y-[2px] hover:shadow-lg">
+                                hover:bg-primary hover:text-dark hover:shadow-lg">
                 <GoArrowUpRight />
                 S'inscrire à la Newsletter
               </button>

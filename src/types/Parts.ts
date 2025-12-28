@@ -19,6 +19,21 @@ export type PartsCatalog = {
   straps: PartOption[];
 };
 
+export type Watch = {
+  id: number;
+  creator: string;
+  name: string;
+  votes: number;
+  image: string;
+  components: PartOption[];
+}
+
+export type Region = {
+    id: number,
+    name: string,
+    votes: number,
+}
+
 export type Rules = {
   bans?: Array<{ if: Partial<Record<keyof PartsCatalog, string>>; because: string }>
   requires?: Array<{ if: Partial<Record<keyof PartsCatalog, string>>; then: Partial<Record<keyof PartsCatalog, string>>; note?: string }>
