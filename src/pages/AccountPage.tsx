@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import type { User } from "../types/Parts";
 
 export default function AccountPage() {
   const { user: authUser, isAuthenticated, isLoading, logout } = useAuth0();
@@ -12,7 +13,7 @@ export default function AccountPage() {
         try {
           const response = await fetch('https://montre-bastille-api.onrender.com/api/users');
           const users = await response.json();
-          const foundUser = users.find(u => u.email === authUser.email);
+          const foundUser = users.find((u: User) => u.email === authUser.email);
           
           if (foundUser) {
             setDbUser(foundUser);

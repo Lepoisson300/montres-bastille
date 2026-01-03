@@ -5,12 +5,15 @@ import Nav from "./components/Nav";
 import { Routes, Route, Navigate, Link } from "react-router-dom";
 import AccountPage from "./pages/AccountPage";
 import HomePage from "./pages/HomePage";
+import { useEffect, useState } from "react";
 import ConfiguratorPage from "./pages/RegionSelectionPage";
 import AboutPage from "./pages/AboutPage";
 import CommunityPage from "./pages/CommunityPage";
 import ContactPage from "./pages/ContactPage";
 import NotImplementedPage from "./pages/NotImplementedPage";
 import Map from "./components/Map";
+import { useAuth0 } from "@auth0/auth0-react";
+import OnboardingModal from "./components/OnboardingModal";
 
 
 // --- Placeholders ---
@@ -29,6 +32,46 @@ const AppointmentPage = () => (
 // --- Main App Component ---
 
 function App() {
+
+  const { user, isAuthenticated, isLoading } = useAuth0();
+  const [dbUser, setDbUser] = useState<any>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // 1. Fetch User Data whenever Auth0 User changes
+  useEffect(() => {
+    async function fetchUserData() {
+      if (isAuthenticated && user?.email) {
+        try {
+          const res = await fetch("https://montre-bastille-api.onrender.com/api/users");
+          const users = await res.json();
+          const found = users.find((u: any) => u.email === user.email);
+
+          if (found) {
+            setDbUser(found);
+            
+            // 2. CHECK MISSING INFO HERE
+            // If phone number is missing or empty, trigger the modal
+            if (!found.numero || found.numero === "") {
+              setShowOnboarding(true);
+            } else {
+              setShowOnboarding(false);
+            }
+          }
+        } catch (error) {
+          console.error("Failed to fetch user", error);
+        }
+      }
+    }
+    fetchUserData();
+  }, [isAuthenticated, user]);
+
+  const handleOnboardingSuccess = (updatedUser: any) => {
+    setDbUser(updatedUser); // Update local state immediately
+    setShowOnboarding(false); // Close the modal
+  };
+
+  if (isLoading) return <div>Chargement...</div>;
+
   return (
     <div className="bg-background min-h-screen flex flex-col">
       {/* Navbar always visible */}
@@ -51,6 +94,13 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+
+      {isAuthenticated && showOnboarding && (
+        <OnboardingModal 
+           dbUser={dbUser} 
+           onUpdateSuccess={handleOnboardingSuccess} 
+        />
+      )}
 
       {/* Footer */}
       <footer className="pt-16 pb-8 bg-dark text-text-primary border-t border-primary/20">

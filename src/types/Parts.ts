@@ -19,6 +19,13 @@ export type PartsCatalog = {
   straps: PartOption[];
 };
 
+export type User = {
+  id: string;
+  email: string;
+  nom: string;
+  prenom: string;
+};
+
 export type Watch = {
   id: number;
   creator: string;

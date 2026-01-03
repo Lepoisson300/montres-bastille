@@ -79,6 +79,8 @@ export default function CommunityPage() {
       .then(data => {
         setRegionsVotes(data.regions);
         console.log('Vote get successfully:', data);
+        // set the regions voted of the current user if authenticated
+        
       })
       .catch((error) => {
         console.error('Error updating vote:', error);
@@ -112,7 +114,13 @@ export default function CommunityPage() {
     })
     .then(response => response.json())
     .then(data => {
+      if(data.error){
+        setAlert({ type: 'info', message: data.error });
+        return;
+      }
       console.log('Vote updated successfully:', data);
+      setAlert({ type: 'success', message: `Votre vote pour ${region.name} a été enregistré !` });
+      setVotedRegions(prev => new Set(prev).add(region.name));
     })
     .catch((error) => {
       console.error('Error updating vote:', error);
@@ -284,7 +292,7 @@ export default function CommunityPage() {
                         : 'border border-primary text-primary hover:bg-primary hover:text-dark'
                     }`}
                   >
-                    {votedRegions.has(region.name) ? 'Vote Enregistré' : 'Voter'}
+                    {votedRegions.has(region.name) ? 'Retirer Vote' : 'Voter'}
                   </button>
                 </div>
               </Reveal>
