@@ -10,7 +10,7 @@ import AboutPage from "./pages/AboutPage";
 import CommunityPage from "./pages/CommunityPage";
 import ContactPage from "./pages/ContactPage";
 import NotImplementedPage from "./pages/NotImplementedPage";
-import Map from "./components/Map";
+import RegionPage from "./pages/RegionPage"
 import { useAuth0 } from "@auth0/auth0-react";
 import OnboardingModal from "./components/OnboardingModal";
 import Footer from "./components/Footer";
@@ -83,7 +83,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/not-implemented" element={<NotImplementedPage />} />
-          <Route path="/your-watch" element={<Map />} />
+          <Route path="/region-page" element={<RegionPage />} />
           <Route path="/configurator" element={<ConfiguratorPage />} />
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/contact" element={<ContactPage />} />

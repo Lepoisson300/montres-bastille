@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import MapModal from "./MapModal";
-import type { PartsCatalog } from "../types/Parts";
-import { WATCH_COMPONENTS, REGION_NAMES } from "../Logic/watchComponents";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { WATCH_COMPONENTS, REGION_NAMES } from "../Logic/watchComponents";
+import mapBG from "/mapBG.png";
+import { useNavigate } from "react-router-dom";
+import franceSVG from "/france.svg"
+//import { goToNext, goToPrev } from "../Logic/mobileRegion";
+
 
 export default function FranceMap() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -10,26 +13,33 @@ export default function FranceMap() {
   const [isMobile, setIsMobile] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
+  
   const containerRef = useRef<HTMLDivElement | null>(null);
   const svgRootRef = useRef<SVGSVGElement | null>(null);
 
-  const HIGHLIGHT_COLOR = "#f5c242";
+  // Gold highlight style (Montres‑Bastille aesthetic)
+  const HIGHLIGHT_COLOR = "#D4AF37"; // rich gold
 
-  // Get array of region codes for carousel
-  const regionCodes = useMemo(() => Object.keys(REGION_NAMES), []);
+  // Get array of ALL region codes (for Desktop reference)
+  const allRegionCodes = useMemo(() => Object.keys(REGION_NAMES), []);
+
+  const goToNext = () => {
+    setCarouselIndex((prev) => (prev + 1) % availableRegions.length);
+  };
+
+  const goToPrev = () => {
+    setCarouselIndex((prev) => (prev - 1 + availableRegions.length) % availableRegions.length);
+  };
 
   // Detect mobile
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
+      if (isMobile) return;
     };
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // Load SVG content on mount
-  useEffect(() => {
+    
+    //retrieve the content of the map
     fetch("/france.svg")
       .then((res) => {
         if (!res.ok) throw new Error("SVG not found");
@@ -43,23 +53,29 @@ export default function FranceMap() {
           .then(setSvgContent)
           .catch(() => console.error("SVG not found in any location"));
       });
+
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  const navigate = useNavigate();
+  
+
+  const handleConfigureClick = () => {
+  navigate('/configurator', { 
+    state: { 
+      selectedRegion: selectedId,
+      regionName: selectedName,
+      watchComponents: WATCH_COMPONENTS 
+    } 
+  });
+};
 
   // Desktop: Attach event delegation
   useEffect(() => {
-    if (isMobile) return;
     
     const container = containerRef.current;
     if (!container) return;
-
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement | null;
-      if (!target) return;
-      const el = (target.closest("[id^='FR-']") as HTMLElement) || null;
-      if (!el) return;
-      const id = el.id;
-      if (id) setSelectedId(id);
-    };
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
@@ -72,12 +88,12 @@ export default function FranceMap() {
       setHoveredRegion(null);
     };
 
-    container.addEventListener("click", handleClick);
+    container.addEventListener("click", handleConfigureClick);
     container.addEventListener("mouseover", handleMouseOver);
     container.addEventListener("mouseout", handleMouseOut);
 
     return () => {
-      container.removeEventListener("click", handleClick);
+      container.removeEventListener("click", handleConfigureClick);
       container.removeEventListener("mouseover", handleMouseOver);
       container.removeEventListener("mouseout", handleMouseOut);
     };
@@ -111,21 +127,8 @@ export default function FranceMap() {
     return REGION_NAMES[hoveredRegion] || hoveredRegion;
   }, [hoveredRegion]);
 
-  // Filter watch components
-  const filteredComponents: PartsCatalog = useMemo(() => {
-    if (!selectedId) {
-      return { cases: [], dials: [], hands: [], straps: [] };
-    }
-    
-    return {
-      cases: WATCH_COMPONENTS.cases.filter(c => c.regions?.includes(selectedId)),
-      dials: WATCH_COMPONENTS.dials.filter(d => d.regions?.includes(selectedId)),
-      hands: WATCH_COMPONENTS.hands.filter(h => h.regions?.includes(selectedId)),
-      straps: WATCH_COMPONENTS.straps.filter(s => s.regions?.includes(selectedId)),
-    };
-  }, [selectedId]);
-
   // Count available components for a region
+  // Wrapped in function for reuse
   const getComponentCount = (regionCode: string) => {
     return (
       WATCH_COMPONENTS.cases.filter(c => c.regions?.includes(regionCode)).length +
@@ -135,66 +138,86 @@ export default function FranceMap() {
     );
   };
 
-  // Carousel navigation
-  const goToNext = () => {
-    setCarouselIndex((prev) => (prev + 1) % regionCodes.length);
-  };
+  /** * FILTERED REGIONS VARIABLE (Used only in Phone Mode)
+   * This creates an array containing ONLY region codes that have components > 0
+   */
+  const availableRegions = useMemo(() => {
+    return allRegionCodes.filter(code => getComponentCount(code) > 0);
+  }, [allRegionCodes]);
 
-  const goToPrev = () => {
-    setCarouselIndex((prev) => (prev - 1 + regionCodes.length) % regionCodes.length);
-  };
+
 
   // Extract individual region from full SVG
   const extractRegionSVG = (regionCode: string) => {
     if (!svgContent) return null;
+    
     const parser = new DOMParser();
     const doc = parser.parseFromString(svgContent, "image/svg+xml");
+    const svgElement = doc.querySelector("svg");
     const regionElement = doc.querySelector(`#${CSS.escape(regionCode)}`);
     
-    if (!regionElement) return null;
+    if (!regionElement || !svgElement) return null;
+    
+    // Create a temporary SVG to calculate bounding box
+    const tempDiv = document.createElement('div');
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.visibility = 'hidden';
+    document.body.appendChild(tempDiv);
+    
+    const tempSvg = svgElement.cloneNode(true) as SVGSVGElement;
+    tempDiv.appendChild(tempSvg);
+    
+    const tempPath = tempSvg.querySelector(`#${CSS.escape(regionCode)}`) as SVGGraphicsElement;
+    
+    if (!tempPath) {
+      document.body.removeChild(tempDiv);
+      return null;
+    }
+    
+    // Get bounding box
+    const bbox = tempPath.getBBox();
+    document.body.removeChild(tempDiv);
+    
+    // Create new SVG with just this region
+    const newSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    const padding = 10;
+    newSvg.setAttribute("viewBox", `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + padding * 2} ${bbox.height + padding * 2}`);
+    newSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    newSvg.setAttribute("width", "100%");
+    newSvg.setAttribute("height", "100%");
     
     const clone = regionElement.cloneNode(true) as SVGElement;
-    const bbox = (regionElement as SVGGraphicsElement).getBBox();
-    
-    const newSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    newSvg.setAttribute("viewBox", `${bbox.x - 10} ${bbox.y - 10} ${bbox.width + 20} ${bbox.height + 20}`);
-    newSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    newSvg.appendChild(clone);
-    
     clone.setAttribute("fill", "#f5c242");
-    clone.setAttribute("stroke", "#000");
-    clone.setAttribute("stroke-width", "2");
+    clone.setAttribute("stroke", "#1E1E1E");
+    clone.setAttribute("stroke-width", "3");
+    
+    newSvg.appendChild(clone);
     
     return new XMLSerializer().serializeToString(newSvg);
   };
 
+
   return (
     <>
-      <div className="relative flex flex-col items-center justify-center min-h-screen px-4 sm:px-8 pt-20 sm:pt-28 pb-12 sm:pb-16 bg-neutral-950 text-neutral-200 font-[Poppins] tracking-wide overflow-hidden">
+      <div className="relative flex flex-col items-center justify-center min-h-screen px-8 pt-28 pb-16 bg-neutral-950 text-neutral-200 font-[Poppins] tracking-wide overflow-hidden">
         <style>{`
           .selected-region {
-            stroke: ${HIGHLIGHT_COLOR} !important;
-            stroke-width: 3 !important;
-            filter: drop-shadow(0 0 8px rgba(245,194,66,0.8)) !important;
+            stroke: ${HIGHLIGHT_COLOR};
+            stroke-width: 2.5;
             transition: all 0.3s ease;
           }
-          [id^='FR-'] {
+          [id^='FR-']:hover {
             cursor: pointer;
+            fill: ${HIGHLIGHT_COLOR};
+            stroke-width: 8px;
+            stroke: 2px solid ${HIGHLIGHT_COLOR};
             transition: all 0.2s ease;
-            stroke: rgba(245,194,66,0.3);
-            stroke-width: 1;
-          }
-          [id^='FR-']:hover { 
-            stroke: ${HIGHLIGHT_COLOR};
-            stroke-width: 2;
-            filter: drop-shadow(0 0 4px rgba(245,194,66,0.5));
           }
           svg {
             display: block;
             margin: 0 auto;
-            width: 100%;
+            max-width: 90%;
             height: auto;
-            max-height: 70vh;
             transition: transform 0.3s ease;
           }
           svg:hover { transform: scale(1.02); }
@@ -205,38 +228,40 @@ export default function FranceMap() {
           <h1 className="text-2xl sm:text-4xl md:text-5xl font-semibold text-neutral-100 tracking-widest mb-2">
             Montres-Bastille
           </h1>
-          <p className="text-xs sm:text-sm md:text-base text-bastilleGold uppercase tracking-[0.35em] mb-2">
+          <p className="text-xs sm:text-sm md:text-base text-primary uppercase tracking-[0.35em] mb-2">
             Les Régions de France
           </p>
           <p className="text-xs sm:text-sm md:text-base text-neutral-300">
             {isMobile ? "Parcourez les régions ci-dessous" : "Choisissez une région de France pour concevoir votre pièce du patrimoine"}
           </p>
         </div>
-
+          
         {/* Desktop hover tooltip */}
-        {!isMobile && hoveredName && (
-          <div className="fixed top-24 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
-            <div className="bg-neutral-900/95 backdrop-blur-sm border border-bastilleGold/50 rounded-lg px-4 py-2 shadow-lg">
-              <span className="text-bastilleGold font-semibold">{hoveredName}</span>
+          {!isMobile && hoveredName && (
+            <div className="fixed top-24 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
+              <div className="bg-neutral-900/95 backdrop-blur-sm border border-primary/50 rounded-lg px-4 py-2 shadow-lg">
+                <span className="text-primary font-semibold">{hoveredName}</span>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Desktop: Full Map */}
         {!isMobile && (
+          
           <div
             ref={containerRef}
             className="relative flex items-center justify-center w-full max-w-6xl rounded-3xl
                        shadow-[0_0_35px_rgba(245,194,66,0.12)]
-                       bg-gradient-to-b from-neutral-100 to-neutral-800 border border-bastilleGold/30 
+                       bg-gradient-to-b from-neutral-100 to-primary/70 border border-primary/30
                        p-6 overflow-hidden"
           >
+            <img src={mapBG} alt="Map Background" className="absolute inset-0 w-full h-full object-cover opacity-90" />
             {svgContent ? (
               <div
                 className="w-full flex justify-center items-center"
                 dangerouslySetInnerHTML={{ __html: svgContent }}
                 style={{
-                  filter: 'sepia(1) saturate(3) hue-rotate(35deg) brightness(1.2)'
+                  filter: 'brightness(1.2)'
                 }}
               />
             ) : (
@@ -247,32 +272,35 @@ export default function FranceMap() {
           </div>
         )}
 
-        {/* Mobile: Region Carousel */}
-        {isMobile && svgContent && (
+        {/* Mobile: Region Carousel - USING FILTERED availableRegions */}
+        {isMobile && svgContent && availableRegions.length > 0 && (
           <div className="w-full max-w-md px-4">
             <div className="relative">
               {/* Carousel container */}
               <div className="overflow-hidden">
-                <div 
+                <div
                   className="flex transition-transform duration-300 ease-out"
                   style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
                 >
-                  {regionCodes.map((code) => {
+                  {availableRegions.map((code) => {
                     const regionSVG = extractRegionSVG(code);
                     const componentCount = getComponentCount(code);
                     
+                    // Note: We don't need to check componentCount === 0 here anymore
+                    // because availableRegions is already filtered.
+
                     return (
                       <div key={code} className="w-full flex-shrink-0 px-2">
-                        <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl border border-bastilleGold/30 p-6 shadow-xl">
+                        <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl border border-primary/30 p-6 shadow-xl">
                           {/* Region name */}
-                          <h3 className="text-2xl font-serif text-bastilleGold text-center mb-4">
+                          <h3 className="text-2xl font-serif text-primary text-center mb-4">
                             {REGION_NAMES[code]}
                           </h3>
                           
                           {/* Region SVG preview */}
                           {regionSVG && (
-                            <div className="bg-neutral-100 rounded-xl p-8 mb-4 flex items-center justify-center min-h-[200px]">
-                              <div 
+                            <div className="rounded-xl p-8 mb-4 flex items-center justify-center min-h-[200px]">
+                              <div
                                 dangerouslySetInnerHTML={{ __html: regionSVG }}
                                 className="w-full max-w-[200px]"
                               />
@@ -290,11 +318,11 @@ export default function FranceMap() {
                               </div>
                             </div>
                           </div>
-                          
+
                           {/* Configure button */}
                           <button
                             onClick={() => setSelectedId(code)}
-                            className="w-full bg-bastilleGold text-neutral-900 font-semibold py-4 rounded-xl hover:bg-bastilleGold/90 transition-all shadow-lg"
+                            className="w-full bg-primary text-neutral-900 font-semibold py-4 rounded-xl hover:bg-bastilleGold/90 transition-all shadow-lg"
                           >
                             Configurer ma montre
                           </button>
@@ -305,33 +333,37 @@ export default function FranceMap() {
                 </div>
               </div>
 
-              {/* Navigation arrows */}
-              <button
-                onClick={goToPrev}
-                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 bg-bastilleGold/10 backdrop-blur-sm border border-bastilleGold/30 rounded-full p-3 hover:bg-bastilleGold/20 transition-all shadow-lg z-10"
-                aria-label="Région précédente"
-              >
-                <ChevronLeft className="w-6 h-6 text-bastilleGold" />
-              </button>
-              
-              <button
-                onClick={goToNext}
-                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 bg-bastilleGold/10 backdrop-blur-sm border border-bastilleGold/30 rounded-full p-3 hover:bg-bastilleGold/20 transition-all shadow-lg z-10"
-                aria-label="Région suivante"
-              >
-                <ChevronRight className="w-6 h-6 text-bastilleGold" />
-              </button>
+              {/* Navigation arrows (Only if more than 1 region) */}
+              {availableRegions.length > 1 && (
+                <>
+                  <button
+                    onClick={goToPrev}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 bg-primary/10 backdrop-blur-sm border border-primary/30 rounded-full p-3 hover:bg-primary/20 transition-all shadow-lg z-10"
+                    aria-label="Région précédente"
+                  >
+                    <ChevronLeft className="w-6 h-6 text-text-primary" />
+                  </button>
+                  
+                  <button
+                    onClick={goToNext}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 bg-primary/10 backdrop-blur-sm border border-primary/30 rounded-full p-3 hover:bg-primary/20 transition-all shadow-lg z-10"
+                    aria-label="Région suivante"
+                  >
+                    <ChevronRight className="w-6 h-6 text-text-primary" />
+                  </button>
+                </>
+              )}
 
               {/* Dots indicator */}
               <div className="flex justify-center gap-2 mt-6">
-                {regionCodes.map((_, index) => (
+                {availableRegions.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCarouselIndex(index)}
                     className={`w-2 h-2 rounded-full transition-all ${
-                      index === carouselIndex 
-                        ? 'bg-bastilleGold w-8' 
-                        : 'bg-neutral-600'
+                      index === carouselIndex
+                        ? 'bg-primary-dark w-8'
+                        : 'bg-primary'
                     }`}
                     aria-label={`Aller à la région ${index + 1}`}
                   />
@@ -340,22 +372,14 @@ export default function FranceMap() {
 
               {/* Counter */}
               <div className="text-center mt-4 text-sm text-neutral-400">
-                {carouselIndex + 1} / {regionCodes.length}
+                {carouselIndex + 1} / {availableRegions.length}
               </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* Modal */}
-      <MapModal
-        selectedId={selectedId}
-        onClose={() => setSelectedId(null)}
-        svgRootRef={svgRootRef}
-        RegionName={selectedName || ""}
-        regions={REGION_NAMES}
-        watchComponents={filteredComponents}
-      />
+      
     </>
   );
 }

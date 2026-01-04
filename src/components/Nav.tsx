@@ -11,7 +11,7 @@ type RouteItem = {
 
 const primaryRoutes: RouteItem[] = [
   { name: "À propos", to: "/about" },
-  { name: "Votre Montres-Bastille", to: "/your-watch" },
+  { name: "Votre Montres-Bastille", to: "/region-page" },
   { name: "Communauté", to: "/community" },
   { name: "Contact", to: "/contact" },
 ];
