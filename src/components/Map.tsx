@@ -3,6 +3,7 @@ import MapModal from "./MapModal"; // Import the modal
 import type { PartsCatalog } from "../types/Parts";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { WATCH_COMPONENTS, REGION_NAMES } from "../Logic/watchComponents";
+import mapBG from "/mapBG.png";
 
 export default function FranceMap() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -15,7 +16,7 @@ export default function FranceMap() {
   const svgRootRef = useRef<SVGSVGElement | null>(null);
 
   // Gold highlight style (Montres‑Bastille aesthetic)
-  const HIGHLIGHT_COLOR = " #1E1E1E"; // rich gold
+  const HIGHLIGHT_COLOR = "#D4AF37"; // rich gold
 
   // Get array of ALL region codes (for Desktop reference)
   const allRegionCodes = useMemo(() => Object.keys(REGION_NAMES), []);
@@ -216,9 +217,8 @@ export default function FranceMap() {
           [id^='FR-']:hover {
             cursor: pointer;
             fill: ${HIGHLIGHT_COLOR};
-            opacity: 0.2;
-            border-radius: 8px;
-            border: 2px solid ${HIGHLIGHT_COLOR};
+            stroke-width: 8px;
+            stroke: 2px solid ${HIGHLIGHT_COLOR};
             transition: all 0.2s ease;
           }
           svg {
@@ -255,6 +255,7 @@ export default function FranceMap() {
 
         {/* Desktop: Full Map */}
         {!isMobile && (
+          
           <div
             ref={containerRef}
             className="relative flex items-center justify-center w-full max-w-6xl rounded-3xl
@@ -262,12 +263,13 @@ export default function FranceMap() {
                        bg-gradient-to-b from-neutral-100 to-primary/70 border border-primary/30
                        p-6 overflow-hidden"
           >
+            <img src={mapBG} alt="Map Background" className="absolute inset-0 w-full h-full object-cover opacity-90" />
             {svgContent ? (
               <div
                 className="w-full flex justify-center items-center"
                 dangerouslySetInnerHTML={{ __html: svgContent }}
                 style={{
-                  filter: 'sepia(1) saturate(3) hue-rotate(35deg) brightness(1.2)'
+                  filter: 'brightness(1.2)'
                 }}
               />
             ) : (
