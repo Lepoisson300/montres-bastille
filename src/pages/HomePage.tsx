@@ -1,8 +1,8 @@
 import React, { useRef, useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 import arcClean from "/arcClean.png";
-import nh35 from "/37.jpg";
-import france from "/france.jpg";
+import patrimoine from "/patrimoine.png";
+import france from "/franceMap.png";
 import watch2 from "/watch2.png";
 import HeroCarousel from "../components/Carousel";
 import { Link } from "react-router-dom";
@@ -67,7 +67,7 @@ export default function HomePage() {
       <Grain />
 
         {/* HERO – Dark with overlay */}
-        <HeroCarousel images={[arcClean, france, nh35]}>
+        <HeroCarousel images={[arcClean, france, patrimoine]}>
           <div className="max-w-2xl">
             <p className="tracking-[.25em] text-xs uppercase text-text-primary font-sans opacity-90">
               Un morceau d'histoire française au poignet
@@ -101,7 +101,7 @@ export default function HomePage() {
         >
           <div className="absolute inset-0 opacity-10">
             <img
-              src={nh35}
+              src={patrimoine}
               alt=""
               className="w-full h-full object-cover object-center scale-110"
             />
