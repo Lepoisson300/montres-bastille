@@ -38,7 +38,7 @@ export default function Footer() {
                    // Helper to map names to routes
                    const routes: Record<string, string> = {
                      'À propos': '/about',
-                     'Personnaliser': '/your-watch',
+                     'Personnaliser': '/region-page',
                      'Communauté': '/community'
                    };
                    return (

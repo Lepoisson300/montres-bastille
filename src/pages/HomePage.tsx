@@ -77,7 +77,7 @@ export default function HomePage() {
             </h1>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
-                to="/your-watch"
+                to="/region-page"
                 className="inline-flex rounded-2xl items-center gap-2 bg-primary text-dark font-sans px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all duration-300 shadow-md hover:bg-primary-dark hover:-translate-y-[2px] hover:shadow-lg"
               >
                 <GoArrowUpRight />
@@ -178,7 +178,7 @@ export default function HomePage() {
                         À partir de {model.price}
                       </div>
                       <Link
-                        to="/your-watch"
+                        to="/region-page"
                         className="inline-flex items-center gap-2 text-sm uppercase font-sans tracking-[0.15em] text-primary 
                                    transition-all duration-300 hover:text-primary-dark hover:-translate-y-[2px]"
                       >
