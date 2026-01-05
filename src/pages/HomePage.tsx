@@ -143,7 +143,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* MODELS GRID – Dark Surface */}
+        {/* MODELS GRID – Dark Surface 
         <section id="models" className="mt-24 bg-background shadow-sm">
           <div className="px-6 md:px-12 py-20">
             <Reveal>
@@ -192,6 +192,7 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+        */}
 
         {/* CUSTOM SECTION – Deep Dark */}
         <section
