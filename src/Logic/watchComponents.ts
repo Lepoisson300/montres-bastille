@@ -36,7 +36,7 @@ export const WATCH_COMPONENTS: PartsCatalog = {
       stock: 'in',
       material: 'Stainless Steel', 
       size: '40mm', 
-      regions: ['FR-E', 'FR-A', 'FR-U']
+      regions: ['FR-E', 'FR-U']
     },
     { 
       id: 'c2', 

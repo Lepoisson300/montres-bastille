@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
-import arcClean from "/arcClean.png";
+import arcClean from "/arc_clean.png";
 import patrimoine from "/patrimoine.png";
 import france from "/franceMap.png";
 import watch2 from "/watch2.png";
