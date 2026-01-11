@@ -2,404 +2,208 @@ import { useEffect, useMemo, useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 import { motion, AnimatePresence } from "framer-motion";
 import html2canvas from "html2canvas";
-import type { PartsCatalog, WatchConfiguratorProps, PartOption } from "../types/Parts";
+import type { WatchConfiguratorProps, PartOption } from "../types/Parts";
 
-const cx = (...classes: Array<string | false | undefined>) =>
-  classes.filter(Boolean).join(" ");
+// --- Utilities ---
+const fmt = (v: number, ccy: string) => new Intl.NumberFormat("fr-FR", { style: "currency", currency: ccy }).format(v);
+const toQuery = (conf: Record<string, string>) => `?${new URLSearchParams(conf).toString()}`;
+const fromQuery = (): Record<string, string> => Object.fromEntries(new URLSearchParams(window.location.search));
 
-const fmt = (v: number, ccy: string) =>
-  new Intl.NumberFormat("fr-FR", {
-    style: "currency",
-    currency: ccy,
-  }).format(v);
-
-const findOpt = (list: PartOption[] | undefined, id?: string) =>
-  list?.find((o) => o.id === id) || list?.[0];
-
-const toQuery = (conf: Record<string, string>) =>
-  `?${new URLSearchParams(conf).toString()}`;
-
-const fromQuery = (): Record<string, string> => {
-  const out: Record<string, string> = {};
-  const p = new URLSearchParams(window.location.search);
-  p.forEach((v, k) => (out[k] = v));
-  return out;
-};
-
-export default function Configurator({
-  assets,
-  pricing,
-  defaultChoice,
-  selectedRegion,
-  onCheckout
-}: WatchConfiguratorProps) {
-  
-  // 1. Filter assets by selected region
-  // Fixed: Uncommented dials and hands, corrected 'dial' to 'dials'
-  const filteredAssets = useMemo(() => {
-    if (!selectedRegion) return assets;
-
-    const filterByRegion = (items: PartOption[]) => 
-      items.filter(i => !i.regions || i.regions.includes(selectedRegion));
-
+export default function Configurator({ assets, pricing, defaultChoice, selectedRegion, onCheckout }: WatchConfiguratorProps) {
+  // 1. Filtered Assets based on Region
+  const filtered = useMemo(() => {
+    const filter = (items: PartOption[]) => items.filter(i => !i.regions || !selectedRegion || i.regions.includes(selectedRegion));
     return {
-      cases: filterByRegion(assets.cases),
-      straps: filterByRegion(assets.straps),
-      dials: filterByRegion(assets.dials), 
-      hands: filterByRegion(assets.hands),
+      cases: filter(assets.cases),
+      straps: filter(assets.straps),
+      dials: filter(assets.dials),
+      hands: filter(assets.hands),
     };
   }, [assets, selectedRegion]);
 
-  // 2. Initialize State
-  const initial: Record<string, string> = useMemo(() => {
-    const q = typeof window !== "undefined" ? fromQuery() : {};
-    return {
-      cases: q.cases || defaultChoice?.cases || filteredAssets.cases[0]?.id || "",
-      straps: q.straps || defaultChoice?.straps || filteredAssets.straps[0]?.id || "",
-      //dials: q.dials || defaultChoice?.dials || filteredAssets.dials[0]?.id || "",
-      //hands: q.hands || defaultChoice?.hands || filteredAssets.hands[0]?.id || "",
-    };
-  }, [filteredAssets, defaultChoice]);
+  // 2. Configuration State
+  const [config, setConfig] = useState<Record<string, string>>(() => ({
+    cases: fromQuery().cases || defaultChoice?.cases || filtered.cases[0]?.id || "",
+    straps: fromQuery().straps || defaultChoice?.straps || filtered.straps[0]?.id || "",
+    dials: fromQuery().dials || defaultChoice?.dials || filtered.dials[0]?.id || "",
+    hands: fromQuery().hands || defaultChoice?.hands || filtered.hands[0]?.id || "",
+  }));
 
-  const [config, setConfig] = useState<Record<string, string>>(initial);
   const [zoom, setZoom] = useState(1);
 
-  // 3. Update config when region changes
-  // Fixed: Now resets all 4 components to the first available option in the new region
-  useEffect(() => {
-    setConfig({
-      cases: filteredAssets.cases[0]?.id || "",
-      straps: filteredAssets.straps[0]?.id || "",
-      //dials: filteredAssets.dials[0]?.id || "",
-      //hands: filteredAssets.hands[0]?.id || "",
-    });
-  }, [selectedRegion, filteredAssets]);
+  // 3. Derived Data
+  const selections = useMemo(() => ({
+    cases: filtered.cases.find(o => o.id === config.cases),
+    straps: filtered.straps.find(o => o.id === config.straps),
+    dials: filtered.dials.find(o => o.id === config.dials),
+    hands: filtered.hands.find(o => o.id === config.hands),
+  }), [config, filtered]);
 
-  // Permalink updates
-  const href = useMemo(() => toQuery(config), [config]);
-  useEffect(() => {
-    const url = `${window.location.pathname}${href}`;
-    window.history.replaceState(null, "", url);
-  }, [href]);
+  const totalPrice = useMemo(() => 
+    pricing.base + Object.values(selections).reduce((acc, curr) => acc + (curr?.price || 0), 0)
+  , [selections, pricing.base]);
 
-  // Keyboard zoom
+  const sku = Object.values(config).filter(Boolean).join("-");
+
+  // 4. Side Effects (URL Sync & Zoom Keys)
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "+") setZoom((z) => Math.min(2, +(z + 0.1).toFixed(2)));
-      if (e.key === "-") setZoom((z) => Math.max(0.8, +(z - 0.1).toFixed(2)));
+    window.history.replaceState(null, "", `${window.location.pathname}${toQuery(config)}`);
+  }, [config]);
+
+  useEffect(() => {
+    const handleKeys = (e: KeyboardEvent) => {
+      if (e.key === "+") setZoom(z => Math.min(2, z + 0.1));
+      if (e.key === "-") setZoom(z => Math.max(0.8, z - 0.1));
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("keydown", handleKeys);
+    return () => window.removeEventListener("keydown", handleKeys);
   }, []);
 
-  // 4. Calculate Price
-  const price = useMemo(() => {
-    let p = pricing.base;
-    const add = (part: keyof PartsCatalog) => {
-      const id = config[part];
-      // @ts-ignore - dynamic access
-      const opt = (filteredAssets[part] || []).find((o) => o.id === id);
-      if (opt?.price) p += opt.price;
-    };
-    add("cases");
-    add("straps");
-    add("dials");
-    add("hands");
-    return p;
-  }, [config, pricing, filteredAssets]);
+const handleDownload = async () => {
+  const el = document.querySelector("#watch-viewer") as HTMLElement;
+  if (!el) return;
 
-  const sku = useMemo(
-    () =>
-      [config.cases, config.straps, config.dials, config.hands]
-        .filter(Boolean)
-        .join("-"),
-    [config]
-  );
+  const canvas = await html2canvas(el, { 
+    backgroundColor: null, 
+    scale: 2,
+    useCORS: true, // Important si vos images (thumbnails) sont sur un autre domaine
+    onclone: (clonedDocument) => {
+      // Nous parcourons TOUS les éléments du clone pour neutraliser oklab
+      const allElements = clonedDocument.querySelectorAll('*');
+      allElements.forEach((node) => {
+        const htmlNode = node as HTMLElement;
+        const style = window.getComputedStyle(htmlNode);
 
-  // 5. Visual Layers
-  // Fixed: Added dials and hands. Order is crucial for Z-Index (Stacking)
-  const layers: Array<{ key: string; src?: string }> = [
-    { key: "straps", src: findOpt(filteredAssets.straps, config.straps)?.thumbnail },
-    { key: "cases", src: findOpt(filteredAssets.cases, config.cases)?.thumbnail },
-    //{ key: "dials", src: findOpt(filteredAssets.dials, config.dials)?.thumbnail },
-    //{ key: "hands", src: findOpt(filteredAssets.hands, config.hands)?.thumbnail },
-  ];
+        // Liste des propriétés courantes pouvant contenir des couleurs
+        const colorProps = ['backgroundColor', 'color', 'borderColor', 'outlineColor'];
 
-  async function handleDownload() {
-    const el = document.querySelector("#watch-viewer");
-    if (!el) return;
-    const canvas = await html2canvas(el as HTMLElement, {
-      backgroundColor: null,
-    });
-    const link = document.createElement("a");
-    link.download = `MontresBastille_${sku}.png`;
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-  }
+        colorProps.forEach(prop => {
+          // @ts-ignore - style[prop] est dynamique
+          if (style[prop] && style[prop].includes('oklab')) {
+            // On remplace par une valeur sûre (transparent ou couleur hexadécimale)
+            if (prop === 'color') htmlNode.style.color = '#000000';
+            else htmlNode.style[prop as any] = 'transparent';
+          }
+        });
 
-  function SelectGrid({
-    part,
-    title,
-  }: {
-    part: keyof PartsCatalog;
-    title: string;
-  }) {
-    const options = (filteredAssets[part] || []) as PartOption[];
-    const current = config[part as string];
-
-    if (options.length === 0) {
-      return (
-        <div>
-          <h4 className="font-serif text-lg mb-3 text-ivory">{title}</h4>
-          <p className="text-ivory/60 text-sm italic">
-            Aucune option disponible pour cette région
-          </p>
-        </div>
-      );
+        // Nettoyage spécifique pour les ombres portées qui utilisent souvent oklab par défaut (Tailwind 4)
+        if (style.boxShadow.includes('oklab')) {
+          htmlNode.style.boxShadow = 'none';
+        }
+      });
     }
+  });
 
-    return (
-      <div>
-        
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {options.map((o) => (
-            <button
-              key={o.id}
-              aria-pressed={current === o.id}
-              onClick={() => setConfig((c) => ({ ...c, [part]: o.id }))}
-              className={cx(
-                "group relative rounded-xl border p-3 transition-all duration-300",
-                "bg-neutral-800/50 backdrop-blur hover:-translate-y-[2px] hover:shadow-lg",
-                current === o.id
-                  ? "border-bastilleGold ring-2 ring-bastilleGold shadow-bastilleGold/20"
-                  : "border-neutral-700 hover:border-bastilleGold/50"
-              )}
-            >
-              {o.thumbnail ? (
-                <img
-                  src={o.thumbnail}
-                  alt={o.name}
-                  className="mx-auto h-16 w-16 object-contain"
-                />
-              ) : (
-                <div className="flex items-center justify-center h-16 bg-neutral-700/30 rounded-lg">
-                  <span className="block text-xs text-center text-ivory/60">
-                    {o.name}
-                  </span>
-                </div>
-              )}
-              <div className="mt-2 text-center">
-                <span className="block font-medium text-sm text-ivory">{o.name}</span>
-                {o.price && o.price > 0 ? (
-                  <span className="block text-xs text-bastilleGold mt-1">
-                    +{fmt(o.price, pricing.currency)}
-                  </span>
-                ) : null}
-                
-                {(o.material || o.size || o.finish || o.style || o.color) && (
-                  <span className="block text-xs text-ivory/50 mt-1">
-                    {o.material || o.finish || o.style || o.color}
-                    {o.size && ` • ${o.size}`}
-                  </span>
-                )}
-              </div>
-              {o.stock && (
-                <span
-                  className={cx(
-                    "absolute right-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-sans uppercase tracking-wider",
-                    o.stock === "in" && "bg-emerald-600 text-white",
-                    o.stock === "low" && "bg-amber-600 text-white",
-                    o.stock === "oos" && "bg-rose-700 text-white"
-                  )}
-                >
-                  {o.stock === "in"
-                    ? "En stock"
-                    : o.stock === "low"
-                    ? "Faible"
-                    : "Rupture"}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
+  const link = document.createElement("a");
+  link.download = `Bastille_${sku}.png`;
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+};
   return (
-    <section id="configurator" className="bg-neutral-950 text-ivory pt-8 min-h-screen">
-      <div className="px-6 md:px-12 py-16">
-        <div className="text-center max-w-3xl mx-auto mb-10">
-          <h3 className="font-serif text-3xl md:text-4xl tracking-tight mb-2 text-bastilleGold">
-            Configurez votre montre
-          </h3>
-          <p className="text-ivory/80">
-            Visualisation en temps réel • Lien partageable • Prix mis à jour
-          </p>
-          {selectedRegion && (
-            <div className="mt-3 inline-block px-4 py-2 bg-bastilleGold/10 border border-bastilleGold/30 rounded-full">
-              <span className="text-sm text-bastilleGold">
-                Région: {selectedRegion}
-              </span>
-            </div>
-          )}
-        </div>
+    <section className="bg-dark text-ivory pt-8 min-h-screen font-sans">
+      <div className="px-6 md:px-12 py-16 max-w-7xl mx-auto">
+        
+        {/* Header */}
+        <header className="text-center mb-10">
+          <h3 className="font-serif text-3xl md:text-4xl text-primary mb-2">Configurez votre montre</h3>
+          <p className="text-text-muted text-sm uppercase tracking-widest">Visualisation 3D • Prix Réel</p>
+        </header>
 
-        <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] items-start">
-          {/* Viewer */}
-         <div className="bg-neutral-900/60 rounded-2xl border border-bastilleGold/30 p-4 shadow-xl">
-          <div
-            id="watch-viewer"
-            // 1. On garde overflow-hidden ici pour "couper" ce qui dépasse
-            className="relative mx-auto aspect-square max-w-[560px] select-none overflow-hidden rounded-xl 
-            bg-[radial-gradient(circle_at_center,rgba(245,194,66,0.05),rgba(0,0,0,0.9))]"
-            aria-label="Aperçu de la montre personnalisée"
-            role="img"
-            // 2. SUPPRIMEZ le style transform ici
-          >
-            {/* 3. CRÉEZ une div interne qui va gérer le zoom */}
-            <div 
-              className="relative h-full w-full"
-              style={{
-                transform: `scale(${zoom})`,
-                transformOrigin: "center",
-                transition: "transform 0.3s ease-out" // Ajoute une animation fluide au zoom
-              }}
-            >
-              <AnimatePresence>
-                {layers.map(
-                  (l) =>
-                    l.src && (
-                      <motion.img
-                        key={l.key + l.src}
-                        src={l.src}
-                        alt=""
-                        className="pointer-events-none absolute inset-0 h-full w-full object-contain"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.4 }}
-                      />
-                    )
-                )}
-              </AnimatePresence>
+        <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr] items-start">
+          
+          {/* LEFT: Viewer Component */}
+          <div className="sticky top-8 space-y-6">
+            <div id="watch-viewer" className="relative aspect-square rounded-2xl bg-neutral-900/50 border border-white/5 overflow-hidden">
+               <div className="relative h-full w-full transition-transform duration-300" style={{ transform: `scale(${zoom})` }}>
+                  <AnimatePresence mode="popLayout">
+                    {[ selections.cases, selections.dials,selections.straps, selections.hands].map((part, i) => (
+                      part?.thumbnail && (
+                        <motion.img 
+                          key={`${part.id}-${i}`}
+                          src={part.thumbnail} 
+                          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                          className="absolute scale-130 inset-0 w-full h-full object-contain pointer-events-none"
+                        />
+                      )
+                    ))}
+                  </AnimatePresence>
+               </div>
             </div>
-          </div>
-
-            {/* Viewer controls */}
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-sm">
-                <button
-                  className="rounded-full border border-bastilleGold/50 px-3 py-1 transition hover:bg-bastilleGold/10"
-                  onClick={() =>
-                    setZoom((z) => Math.max(0.8, +(z - 0.1).toFixed(2)))
-                  }
-                  aria-label="Zoom out"
-                >
-                  –
-                </button>
-                <div className="min-w-16 text-center text-xs text-ivory/80">
-                  Zoom {Math.round(zoom * 100)}%
+            
+            <div className="flex justify-between items-center">
+                <div className="flex bg-surface rounded-full p-1 border border-white/10">
+                  <ZoomBtn label="-" onClick={() => setZoom(Math.max(0.6, zoom - 0.1))} />
+                  <span className="px-4 py-1 text-xs flex items-center">Zoom {Math.round(zoom * 100)}%</span>
+                  <ZoomBtn label="+" onClick={() => setZoom(Math.min(6, zoom + 0.2))} />
                 </div>
-                <button
-                  className="rounded-full border border-bastilleGold/50 px-3 py-1 transition hover:bg-bastilleGold/10"
-                  onClick={() =>
-                    setZoom((z) => Math.min(2, +(z + 0.1).toFixed(2)))
-                  }
-                  aria-label="Zoom in"
-                >
-                  +
+                <button onClick={handleDownload} className="text-xs uppercase tracking-widest text-primary border border-primary/30 px-6 py-2 rounded-full hover:bg-primary/10 transition">
+                  Capture d'écran
                 </button>
-              </div>
-              <div className="flex gap-2">
-                <a
-                  href={href}
-                  className="inline-flex items-center gap-2 rounded-full bg-bastilleGold text-neutral-900 font-sans px-4 py-2 text-xs uppercase tracking-[0.2em] transition-all hover:-translate-y-[1px] hover:shadow-lg hover:shadow-bastilleGold/30"
-                  title="Lien permanent de cette configuration"
-                >
-                  <GoArrowUpRight /> Lien
-                </a>
-                <button
-                  onClick={handleDownload}
-                  className="rounded-full border border-bastilleGold/50 px-4 py-2 text-xs uppercase tracking-[0.2em] text-ivory/90 hover:-translate-y-[1px] transition hover:bg-bastilleGold/10"
-                >
-                  Télécharger
-                </button>
-              </div>
             </div>
           </div>
 
-          {/* Options */}
+          {/* RIGHT: Selection Controls */}
           <div className="space-y-8">
-            <div className="rounded-2xl border border-bastilleGold/40 bg-neutral-900/60 p-5 backdrop-blur">
-              <div className="flex items-baseline justify-between mb-4">
-                <h4 className="font-serif text-xl text-bastilleGold">Votre sélection</h4>
-                <div className="text-sm text-ivory/60">SKU: {sku}</div>
-              </div>
-              <div className="space-y-2 text-sm text-ivory/80">
-                <div className="flex justify-between">
-                  <span>Boîtier</span>
-                  <span className="text-right font-medium text-ivory">
-                    {findOpt(filteredAssets.cases, config.cases)?.name || "—"}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Bracelet</span>
-                  <span className="text-right font-medium text-ivory">
-                    {findOpt(filteredAssets.straps, config.straps)?.name || "—"}
-                  </span>
-                </div>
-                {/* Fixed: Added Dial and Hands display */}
-                <div className="flex justify-between">
-                  <span>Cadran</span>
-                  <span className="text-right font-medium text-ivory">
-                    {findOpt(filteredAssets.dials, config.dials)?.name || "—"}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Aiguilles</span>
-                  <span className="text-right font-medium text-ivory">
-                    {findOpt(filteredAssets.hands, config.hands)?.name || "—"}
-                  </span>
-                </div>
-              </div>
-              <div className="mt-4 h-px w-full bg-gradient-to-r from-transparent via-bastilleGold/60 to-transparent" />
-              <div className="mt-4 flex items-center justify-between">
-                <div className="text-sm text-ivory/80">Prix total</div>
-                <div className="text-2xl font-serif text-bastilleGold">
-                  {fmt(price, pricing.currency)}
-                </div>
-              </div>
-              <div className="mt-4 flex flex-col sm:flex-row gap-3">
-                <button
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-bastilleGold text-neutral-900 font-sans px-5 py-3 text-sm uppercase tracking-[0.2em] transition-all hover:-translate-y-[2px] hover:shadow-lg hover:shadow-bastilleGold/30 font-semibold"
-                  onClick={() => onCheckout?.({ sku, price, config })}
-                >
-                  <GoArrowUpRight /> Commander
-                </button>
-                <button
-                  className="rounded-full border border-bastilleGold/50 px-5 py-3 text-sm uppercase tracking-[0.2em] text-ivory/90 transition hover:bg-bastilleGold/10"
-                  onClick={() =>
-                    navigator.clipboard.writeText(
-                      `${window.location.origin}${window.location.pathname}${href}`
-                    )
-                  }
-                >
-                  Copier le lien
-                </button>
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-bastilleGold/40 bg-neutral-900/60 p-5 space-y-8 backdrop-blur">
-              <SelectGrid part="cases" title="Boîtier" />
-              <SelectGrid part="straps" title="Bracelet" />
-              {/* Fixed: Enabled Dial and Hands selectors with correct keys */}
-              <SelectGrid part="dials" title="Cadran" />
-              <SelectGrid part="hands" title="Aiguilles" />
+            <SummaryCard sku={sku} selections={selections} price={totalPrice} currency={pricing.currency} onCheckout={() => onCheckout?.({sku, price: totalPrice, config})} />
+            
+            <div className="space-y-10 bg-surface/30 p-6 rounded-2xl border border-white/5">
+              <PartGrid title="Boîtier" part="cases" options={filtered.cases} current={config.cases} onSelect={(id) => setConfig(prev => ({...prev, cases: id}))} currency={pricing.currency} />
+              <PartGrid title="Bracelet" part="straps" options={filtered.straps} current={config.straps} onSelect={(id) => setConfig(prev => ({...prev, straps: id}))} currency={pricing.currency} />
+              <PartGrid title="Cadran" part="dials" options={filtered.dials} current={config.dials} onSelect={(id) => setConfig(prev => ({...prev, dials: id}))} currency={pricing.currency} />
+              <PartGrid title="Aiguilles" part="hands" options={filtered.hands} current={config.hands} onSelect={(id) => setConfig(prev => ({...prev, hands: id}))} currency={pricing.currency} />
             </div>
           </div>
+
         </div>
       </div>
     </section>
+  );
+}
+
+// --- Sub-Components (Keep in same file or move to separate files) ---
+
+function ZoomBtn({ label, onClick }: { label: string; onClick: () => void }) {
+  return <button onClick={onClick} className="w-8 h-8 rounded-full hover:bg-white/10 transition flex items-center justify-center">{label}</button>;
+}
+
+function SummaryCard({ sku, selections, price, currency, onCheckout }: any) {
+  return (
+    <div className="bg-surface p-6 rounded-2xl border border-primary/20 shadow-2xl">
+      <div className="flex justify-between items-start mb-6">
+        <div>
+          <h4 className="text-primary font-serif text-xl">Votre Composition</h4>
+          <p className="text-[10px] text-text-subtle uppercase tracking-widest mt-1">Ref: {sku}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-2xl font-serif text-primary">{fmt(price, currency)}</p>
+        </div>
+      </div>
+      <button onClick={onCheckout} className="w-full bg-primary text-dark font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-primary-dark transition shadow-lg shadow-primary/20">
+        <GoArrowUpRight className="text-xl" /> COMMANDER LA MONTRE
+      </button>
+    </div>
+  );
+}
+
+function PartGrid({ title, options, current, onSelect, currency }: any) {
+  return (
+    <div>
+      <h5 className="font-serif text-lg mb-4 text-ivory/90">{title}</h5>
+      <div className="grid grid-cols-4 gap-3">
+        {options.map((opt: PartOption) => (
+          <button 
+            key={opt.id} 
+            onClick={() => onSelect(opt.id)}
+            className={`group relative p-2 rounded-xl border transition-all ${current === opt.id ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-white/10 bg-white/5 hover:border-white/30'}`}
+          >
+            <div className="aspect-square mb-2 overflow-hidden rounded-lg">
+              <img src={opt.thumbnail} alt={opt.name} className="w-full h-full scale-500 object-contain group-hover:scale-600 transition-transform" />
+            </div>
+            <p className="text-[10px] text-center uppercase tracking-tighter truncate">{opt.name}</p>
+            {opt.price ? <p className="text-[9px] text-center text-primary mt-1">+{fmt(opt.price, currency)}</p> : null}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
