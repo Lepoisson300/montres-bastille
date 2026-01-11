@@ -200,7 +200,7 @@ function PartGrid({ title, options, current, onSelect, currency }: any) {
               <img src={opt.thumbnail} alt={opt.name} className="w-full h-full scale-500 object-contain group-hover:scale-600 transition-transform" />
             </div>
             <p className="text-[10px] text-center uppercase tracking-tighter truncate">{opt.name}</p>
-            {opt.price ? <p className="text-[9px] text-center text-primary mt-1">+{fmt(opt.price, currency)}</p> : null}
+            {opt.price ? <p className="text-[9px] text-center text-primary mt-1">{fmt(opt.price, currency)}</p> : null}
           </button>
         ))}
       </div>
