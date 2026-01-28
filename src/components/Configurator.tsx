@@ -112,8 +112,8 @@ const handleDownload = async () => {
         <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr] items-start">
           
           {/* LEFT: Viewer Component */}
-          <div className="sticky top-8 space-y-6">
-            <div id="watch-viewer" className="relative aspect-square rounded-2xl bg-neutral-900/50 border border-white/5 overflow-hidden">
+          <div className="sticky top-8 space-y-6 z-10 bg-dark pb-3 pt-2">
+            <div id="watch-viewer" className="relative bg-background aspect-square rounded-2xl border border-white/5 overflow-hidden">
                <div className="relative h-full w-full transition-transform duration-300" style={{ transform: `scale(${zoom})` }}>
                   <AnimatePresence mode="popLayout">
                     {[ selections.cases, selections.dials,selections.straps, selections.hands].map((part, i) => (
@@ -131,12 +131,12 @@ const handleDownload = async () => {
             </div>
             
             <div className="flex justify-between items-center">
-                <div className="flex bg-surface rounded-full p-1 border border-white/10">
+                <div className="flex bg-surface rounded-full mx-2 p-1 flex-row border border-white/10">
                   <ZoomBtn label="-" onClick={() => setZoom(Math.max(0.6, zoom - 0.1))} />
-                  <span className="px-4 py-1 text-xs flex items-center">Zoom {Math.round(zoom * 100)}%</span>
+                  <span className="px-4 py-1 text-center text-xs">Zoom {Math.round(zoom * 100)}%</span>
                   <ZoomBtn label="+" onClick={() => setZoom(Math.min(6, zoom + 0.2))} />
                 </div>
-                <button onClick={handleDownload} className="text-xs uppercase tracking-widest text-primary border border-primary/30 px-6 py-2 rounded-full hover:bg-primary/10 transition">
+                <button onClick={handleDownload} className="text-xs uppercase tracking-widest bg-accent text-white border border-primary/30 px-6 py-2 rounded-full hover:bg-primary/10 transition">
                   Capture d'écran
                 </button>
             </div>
