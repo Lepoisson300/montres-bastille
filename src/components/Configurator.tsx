@@ -5,12 +5,24 @@ import html2canvas from "html2canvas";
 import type { WatchConfiguratorProps, PartOption } from "../types/Parts";
 
 // --- Utilities ---
-const fmt = (v: number, ccy: string) => new Intl.NumberFormat("fr-FR", { style: "currency", currency: ccy }).format(v);
-const toQuery = (conf: Record<string, string>) => `?${new URLSearchParams(conf).toString()}`;
-const fromQuery = (): Record<string, string> => Object.fromEntries(new URLSearchParams(window.location.search));
+const fmt = (v: number, ccy: string) => 
+  new Intl.NumberFormat("fr-FR", { style: "currency", currency: ccy }).format(v);
+
+const toQuery = (conf: Record<string, string>) => 
+  `?${new URLSearchParams(conf).toString()}`;
+
+// FIX 1: Safe Window Access
+const fromQuery = (): Record<string, string> => {
+  if (typeof window === "undefined") return {};
+  return Object.fromEntries(new URLSearchParams(window.location.search));
+};
 
 export default function Configurator({ assets, pricing, defaultChoice, selectedRegion, onCheckout }: WatchConfiguratorProps) {
-  // 1. Filtered Assets based on Region
+  
+  // FIX 3: Initialize isMobile safely to avoid hydration errors (optional but recommended)
+  // Ideally, use a CSS media query for layout, but for logic:
+  const [isMobile, setIsMobile] = useState(false);
+
   const filtered = useMemo(() => {
     const filter = (items: PartOption[]) => items.filter(i => !i.regions || !selectedRegion || i.regions.includes(selectedRegion));
     return {
@@ -22,12 +34,15 @@ export default function Configurator({ assets, pricing, defaultChoice, selectedR
   }, [assets, selectedRegion]);
 
   // 2. Configuration State
-  const [config, setConfig] = useState<Record<string, string>>(() => ({
-    cases: fromQuery().cases || defaultChoice?.cases || filtered.cases[0]?.id || "",
-    straps: fromQuery().straps || defaultChoice?.straps || filtered.straps[0]?.id || "",
-    dials: fromQuery().dials || defaultChoice?.dials || filtered.dials[0]?.id || "",
-    hands: fromQuery().hands || defaultChoice?.hands || filtered.hands[0]?.id || "",
-  }));
+  const [config, setConfig] = useState<Record<string, string>>(() => {
+    const query = fromQuery(); // Uses the safe version now
+    return {
+      cases: query.cases || defaultChoice?.cases || filtered.cases[0]?.id || "",
+      straps: query.straps || defaultChoice?.straps || filtered.straps[0]?.id || "",
+      dials: query.dials || defaultChoice?.dials || filtered.dials[0]?.id || "",
+      hands: query.hands || defaultChoice?.hands || filtered.hands[0]?.id || "",
+    };
+  });
 
   const [zoom, setZoom] = useState(1);
 
@@ -45,60 +60,101 @@ export default function Configurator({ assets, pricing, defaultChoice, selectedR
 
   const sku = Object.values(config).filter(Boolean).join("-");
 
-  // 4. Side Effects (URL Sync & Zoom Keys)
+  // 4. Side Effects
   useEffect(() => {
-    window.history.replaceState(null, "", `${window.location.pathname}${toQuery(config)}`);
+    if (typeof window !== "undefined") {
+      window.history.replaceState(null, "", `${window.location.pathname}${toQuery(config)}`);
+    }
   }, [config]);
 
   useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    
+    // Check initially
+    checkMobile();
+    
+    // Add resize listener to update state dynamically
+    window.addEventListener("resize", checkMobile);
+
     const handleKeys = (e: KeyboardEvent) => {
       if (e.key === "+") setZoom(z => Math.min(2, z + 0.1));
       if (e.key === "-") setZoom(z => Math.max(0.8, z - 0.1));
     };
     window.addEventListener("keydown", handleKeys);
-    return () => window.removeEventListener("keydown", handleKeys);
+    
+    return () => {
+      window.removeEventListener("keydown", handleKeys);
+      window.removeEventListener("resize", checkMobile);
+    };
   }, []);
 
-const handleDownload = async () => {
-  const el = document.querySelector("#watch-viewer") as HTMLElement;
-  if (!el) return;
+  const handleDownload = async () => {
+    const el = document.querySelector("#watch-viewer") as HTMLElement;
+    if (!el) return;
 
-  const canvas = await html2canvas(el, { 
-    backgroundColor: null, 
-    scale: 2,
-    useCORS: true, // Important si vos images (thumbnails) sont sur un autre domaine
-    onclone: (clonedDocument) => {
-      // Nous parcourons TOUS les éléments du clone pour neutraliser oklab
-      const allElements = clonedDocument.querySelectorAll('*');
-      allElements.forEach((node) => {
-        const htmlNode = node as HTMLElement;
-        const style = window.getComputedStyle(htmlNode);
-
-        // Liste des propriétés courantes pouvant contenir des couleurs
-        const colorProps = ['backgroundColor', 'color', 'borderColor', 'outlineColor'];
-
-        colorProps.forEach(prop => {
-          // @ts-ignore - style[prop] est dynamique
-          if (style[prop] && style[prop].includes('oklab')) {
-            // On remplace par une valeur sûre (transparent ou couleur hexadécimale)
-            if (prop === 'color') htmlNode.style.color = '#000000';
-            else htmlNode.style[prop as any] = 'transparent';
+    const canvas = await html2canvas(el, { 
+      backgroundColor: null, 
+      scale: 2,
+      useCORS: true, 
+      onclone: (clonedDocument) => {
+        const allElements = clonedDocument.querySelectorAll('*');
+        allElements.forEach((node) => {
+          const htmlNode = node as HTMLElement;
+          const style = window.getComputedStyle(htmlNode);
+          const colorProps = ['backgroundColor', 'color', 'borderColor', 'outlineColor'];
+          colorProps.forEach(prop => {
+            // @ts-ignore 
+            if (style[prop] && style[prop].includes('oklab')) {
+              if (prop === 'color') htmlNode.style.color = '#000000';
+              else htmlNode.style[prop as any] = 'transparent';
+            }
+          });
+          if (style.boxShadow.includes('oklab')) {
+            htmlNode.style.boxShadow = 'none';
           }
         });
+      }
+    });
 
-        // Nettoyage spécifique pour les ombres portées qui utilisent souvent oklab par défaut (Tailwind 4)
-        if (style.boxShadow.includes('oklab')) {
-          htmlNode.style.boxShadow = 'none';
-        }
-      });
-    }
-  });
+    const link = document.createElement("a");
+    link.download = `Bastille_${sku}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  };
 
-  const link = document.createElement("a");
-  link.download = `Bastille_${sku}.png`;
-  link.href = canvas.toDataURL("image/png");
-  link.click();
-};
+  // Helper to render the Viewer content to avoid code duplication
+  const renderViewer = () => (
+    <>
+      <div id="watch-viewer" className="relative bg-background aspect-square rounded-2xl border border-white/5 overflow-hidden">
+        <div className="relative h-full w-full transition-transform duration-300" style={{ transform: `scale(${zoom})` }}>
+          <AnimatePresence mode="popLayout">
+            {[selections.cases, selections.dials, selections.straps, selections.hands].map((part, i) => (
+              part?.thumbnail && (
+                <motion.img 
+                  key={`${part.id}-${i}`}
+                  src={part.thumbnail} 
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  className="absolute scale-130 inset-0 w-full h-full object-contain pointer-events-none"
+                />
+              )
+            ))}
+          </AnimatePresence>
+        </div>
+      </div>
+      
+      <div className="flex justify-between items-center mt-4">
+        <div className="flex bg-surface rounded-full mx-2 p-1 flex-row border border-white/10">
+          <ZoomBtn label="-" onClick={() => setZoom(Math.max(0.6, zoom - 0.1))} />
+          <span className="px-4 py-1 text-center text-xs">Zoom {Math.round(zoom * 100)}%</span>
+          <ZoomBtn label="+" onClick={() => setZoom(Math.min(6, zoom + 0.2))} />
+        </div>
+        <button onClick={handleDownload} className="text-xs uppercase tracking-widest bg-accent text-white border border-primary/30 px-6 py-2 rounded-full hover:bg-primary/10 transition">
+          Capture d'écran
+        </button>
+      </div>
+    </>
+  );
+
   return (
     <section className="bg-dark text-ivory pt-8 min-h-screen font-sans">
       <div className="px-6 md:px-12 py-16 max-w-7xl mx-auto">
@@ -111,46 +167,26 @@ const handleDownload = async () => {
 
         <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr] items-start">
           
-          {/* LEFT: Viewer Component */}
-          <div className="sticky top-8 space-y-6 z-10 bg-dark pb-3 pt-2">
-            <div id="watch-viewer" className="relative bg-background aspect-square rounded-2xl border border-white/5 overflow-hidden">
-               <div className="relative h-full w-full transition-transform duration-300" style={{ transform: `scale(${zoom})` }}>
-                  <AnimatePresence mode="popLayout">
-                    {[ selections.cases, selections.dials,selections.straps, selections.hands].map((part, i) => (
-                      part?.thumbnail && (
-                        <motion.img 
-                          key={`${part.id}-${i}`}
-                          src={part.thumbnail} 
-                          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                          className="absolute scale-130 inset-0 w-full h-full object-contain pointer-events-none"
-                        />
-                      )
-                    ))}
-                  </AnimatePresence>
-               </div>
+          {/* FIX 2: Render EITHER Mobile OR Desktop viewer, never both */}
+          {isMobile ? (
+             <div className="sticky top-8 space-y-6 z-10 bg-dark pb-3 pt-2">
+               {renderViewer()}
+             </div>
+          ) : (
+            <div className="top-8 space-y-6 z-10 pb-3 pt-2">
+               {renderViewer()}
             </div>
-            
-            <div className="flex justify-between items-center">
-                <div className="flex bg-surface rounded-full mx-2 p-1 flex-row border border-white/10">
-                  <ZoomBtn label="-" onClick={() => setZoom(Math.max(0.6, zoom - 0.1))} />
-                  <span className="px-4 py-1 text-center text-xs">Zoom {Math.round(zoom * 100)}%</span>
-                  <ZoomBtn label="+" onClick={() => setZoom(Math.min(6, zoom + 0.2))} />
-                </div>
-                <button onClick={handleDownload} className="text-xs uppercase tracking-widest bg-accent text-white border border-primary/30 px-6 py-2 rounded-full hover:bg-primary/10 transition">
-                  Capture d'écran
-                </button>
-            </div>
-          </div>
+          )}
 
           {/* RIGHT: Selection Controls */}
           <div className="space-y-8">
             <SummaryCard sku={sku} selections={selections} price={totalPrice} currency={pricing.currency} onCheckout={() => onCheckout?.({sku, price: totalPrice, config})} />
             
             <div className="space-y-10 bg-surface/30 p-6 rounded-2xl border border-white/5">
-              <PartGrid title="Boîtier" part="cases" options={filtered.cases} current={config.cases} onSelect={(id) => setConfig(prev => ({...prev, cases: id}))} currency={pricing.currency} />
-              <PartGrid title="Bracelet" part="straps" options={filtered.straps} current={config.straps} onSelect={(id) => setConfig(prev => ({...prev, straps: id}))} currency={pricing.currency} />
-              <PartGrid title="Cadran" part="dials" options={filtered.dials} current={config.dials} onSelect={(id) => setConfig(prev => ({...prev, dials: id}))} currency={pricing.currency} />
-              <PartGrid title="Aiguilles" part="hands" options={filtered.hands} current={config.hands} onSelect={(id) => setConfig(prev => ({...prev, hands: id}))} currency={pricing.currency} />
+              <PartGrid title="Boîtier" part="cases" options={filtered.cases} current={config.cases} onSelect={(id: string) => setConfig(prev => ({...prev, cases: id}))} currency={pricing.currency} />
+              <PartGrid title="Bracelet" part="straps" options={filtered.straps} current={config.straps} onSelect={(id: string) => setConfig(prev => ({...prev, straps: id}))} currency={pricing.currency} />
+              <PartGrid title="Cadran" part="dials" options={filtered.dials} current={config.dials} onSelect={(id: string) => setConfig(prev => ({...prev, dials: id}))} currency={pricing.currency} />
+              <PartGrid title="Aiguilles" part="hands" options={filtered.hands} current={config.hands} onSelect={(id: string) => setConfig(prev => ({...prev, hands: id}))} currency={pricing.currency} />
             </div>
           </div>
 
@@ -160,13 +196,12 @@ const handleDownload = async () => {
   );
 }
 
-// --- Sub-Components (Keep in same file or move to separate files) ---
-
+// ... Keep your Sub-Components (ZoomBtn, SummaryCard, PartGrid) as they were ...
 function ZoomBtn({ label, onClick }: { label: string; onClick: () => void }) {
   return <button onClick={onClick} className="w-8 h-8 rounded-full hover:bg-white/10 transition flex items-center justify-center">{label}</button>;
 }
 
-function SummaryCard({ sku, selections, price, currency, onCheckout }: any) {
+function SummaryCard({ sku, price, currency, onCheckout }: any) {
   return (
     <div className="bg-surface p-6 rounded-2xl border border-primary/20 shadow-2xl">
       <div className="flex justify-between items-start mb-6">

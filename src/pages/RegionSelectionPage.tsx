@@ -31,11 +31,7 @@ export default function ConfiguratorPage() {
   const handleCheckout = (order: { sku: string; price: number; config: Record<string, string> }) => {
     console.log("Order placed:", order);
   };
-
-  const handleBackToMap = () => {
-    navigate(-1); // Go back to previous page (the map)
-  };
-
+  
   return (
     <div className="min-h-screen bg-neutral-950">
       <Configurator
