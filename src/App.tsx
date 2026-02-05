@@ -15,20 +15,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 import OnboardingModal from "./components/OnboardingModal";
 import Footer from "./components/Footer";
 
-
-// --- Placeholders ---
-
-const AppointmentPage = () => (
-  <div className="p-8 bg-background text-text-secondary font-sans min-h-screen">
-    <div className="max-w-2xl mx-auto pt-20">
-      <h1 className="font-serif text-4xl text-text-primary mb-4">Rendez-vous</h1>
-      <p className="text-text-muted">Cette fonctionnalité arrive bientôt...</p>
-    </div>
-  </div>
-);
-
-
-
 // --- Main App Component ---
 
 function App() {
@@ -65,6 +51,14 @@ function App() {
     fetchUserData();
   }, [isAuthenticated, user]);
 
+  useEffect(()=>{
+    async function startServer(){
+      const start = await fetch("https://montre-bastille-api.onrender.com/api/site")
+      console.log(start.json)
+    }
+    startServer();
+  },[])
+
   const handleOnboardingSuccess = (updatedUser: any) => {
     setDbUser(updatedUser); // Update local state immediately
     setShowOnboarding(false); // Close the modal
@@ -87,7 +81,6 @@ function App() {
           <Route path="/configurator" element={<ConfiguratorPage />} />
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/appointment" element={<AppointmentPage />} />
           <Route path="/account" element={<AccountPage />} />
         
           {/* Fallback */}
