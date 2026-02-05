@@ -14,6 +14,7 @@ import RegionPage from "./pages/RegionPage"
 import { useAuth0 } from "@auth0/auth0-react";
 import OnboardingModal from "./components/OnboardingModal";
 import Footer from "./components/Footer";
+import LegalPage from "./pages/mentionLegalePage";
 
 // --- Main App Component ---
 
@@ -34,8 +35,6 @@ function App() {
 
           if (found) {
             setDbUser(found);
-            
-            // 2. CHECK MISSING INFO HERE
             // If phone number is missing or empty, trigger the modal
             if (!found.numero || found.numero === "") {
               setShowOnboarding(true);
@@ -82,7 +81,7 @@ function App() {
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/account" element={<AccountPage />} />
-        
+          <Route path="/mention" element={<LegalPage/>}/>
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -110,7 +110,7 @@ export default function Footer() {
         <div className="mt-16 pt-8 border-t border-border/20 flex flex-col md:flex-row justify-between items-center text-xs text-text-subtle font-sans gap-4">
           <p>© 2025 Montres-Bastille. Tous droits réservés.</p>
           <div className="flex gap-6">
-            <Link to="/legal" className="hover:text-primary transition-colors">Mentions Légales</Link>
+            <Link to="/mention" className="hover:text-primary transition-colors">Mentions Légales</Link>
             <Link to="/cgv" className="hover:text-primary transition-colors">CGV</Link>
             <Link to="/privacy" className="hover:text-primary transition-colors">Confidentialité</Link>
           </div>

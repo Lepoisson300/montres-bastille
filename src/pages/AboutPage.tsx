@@ -2,10 +2,10 @@ import Reveal from "../Logic/Reveal";
 import { Link } from "react-router-dom";
 import heroImg from "/about_hero.png";      // replace with real image
 import atelier1 from "/atelier1.png";       // replace with real image
-import atelier2 from "/atelier2.png";       // replace with real image
-import atelier3 from "/watch1.png";       // replace with real image
+import atelier2 from "/Gurv.png";       // replace with real image
+import atelier3 from "/nico.png";       // replace with real image
 import texture from "/paper_texture.png";    // optional subtle texture
-import nh35 from "/nh35.png";               // movement image
+import eclate from "/eclate.jpg";               // movement image
 
 export default function AboutPage() {
   return (
@@ -22,7 +22,7 @@ export default function AboutPage() {
           <div className="mx-auto max-w-6xl px-6 md:px-12 h-[60vh] flex items-end">
             <Reveal>
               <div className="pb-14 text-text-primary">
-                <p className="tracking-[.25em] text-xs uppercase text-primary font-sans opacity-90">Paris — Est. 2025</p>
+                <p className="tracking-[.25em] text-xs uppercase text-primary font-sans opacity-90">Bordeaux — Est. 2025</p>
                 <h1 className="mt-4 text-4xl md:text-6xl font-serif leading-tight tracking-tight text-text-primary">L'histoire de <span className="text-primary">Montres‑Bastille</span></h1>
                 <p className="mt-4 max-w-2xl text-text-muted font-sans">Si vous êtes arrivé là, c'est que vous êtes curieux de savoir comment sont fabriquées nos montres et ce que nous faisons. Alors allons-y</p>
               </div>
@@ -81,7 +81,7 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[atelier1, atelier2, atelier3].map((src, i) => (
                 <figure key={i} className="group relative overflow-hidden rounded-2xl shadow-lg border border-border/20">
-                  <img src={src} alt="Atelier" className="h-64 w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <img src={src} alt="Atelier" className="h-64 w-full scale-110 object-cover transition-transform duration-700 group-hover:scale-130" />
                   <figcaption className="pointer-events-none absolute inset-0 bg-gradient-to-t from-dark/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 </figure>
               ))}
@@ -114,7 +114,7 @@ export default function AboutPage() {
                 <div className="absolute -inset-6 -z-10 rounded-3xl bg-gradient-to-tr from-primary/10 to-transparent blur-2xl" />
                 <div className="rounded-2xl border border-primary/30 bg-surface p-2 shadow-[0_10px_40px_rgba(0,0,0,0.45)]">
                   <div className="aspect-[4/3] rounded-xl bg-gradient-to-b from-surface-hover to-surface-active flex items-center justify-center text-text-muted">
-                    <img src={nh35} alt="" className="h-[90%] w-[50%]" />
+                    <img src={eclate} />
                   </div>
                 </div>
               </div>
@@ -172,7 +172,7 @@ export default function AboutPage() {
                 <p className="mt-2 text-text-muted font-sans">Configurez votre Montres‑Bastille en quelques clics. Assemblée à Bordeaux, pour vous.</p>
               </div>
               <Link 
-                to="/not-implemented" 
+                to="/region-page" 
                 className="inline-flex items-center gap-2 rounded-full bg-primary text-dark font-sans px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all hover:-translate-y-[2px] hover:shadow-md hover:bg-primary-dark"
               >
                 Commencer
