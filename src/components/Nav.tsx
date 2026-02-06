@@ -1,8 +1,10 @@
 // NavbarLuxury.tsx
 import React, { useEffect, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, redirect, useLocation } from "react-router-dom";
 import logo from "/logo.png";
 import { useAuth0 } from '@auth0/auth0-react';
+import CartButton from "./cartsBouton";
+import { useNavigate } from "react-router-dom";
 
 type RouteItem = {
   name: string;
@@ -21,6 +23,7 @@ const Nav: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const { pathname } = useLocation();
   const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const navigate = useNavigate();
 
   // Scroll detection
   useEffect(() => {
@@ -106,6 +109,33 @@ const Nav: React.FC = () => {
 
             {/* --- Right Side Actions --- */}
             <div className="flex items-center gap-2">
+
+             <button
+                onClick={()=>{navigate("/panier")}}
+                aria-label="Voir le panier"
+                className="group relative flex items-center justify-center rounded-full p-2 text-text-primary transition-all duration-300 hover:bg-surface hover:text-primary"
+              >
+                {/* SVG Sac de Shopping élégant */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5" // Trait fin pour l'élégance
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-6 w-6 transition-transform duration-300 group-hover:scale-105"
+                >
+                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+                  <path d="M3 6h18" />
+                  <path d="M16 10a4 4 0 0 1-8 0" />
+                </svg>
+
+                {/* Badge de notification (S'affiche seulement si itemCount > 0) */}
+                
+              </button>
               
               {/* Desktop Account Icon (Hidden on mobile) */}
               <button
