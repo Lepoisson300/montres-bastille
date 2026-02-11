@@ -59,7 +59,6 @@ export type WatchConfiguratorProps = {
   defaultChoice?: Partial<Record<keyof PartsCatalog, string>>;
   brand?: string;
   onCheckout?: (payload: {
-    sku: string;
     price: number;
     config: Record<string, string>;
     engraving?: string;

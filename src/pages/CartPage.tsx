@@ -1,71 +1,116 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Alert from "../components/Alert"; // Assure-toi que le chemin est bon
-import watchRender from "/Gurv.png"; // Remplace par ton image finale
+import Alert from "../components/Alert"; 
 
-// Données factices pour l'exemple (simulant ce qui viendrait d'un Context ou Redux)
-const INITIAL_ITEMS = [
-  { id: 1, type: "boitier", name: "Boîtier Acier Noir 40mm", price: 150, image: "/parts/case-black.png" },
-  { id: 2, type: "cadran", name: "Cadran Bleu Nuit", price: 85, image: "/parts/dial-blue.png" },
-  { id: 3, type: "aiguilles", name: "Aiguilles Dauphine Argent", price: 35, image: "/parts/hands-silver.png" },
-  { id: 4, type: "mouvement", name: "Mouvement Automatique Miyota", price: 120, image: "/parts/movement.png" },
-  { id: 5, type: "bracelet", name: "Bracelet Acier Noir", price: 90, image: "/parts/strap-black.png" },
-];
+// On définit le type des props pour TypeScript
+interface CartPageProps {
+  // Le "?" rend la fonction optionnelle : si elle n'est pas passée, pas d'erreur.
+  updateCartCount?: (count: number) => void; 
+}
 
-export default function CartPage({ updateCartCount }) {
-  const [cartItems, setCartItems] = useState(INITIAL_ITEMS);
-  const [alert, setAlert] = useState(null); // State pour gérer l'affichage de l'alerte
+export default function CartPage({ updateCartCount }: CartPageProps) {
+  // 1. STATE : Initialisation via LocalStorage
+  const [cartWatches, setCartWatches] = useState<any[]>(() => {
+    try {
+      const saved = localStorage.getItem('cart');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error("Erreur lecture localStorage:", e);
+      return [];
+    }
+  });
+  
+  const [selectedWatchId, setSelectedWatchId] = useState<string | null>(null);
+  const [alert, setAlert] = useState<{type: string, message: string} | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
 
-  // Calcul du total
-  const totalPrice = cartItems.reduce((acc, item) => acc + item.price, 0);
-
-  // Fonction de suppression
-  const handleRemoveItem = (id, type) => {
-    // 1. Filtrer l'élément
-    const newItems = cartItems.filter((item) => item.id !== id);
-    setCartItems(newItems);
-
-    // 2. Mettre à jour le compteur global (via props)
-    if (updateCartCount) {
-      updateCartCount(newItems.length);
+  // 2. EFFECT : Gestion de la sélection par défaut
+  useEffect(() => {
+    if (cartWatches.length > 0 && !selectedWatchId) {
+      // On sécurise l'accès à l'ID
+      const firstId = cartWatches[0].id || cartWatches[0].cartId;
+      if (firstId) setSelectedWatchId(firstId);
     }
+  }, [cartWatches, selectedWatchId]);
 
-    // 3. Déclencher l'alerte spécifique demandée
-    setAlert({
-      type: "warning",
-      message: `Vous avez retiré : ${type}. Votre montre est incomplète, n'oubliez pas d'en sélectionner un nouveau.`,
-    });
+  // 3. EFFECT : Sauvegarde et Mise à jour du compteur (CORRIGÉ)
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cartWatches));
+    
+    // CORRECTION ICI : On vérifie que la fonction existe avant de l'appeler
+    if (updateCartCount && typeof updateCartCount === 'function') {
+      updateCartCount(cartWatches.length);
+    }
+  }, [cartWatches, updateCartCount]);
+
+  // Récupérer la montre sélectionnée
+  const selectedWatch = cartWatches.find(w => (w.id === selectedWatchId || w.cartId === selectedWatchId)) || cartWatches[0];
+
+  // Calcul du prix
+  const getWatchPrice = (watch: any) => {
+    const parts = watch.parts || watch.components || []; 
+    const partsPrice = parts.reduce((acc: number, part: any) => acc + (part.price || 0), 0);
+    return (watch.basePrice || 0) + partsPrice;
   };
 
-  // Fonction de paiement Stripe (Simulée)
-  const handleCheckout = async () => {
-    if (cartItems.length < 5) {
-      setAlert({
-        type: "error",
-        message: "Votre montre est incomplète. Veuillez ajouter tous les composants avant de payer.",
-      });
-      return;
-    }
+  const grandTotal = cartWatches.reduce((acc, watch) => acc + getWatchPrice(watch), 0);
 
-    setIsRedirecting(true);
+  const removeWatch = (targetId: string) => {
+    const updatedCart = cartWatches.filter(w => {
+        const wId = w.id || w.cartId;
+        return wId !== targetId;
+    });
+    setCartWatches(updatedCart);
     
-    // Simulation d'appel API
-    // En production: const stripe = await loadStripe('PK_...');
+    if (selectedWatchId === targetId) {
+       setSelectedWatchId(null); // On reset, le useEffect du haut remettra le 1er dispo
+    }
+  };
+
+  const clearCart = () => {
+    setCartWatches([]);
+    setSelectedWatchId(null);
+    setAlert({ type: "success", message: "Le panier a été vidé." });
+  };
+
+  const removePartFromSelected = (partId: string, type: string) => {
+    if (!selectedWatch) return;
+
+    const updatedWatches = cartWatches.map(watch => {
+      const wId = watch.id || watch.cartId;
+      if (wId === selectedWatchId) {
+        const currentParts = watch.parts || watch.components || [];
+        const filteredParts = currentParts.filter((p: any) => p.id !== partId);
+        
+        return {
+          ...watch,
+          parts: filteredParts,      
+          components: filteredParts, 
+        };
+      }
+      return watch;
+    });
+
+    setCartWatches(updatedWatches);
+    setAlert({ type: "warning", message: `Pièce "${type}" retirée.` });
+  };
+
+  const handleCheckout = () => {
+    if (cartWatches.length === 0) return;
+    setIsRedirecting(true);
     setTimeout(() => {
-      console.log("Redirection vers Stripe Checkout...");
-      // window.location.href = "https://buy.stripe.com/..." 
+      console.log("Commande envoyée :", cartWatches);
       setIsRedirecting(false);
+      window.alert("Redirection vers le paiement..."); // Utilisation de window.alert pour éviter conflit de nom
     }, 2000);
   };
 
   return (
     <div className="min-h-screen bg-background text-text-primary font-sans pt-24 pb-12">
-      
-      {/* Affichage conditionnel de l'alerte */}
+      {/* ALERTE */}
       {alert && (
         <Alert
-          type={alert.type}
+          type={alert.type as "success" | "warning" | "error" | "info"}
           message={alert.message}
           onClose={() => setAlert(null)}
           duration={4000}
@@ -73,127 +118,157 @@ export default function CartPage({ updateCartCount }) {
       )}
 
       <div className="mx-auto max-w-7xl px-6 md:px-12">
-        <h1 className="font-serif text-3xl md:text-5xl mb-12">
-          Votre <span className="text-primary">Configuration</span>
-        </h1>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        <div className="flex justify-between items-end mb-12">
+          <h1 className="font-serif text-3xl md:text-5xl">
+            Votre <span className="text-primary">Panier</span> ({cartWatches.length})
+          </h1>
           
-          {/* COLONNE GAUCHE : VISUEL FINAL */}
-          <div className="lg:col-span-7 sticky top-32">
-            <div className="relative rounded-3xl bg-surface border border-primary/20 p-8 shadow-2xl overflow-hidden group">
-              {/* Fond subtil */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50" />
-              
-              {/* Image Montre */}
-              <div className="relative z-10 aspect-square flex items-center justify-center">
-                 {/* Utilisation de l'image placeholder si watchRender n'est pas dispo */}
-                <img 
-                  src={watchRender} 
-                  alt="Votre montre configurée" 
-                  className="w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 group-hover:scale-105" 
-                />
-              </div>
+          {cartWatches.length > 0 && (
+            <button 
+              onClick={clearCart}
+              className="text-xs text-red-400 border border-red-500/30 px-3 py-1 rounded hover:bg-red-500/10 transition"
+            >
+              Vider le panier
+            </button>
+          )}
+        </div>
 
-              <div className="absolute bottom-6 left-6 z-10">
-                <p className="text-text-muted text-sm uppercase tracking-widest font-sans">Modèle Unique</p>
-                <p className="text-primary font-serif text-xl">Bastille — Édition Personnalisée</p>
-              </div>
-            </div>
-          </div>
-
-          {/* COLONNE DROITE : LISTE & PAIEMENT */}
-          <div className="lg:col-span-5 flex flex-col gap-8">
+        {cartWatches.length === 0 ? (
+           <div className="text-center py-20 bg-surface rounded-3xl border border-border/10">
+             <p className="text-xl text-text-muted mb-4">Votre panier est vide.</p>
+             <Link to="/configurator" className="text-primary underline hover:text-white transition">
+                Créer une montre
+             </Link>
+           </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            {/* Liste des composants */}
-            <div className="bg-surface rounded-2xl border border-border/10 p-6 shadow-lg">
-              <h2 className="font-serif text-2xl mb-6 border-b border-border/10 pb-4">Détail des pièces</h2>
+            {/* LISTE DES MONTRES */}
+            <div className="lg:col-span-7 flex flex-col gap-8 sticky top-32">
               
-              {cartItems.length === 0 ? (
-                <p className="text-text-muted text-center py-8">Votre panier est vide.</p>
-              ) : (
-                <ul className="space-y-4">
-                  {cartItems.map((item) => (
-                    <li key={item.id} className="flex items-center gap-4 bg-background/50 p-3 rounded-xl border border-transparent hover:border-primary/30 transition-colors group">
-                      {/* Miniature composant (placeholder bg si pas d'image) */}
-                      <div className="h-16 w-16 rounded-lg bg-surface-hover flex-shrink-0 overflow-hidden flex items-center justify-center border border-border/10">
-                         {item.image ? (
-                           <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
-                         ) : (
-                           <div className="w-4 h-4 rounded-full bg-primary/20" />
-                         )}
-                      </div>
-
-                      {/* Info Text */}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-text-subtle uppercase tracking-wider mb-0.5">{item.type}</p>
-                        <p className="font-medium text-text-primary truncate">{item.name}</p>
-                        <p className="text-primary text-sm font-serif mt-1">{item.price} €</p>
-                      </div>
-
-                      {/* Bouton Supprimer */}
+              {cartWatches.length > 1 && (
+                <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x">
+                  {cartWatches.map((watch, index) => {
+                    // CORRECTION CLÉ UNIQUE : On utilise cartId, sinon id, sinon l'index
+                    const wId = watch.cartId || watch.id || `fallback-${index}`;
+                    const isSelected = selectedWatchId === wId;
+                    
+                    return (
                       <button
-                        onClick={() => handleRemoveItem(item.id, item.type)}
-                        className="p-2 text-text-muted hover:text-red-500 hover:bg-red-500/10 rounded-full transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
-                        title="Retirer ce composant"
+                        key={wId} // Utilisation de la clé sécurisée
+                        onClick={() => setSelectedWatchId(wId)}
+                        className={`flex-shrink-0 snap-start w-64 p-4 rounded-xl border transition-all text-left relative group
+                          ${isSelected
+                            ? "bg-surface border-primary shadow-lg ring-1 ring-primary/20" 
+                            : "bg-background border-border/20 opacity-70 hover:opacity-100 hover:border-primary/50"
+                          }`}
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
-                        </svg>
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="text-xs font-bold text-primary uppercase tracking-wider">Config</span>
+                          <div 
+                            onClick={(e) => { e.stopPropagation(); removeWatch(wId); }}
+                            className="text-text-muted hover:text-red-500 p-1 rounded-full hover:bg-red-500/10 transition"
+                          >
+                            ×
+                          </div>
+                        </div>
+                        <p className="font-serif truncate text-lg">{watch.name || `Montre #${index + 1}`}</p>
+                        <p className="text-sm text-text-muted">{getWatchPrice(watch)} €</p>
                       </button>
-                    </li>
-                  ))}
-                </ul>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* VISUALISATION */}
+              {selectedWatch && (
+                <div className="relative rounded-3xl bg-surface border border-primary/20 p-8 shadow-2xl overflow-hidden group min-h-[400px]">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50" />
+                  <div className="relative z-10 flex items-center justify-center h-full">
+                    <img 
+                      src={selectedWatch.image || "/Gurv.png"} 
+                      alt="Montre" 
+                      className="max-h-[350px] w-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 group-hover:scale-105" 
+                    />
+                  </div>
+                  <div className="absolute bottom-6 left-6 z-10">
+                    <p className="text-text-muted text-sm uppercase tracking-widest font-sans">Sélection actuelle</p>
+                    <p className="text-primary font-serif text-xl">{selectedWatch.name || "Personnalisée"}</p>
+                  </div>
+                </div>
               )}
             </div>
 
-            {/* Résumé & Total */}
-            <div className="bg-dark text-text-primary rounded-2xl p-8 border border-primary/30 shadow-[0_10px_40px_rgba(0,0,0,0.3)]">
-              <div className="flex justify-between items-end mb-2">
-                <span className="text-text-muted font-sans text-sm">Total estimé</span>
-                <span className="font-serif text-3xl md:text-4xl text-primary">{totalPrice} €</span>
-              </div>
-              <p className="text-xs text-text-subtle mb-8">Taxes incluses, livraison offerte en France.</p>
+            {/* DÉTAILS */}
+            <div className="lg:col-span-5 flex flex-col gap-6">
+              {selectedWatch && (
+                <div className="bg-surface rounded-2xl border border-border/10 p-6 shadow-lg">
+                  {(() => {
+                    const partsList = selectedWatch.parts || selectedWatch.components || [];
+                    return (
+                      <>
+                        <h2 className="font-serif text-xl mb-4 flex justify-between items-center">
+                          <span>Composants</span>
+                          <span className="text-sm font-sans text-text-muted font-normal">
+                            {partsList.length} pièces
+                          </span>
+                        </h2>
+                        
+                        <ul className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                          {partsList.map((item: any, idx: number) => (
+                            // Utilisation d'une clé composite pour éviter les doublons
+                            <li key={`${item.id}-${idx}`} className="flex items-center gap-3 bg-background/50 p-2 rounded-lg border border-transparent hover:border-primary/20 transition-colors group">
+                              <div className="h-10 w-10 rounded bg-surface-hover flex-shrink-0 overflow-hidden flex items-center justify-center border border-border/10">
+                                {item.image || item.thumbnail ? (
+                                  <img src={item.image || item.thumbnail} alt={item.name} className="h-full w-full object-cover" />
+                                ) : (
+                                  <div className="w-2 h-2 rounded-full bg-primary/20" />
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[10px] text-text-subtle uppercase tracking-wider">{item.type}</p>
+                                <p className="text-sm font-medium text-text-primary truncate">{item.name}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-primary text-xs font-serif">{item.price} €</p>
+                                <button
+                                  onClick={() => removePartFromSelected(item.id, item.type)}
+                                  className="text-[10px] text-red-400 opacity-0 group-hover:opacity-100 hover:underline"
+                                >
+                                  Retirer
+                                </button>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
 
-              <button
-                onClick={handleCheckout}
-                disabled={isRedirecting || cartItems.length === 0}
-                className={`w-full py-4 px-6 rounded-full text-sm uppercase tracking-[0.2em] font-bold transition-all duration-300 flex items-center justify-center gap-3
-                  ${isRedirecting || cartItems.length === 0
-                    ? "bg-surface text-text-muted cursor-not-allowed" 
-                    : "bg-primary text-dark hover:bg-primary-dark hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] hover:-translate-y-1"
-                  }`}
-              >
-                {isRedirecting ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-dark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Redirection...
-                  </>
-                ) : (
-                  <>
-                    <span>Valider la commande</span>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                  </>
-                )}
-              </button>
-              
-              <div className="mt-6 flex justify-center gap-4 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-                {/* Icônes de paiement (décoratif) */}
-                <div className="h-6 w-10 bg-white/10 rounded" title="Visa"></div>
-                <div className="h-6 w-10 bg-white/10 rounded" title="Mastercard"></div>
-                <div className="h-6 w-10 bg-white/10 rounded" title="Amex"></div>
+              {/* PAIEMENT */}
+              <div className="bg-dark text-text-primary rounded-2xl p-8 border border-primary/30 shadow-[0_10px_40px_rgba(0,0,0,0.3)] sticky top-32">
+                <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-4">
+                  <span className="text-text-muted font-sans text-sm">Sous-total</span>
+                  <span className="font-serif text-xl text-white">{grandTotal} €</span>
+                </div>
+                <div className="flex justify-between items-end mb-2">
+                  <span className="text-text-muted font-sans text-sm">Total à payer</span>
+                  <span className="font-serif text-3xl md:text-4xl text-primary">{grandTotal} €</span>
+                </div>
+                <button
+                  onClick={handleCheckout}
+                  disabled={isRedirecting}
+                  className="w-full mt-6 py-4 px-6 rounded-full text-sm uppercase tracking-[0.2em] font-bold bg-primary text-dark hover:bg-primary-dark transition-all duration-300 flex items-center justify-center gap-3"
+                >
+                  {isRedirecting ? "Chargement..." : "Payer la commande"}
+                </button>
               </div>
+
             </div>
-
-            <Link to="/configurator" className="text-center text-sm text-text-muted hover:text-primary transition-colors underline decoration-primary/30 underline-offset-4">
-              Modifier la configuration
-            </Link>
-
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -180,7 +180,7 @@ export default function Configurator({ assets, pricing, defaultChoice, selectedR
 
           {/* RIGHT: Selection Controls */}
           <div className="space-y-8">
-            <SummaryCard sku={sku} selections={selections} price={totalPrice} currency={pricing.currency} onCheckout={() => onCheckout?.({sku, price: totalPrice, config})} />
+            <SummaryCard sku={sku} selections={selections} price={totalPrice} currency={pricing.currency} onCheckout={() => onCheckout?.({price: totalPrice, config})} />
             
             <div className="space-y-10 bg-surface/30 p-6 rounded-2xl border border-white/5">
               <PartGrid title="Boîtier" part="cases" options={filtered.cases} current={config.cases} onSelect={(id: string) => setConfig(prev => ({...prev, cases: id}))} currency={pricing.currency} />

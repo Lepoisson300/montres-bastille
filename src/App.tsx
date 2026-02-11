@@ -89,7 +89,7 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/account" element={<AccountPage />} />
           <Route path="/mention" element={<LegalPage/>}/>
-          <Route path="/panier" element={<CartPage updateCartCount={10}/>}/>
+          <Route path="/panier" element={<CartPage />}/>
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
