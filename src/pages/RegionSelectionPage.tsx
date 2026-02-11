@@ -1,5 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import Configurator from "../components/Configurator";
 import type { PartOption, PartsCatalog } from "../types/Parts";
 
@@ -12,7 +11,6 @@ interface LocationState {
 
 export default function ConfiguratorPage() {
   const location = useLocation();
-  const navigate = useNavigate();
   const state = location.state as LocationState;
 
   // Transform the watch components to match the PartsCatalog format

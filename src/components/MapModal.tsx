@@ -4,8 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import type { PartsCatalog } from "../types/Parts";
 // 1. Import the new carousel
-import RegionWatchesCarousel from "./RegionWatchCarousel"; 
-import type { UserWatch } from "./RegionWatchCarousel";
 
 // --- MOCK DATA FOR USER WATCHES ---
 // You would usually fetch this from an API

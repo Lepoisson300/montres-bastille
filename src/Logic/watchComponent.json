@@ -1,0 +1,129 @@
+[
+  {
+    "id": "c1",
+    "type": "case",
+    "name": "Classic Round",
+    "price": 350,
+    "thumbnail": "https://res.cloudinary.com/dqginwoci/image/upload/v1770459861/testMilieu_zkbldp.png",
+    "stock": 0,
+    "material": "Stainless Steel",
+    "size": "40mm",
+    "regions": ["FR-E", "FR-U"]
+  },
+  {
+    "id": "c2",
+    "type": "case",
+    "name": "Sportivité hexagonale",
+    "price": 300,
+    "thumbnail": "https://res.cloudinary.com/dqginwoci/image/upload/v1770459858/hexa_gibzvx.png",
+    "stock": 0,
+    "material": "Acier Inoxydable",
+    "size": "42mm",
+    "regions": ["FR-E", "FR-A", "FR-U"]
+  },
+  {
+    "id": "c3",
+    "type": "case",
+    "name": "Classique",
+    "price": 300,
+    "thumbnail": "https://res.cloudinary.com/dqginwoci/image/upload/v1770459860/silver_muvtoi.png",
+    "stock": 0,
+    "material": "Acier Inoxydable",
+    "size": "42mm",
+    "regions": ["FR-E", "FR-A", "FR-U"]
+  },
+  {
+    "id": "d1",
+    "type": "dial",
+    "name": "Olivier rayonant",
+    "price": 800,
+    "thumbnail": "https://res.cloudinary.com/dqginwoci/image/upload/v1770459854/PACA_w_d_a6wn7w.png",
+    "stock": 0,
+    "color": "brown",
+    "finish": "Lacquer",
+    "markers": "Roman",
+    "regions": ["FR-E", "FR-A", "FR-U"]
+  },
+  {
+    "id": "h1",
+    "type": "hands",
+    "name": "Pointe dorée",
+    "price": 200,
+    "thumbnail": "https://res.cloudinary.com/dqginwoci/image/upload/v1770459854/handsGold_xjuk8n.png",
+    "stock": 0,
+    "style": "Classic",
+    "luminous": true,
+    "regions": ["FR-E", "FR-A", "FR-U"]
+  },
+  {
+    "id": "h2",
+    "type": "hands",
+    "name": "épées affutées",
+    "price": 250,
+    "thumbnail": "https://res.cloudinary.com/dqginwoci/image/upload/v1770459854/handsSilver_gsdobs.png",
+    "stock": 0,
+    "style": "Vintage",
+    "luminous": true,
+    "regions": ["FR-A", "FR-U"]
+  },
+  {
+    "id": "s1",
+    "type": "strap",
+    "name": "Bombe",
+    "price": 150,
+    "thumbnail": "https://res.cloudinary.com/dqginwoci/image/upload/v1770459855/Bombe_htnqma.png",
+    "stock": 0,
+    "material": "Leather",
+    "color": "Brown",
+    "clasp": "Deployant",
+    "regions": ["FR-E", "FR-A", "FR-U"]
+  },
+  {
+    "id": "s2",
+    "type": "strap",
+    "name": "Chrono",
+    "price": 100,
+    "thumbnail": "https://res.cloudinary.com/dqginwoci/image/upload/v1770459855/chrono_z4ggiq.png",
+    "stock": 0,
+    "material": "plastic",
+    "color": "Black",
+    "clasp": "Deployant",
+    "regions": ["FR-E", "FR-A", "FR-U"]
+  },
+  {
+    "id": "s3",
+    "type": "strap",
+    "name": "Lezard",
+    "price": 150,
+    "thumbnail": "https://res.cloudinary.com/dqginwoci/image/upload/v1770459856/lezard_p07k3v.png",
+    "stock": 0,
+    "material": "Leather",
+    "color": "Black",
+    "clasp": "Deployant",
+    "regions": ["FR-E", "FR-A", "FR-U"]
+  },
+  {
+    "id": "s4",
+    "type": "strap",
+    "name": "Toile Militaire",
+    "price": 80,
+    "thumbnail": "https://res.cloudinary.com/dqginwoci/image/upload/v1770459856/toileMilitaire_bdju9n.png",
+    "stock": 0,
+    "material": "Steel",
+    "color": "Silver",
+    "clasp": "Folding",
+    "regions": ["FR-E", "FR-A", "FR-U"]
+  },
+  {
+    "id": "s5",
+    "type": "strap",
+    "name": "Classic",
+    "price": 100,
+    "thumbnail": "https://res.cloudinary.com/dqginwoci/image/upload/v1770459857/classic_nk3mup.png",
+    "stock": 0,
+    "material": "Rubber",
+    "color": "Blue",
+    "clasp": "Tang",
+    "regions": ["FR-E", "FR-U"]
+  }
+]
