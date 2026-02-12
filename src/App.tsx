@@ -54,13 +54,14 @@ function App() {
   useEffect(()=>{
     async function startServer(){
       const start = await fetch("https://montre-bastille-api.onrender.com/api/site")
-      //console.log(start.json)
+      console.log(start.json)
     }
     startServer();
     async function getComponents(){
       const component = await fetch("https://montre-bastille-api.onrender.com/api/components")
       const comp = await component.json();
-      console.log(comp);
+      localStorage.setItem("composants", JSON.stringify(comp))
+      console.log(JSON.parse(localStorage.getItem("composants")));
     }
     getComponents();
   },[])
