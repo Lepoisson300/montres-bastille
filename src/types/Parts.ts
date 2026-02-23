@@ -13,6 +13,7 @@ export type PartOption = {
 };
 
 export type PartsCatalog = {
+  mouvement:PartOption[];
   cases: PartOption[];
   dials: PartOption[];
   hands: PartOption[];
@@ -61,6 +62,5 @@ export type WatchConfiguratorProps = {
   onCheckout?: (payload: {
     price: number;
     config: Record<string, string>;
-    engraving?: string;
   }) => void;
 };

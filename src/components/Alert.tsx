@@ -6,14 +6,12 @@ interface AlertProps {
   type: AlertType;
   message: string;
   duration?: number; // Time in ms (default 3000)
-  onClose: () => void;
 }
 
 const Alert: React.FC<AlertProps> = ({ 
   type, 
   message, 
   duration = 3000, 
-  onClose 
 }) => {
   const [isExiting, setIsExiting] = useState(false);
   const [progress, setProgress] = useState(100);
@@ -81,7 +79,6 @@ const Alert: React.FC<AlertProps> = ({
 
     // 3. Unmount component
     const closeTimer = setTimeout(() => {
-      onClose();
     }, duration);
 
     return () => {
@@ -89,7 +86,7 @@ const Alert: React.FC<AlertProps> = ({
       clearTimeout(exitTimer);
       clearTimeout(closeTimer);
     };
-  }, [duration, onClose]);
+  }, [duration]);
 
   return (
     <div
@@ -108,7 +105,6 @@ const Alert: React.FC<AlertProps> = ({
         <button
           onClick={() => {
             setIsExiting(true);
-            setTimeout(onClose, 300);
           }}
           className="ml-4 text-gray-400 hover:text-white transition-colors"
         >

@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
-import { motion, AnimatePresence } from "framer-motion";
-import html2canvas from "html2canvas";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";import html2canvas from "html2canvas";
 import type { WatchConfiguratorProps, PartOption } from "../types/Parts";
-import Nav from "./Nav";
 
 // --- Utilities ---
 const fmt = (v: number, ccy: string) => 
@@ -23,10 +21,11 @@ export default function Configurator({ assets, pricing, defaultChoice, selectedR
   // FIX 3: Initialize isMobile safely to avoid hydration errors (optional but recommended)
   // Ideally, use a CSS media query for layout, but for logic:
   const [isMobile, setIsMobile] = useState(false);
-
   const filtered = useMemo(() => {
-    const filter = (items: PartOption[]) => items.filter(i => !i.regions || !selectedRegion || i.regions.includes(selectedRegion));
+  console.log("assets : ", assets);
+  const filter = (items: PartOption[]) => items.filter(i => !i.regions || !selectedRegion || i.regions.includes(selectedRegion));
     return {
+      mouvement:filter(assets.mouvement),
       cases: filter(assets.cases),
       straps: filter(assets.straps),
       dials: filter(assets.dials),
@@ -34,10 +33,18 @@ export default function Configurator({ assets, pricing, defaultChoice, selectedR
     };
   }, [assets, selectedRegion]);
 
+  const { scrollY } = useScroll();
+  
+  // 2. On map cette position : 
+  // - à 0px de scroll -> scale = 1 (taille normale)
+  // - à 500px de scroll -> scale = 0.6 (taille réduite à 60%)
+  const scrollScale = useTransform(scrollY, [0, 500], [1, 0.6]);
+
   // 2. Configuration State
   const [config, setConfig] = useState<Record<string, string>>(() => {
     const query = fromQuery(); // Uses the safe version now
     return {
+      mouvement: query.mouvement || defaultChoice?.mouvement || filtered.mouvement[0]?.id || "",
       cases: query.cases || defaultChoice?.cases || filtered.cases[0]?.id || "",
       straps: query.straps || defaultChoice?.straps || filtered.straps[0]?.id || "",
       dials: query.dials || defaultChoice?.dials || filtered.dials[0]?.id || "",
@@ -45,10 +52,12 @@ export default function Configurator({ assets, pricing, defaultChoice, selectedR
     };
   });
 
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(1.5);
+  const [showPreview, setShowPreview] = useState(true);
 
   // 3. Derived Data
   const selections = useMemo(() => ({
+    mouvement: filtered.mouvement.find(o => o.id === config.mouvement),
     cases: filtered.cases.find(o => o.id === config.cases),
     straps: filtered.straps.find(o => o.id === config.straps),
     dials: filtered.dials.find(o => o.id === config.dials),
@@ -78,8 +87,8 @@ export default function Configurator({ assets, pricing, defaultChoice, selectedR
     window.addEventListener("resize", checkMobile);
 
     const handleKeys = (e: KeyboardEvent) => {
-      if (e.key === "+") setZoom(z => Math.min(2, z + 0.1));
-      if (e.key === "-") setZoom(z => Math.max(0.8, z - 0.1));
+      if (e.key === "+") setZoom(z => Math.min(5, z + 0.5));
+      if (e.key === "-") setZoom(z => Math.max(0.8, z - 0.5));
     };
     window.addEventListener("keydown", handleKeys);
     
@@ -125,42 +134,72 @@ export default function Configurator({ assets, pricing, defaultChoice, selectedR
 
   // Helper to render the Viewer content to avoid code duplication
   const renderViewer = () => (
-    <>
-      <div id="watch-viewer" className="relative bg-background aspect-square rounded-2xl border border-white/5 overflow-hidden">
-        <div className="relative h-full w-full transition-transform duration-300" style={{ transform: `scale(${zoom})` }}>
-          <AnimatePresence mode="popLayout">
-            {[selections.cases, selections.dials, selections.straps, selections.hands].map((part, i) => (
-              part?.thumbnail && (
-                <motion.img 
-                  key={`${part.id}-${i}`}
-                  src={part.thumbnail} 
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="absolute scale-130 inset-0 w-full h-full object-contain pointer-events-none"
-                />
-              )
-            ))}
-          </AnimatePresence>
-        </div>
-      </div>
+    <div className="bg-surface/20 rounded-3xl border border-white/10 p-4 shadow-lg backdrop-blur-sm">
       
-      <div className="flex justify-between items-center mt-4">
-        <div className="flex bg-surface rounded-full mx-2 p-1 flex-row border border-white/10">
-          <ZoomBtn label="-" onClick={() => setZoom(Math.max(0.6, zoom - 0.1))} />
-          <span className="px-4 py-1 text-center text-xs">Zoom {Math.round(zoom * 100)}%</span>
-          <ZoomBtn label="+" onClick={() => setZoom(Math.min(6, zoom + 0.2))} />
-        </div>
-        <button onClick={handleDownload} className="text-xs uppercase tracking-widest bg-accent text-white border border-primary/30 px-6 py-2 rounded-full hover:bg-primary/10 transition">
-          Capture d'écran
-        </button>
-      </div>
-    </>
+      {/* BOUTON POUR DÉROULER / ENROULER */}
+      <button 
+        onClick={() => setShowPreview(!showPreview)}
+        className="w-full flex justify-between items-center text-ivory/90 hover:text-primary transition-colors py-2 px-2"
+      >
+        <span className="font-serif text-lg">Aperçu en direct</span>
+        {/* Petite icône flèche qui tourne avec framer-motion */}
+        <motion.div animate={{ rotate: showPreview ? 180 : 0 }}>
+          ▼
+        </motion.div>
+      </button>
+
+      {/* LA ZONE QUI S'ANIME (S'OUVRE ET SE FERME) */}
+      <AnimatePresence initial={false}>
+        {showPreview && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="overflow-hidden" // Important pour ne pas dépasser pendant l'animation
+          >
+            <div className="pt-4"> {/* Marge interne pour séparer du bouton */}
+              
+              {/* TON ANCIEN BLOC DE MONTRE (Intact) */}
+              <div id="watch-viewer" className="relative bg-background aspect-square rounded-2xl border border-white/5 overflow-hidden">
+                <div className="relative h-full w-full transition-transform duration-300" style={{ transform: `scale(${zoom})` }}>
+                  <AnimatePresence mode="popLayout">
+                    {[selections.cases, selections.dials, selections.straps, selections.hands].map((part, i) => (
+                      part?.thumbnail && (
+                        <motion.img 
+                          key={`${part.id}-${i}`}
+                          src={part.thumbnail} 
+                          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                          className="absolute scale-130 inset-0 w-full h-full object-contain pointer-events-none"
+                        />
+                      )
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </div>
+              
+              {/* TES BOUTONS SOUS LA MONTRE (Intacts) */}
+              <div className="flex justify-between items-center mt-4">
+                <div className="flex bg-surface rounded-full mx-2 p-1 flex-row border border-white/10">
+                  <ZoomBtn label="-" onClick={() => setZoom(Math.max(1, zoom - 0.5))} />
+                  <span className="px-4 py-1 text-center text-xs w-24">Zoom {Math.round(zoom * 100)}%</span>
+                  <ZoomBtn label="+" onClick={() => setZoom(Math.min(5, zoom + 0.5))} />
+                </div>
+                <button onClick={handleDownload} className="text-xs uppercase tracking-widest bg-accent text-white border border-primary/30 px-6 py-2 rounded-full hover:bg-primary/10 transition">
+                  Capture d'écran
+                </button>
+              </div>
+
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 
   return (
     <>
-    
     <section className="bg-dark text-ivory pt-8 min-h-screen font-sans">
-  
       <div className="px-6 md:px-12 py-16 max-w-7xl mx-auto">
         
         <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr] items-start">
@@ -183,6 +222,7 @@ export default function Configurator({ assets, pricing, defaultChoice, selectedR
             <SummaryCard sku={sku} selections={selections} price={totalPrice} currency={pricing.currency} onCheckout={() => onCheckout?.({price: totalPrice, config})} />
             
             <div className="space-y-10 bg-surface/30 p-6 rounded-2xl border border-white/5">
+              <PartGrid title="Mouvement" part="mouvement" options={filtered.mouvement} current={config.mouvement} onSelect={(id: string) => setConfig(prev => ({...prev, mouvement: id}))} currency={pricing.currency} />
               <PartGrid title="Boîtier" part="cases" options={filtered.cases} current={config.cases} onSelect={(id: string) => setConfig(prev => ({...prev, cases: id}))} currency={pricing.currency} />
               <PartGrid title="Bracelet" part="straps" options={filtered.straps} current={config.straps} onSelect={(id: string) => setConfig(prev => ({...prev, straps: id}))} currency={pricing.currency} />
               <PartGrid title="Cadran" part="dials" options={filtered.dials} current={config.dials} onSelect={(id: string) => setConfig(prev => ({...prev, dials: id}))} currency={pricing.currency} />

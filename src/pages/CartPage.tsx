@@ -121,7 +121,6 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
         <Alert
           type={alert.type as "success" | "warning" | "error" | "info"}
           message={alert.message}
-          onClose={() => setAlert(null)}
           duration={4000}
         />
       )}

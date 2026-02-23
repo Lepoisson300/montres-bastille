@@ -27,6 +27,18 @@ export const REGION_NAMES: Record<string, string> = {
 
 
 export const WATCH_COMPONENTS: PartsCatalog = {
+  mouvement:[
+    {
+      id: "m1",
+      name: "Yema CMM10",
+      price: 800,
+      regions: ['FR-E', 'FR-A', 'FR-U'],
+      size: "",
+      stock: 'in',
+      thumbnail: "https://res.cloudinary.com/dqginwoci/image/upload/v1771269953/CMM10_2500_snltf6.webp",
+      type: "mouvement"
+    }
+  ],
   cases: [
     { 
       id: 'c1', 

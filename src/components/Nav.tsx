@@ -48,7 +48,7 @@ const Nav: React.FC<NavProps> = ({ bg = false }) => {
   return (
 <header className={[
   "fixed top-0 left-0 right-0 z-50 w-full", // J'ai retiré mx-4 ici (voir explication ci-dessous)
-  bg ? "bg-black" : "bg-transparent", // Mieux vaut utiliser un ternaire pour éviter d'écrire "false" dans le HTML
+  bg ? "bg-neutral-950" : "bg-transparent", // Mieux vaut utiliser un ternaire pour éviter d'écrire "false" dans le HTML
   "py-2 transition-all duration-200 shadow-md"
 ].filter(Boolean).join(" ")}> 
     <nav

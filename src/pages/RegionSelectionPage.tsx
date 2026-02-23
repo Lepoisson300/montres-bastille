@@ -3,6 +3,7 @@ import Configurator from "../components/Configurator";
 import type { PartOption, PartsCatalog } from "../types/Parts";
 import { useState } from "react";
 import Nav from "../components/Nav";
+import Alert from "../components/Alert";
 
 
 interface LocationState {
@@ -14,6 +15,7 @@ interface LocationState {
 export default function ConfiguratorPage() {
   const location = useLocation();
   const state = location.state as LocationState;
+  const [alert, setAlert] = useState<{type: string, message: string} | null>(null);
   const [cartList, setCartList] = useState<any[]>(() => {
     try {
       const saved = localStorage.getItem('cart');
@@ -23,6 +25,7 @@ export default function ConfiguratorPage() {
     }
   });
     const assets: PartsCatalog = {
+    mouvement: state?.watchComponents?.mouvement || [],
     cases: state?.watchComponents?.cases || [],
     straps: state?.watchComponents?.straps || [],
     dials: state?.watchComponents?.dials || [],
@@ -42,12 +45,21 @@ const handleCheckout = (order: { sku: string; price: number; config: Record<stri
     // On sauvegarde la variable updatedCart (qui contient bien le nouvel élément)
     localStorage.setItem('cart', JSON.stringify(updatedCart));
     console.log("Panier sauvegardé :", updatedCart);
-    alert("Ajouté au panier !");
+    setAlert({ type: "success", message: "Montre ajouté au panier" });
   };
   return (
     <>
-        <Nav bg={false}/>
-    <div className="min-h-screen bg-neutral-950">
+    <Nav bg={true}/>
+      <div className="min-h-screen bg-neutral-950">
+
+      {alert && (
+          <Alert
+            type={alert.type as "success" | "warning" | "error" | "info"}
+            message={alert.message}
+            duration={4000}
+          />
+        )}
+        
       <Configurator
         assets={assets}
         pricing={pricing}
