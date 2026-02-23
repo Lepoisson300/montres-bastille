@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Alert from "../components/Alert"; 
 import type { PartOption } from "../types/Parts";
+import Nav from "../components/Nav";
 
 // --- TYPES ---
 interface CartItem {
@@ -33,15 +34,24 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
   const [selectedWatchIndex, setSelectedWatchIndex] = useState<number>(0);
   const [alert, setAlert] = useState<{type: string, message: string} | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const assets = JSON.parse(localStorage.getItem("composants"))
+  const assets = JSON.parse(localStorage.getItem("composants"));
+  const [scrolled, setScrolled] = useState(false);
+  
 
-  // 2. EFFECT
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cartWatches));
     if (updateCartCount && typeof updateCartCount === 'function') {
       updateCartCount(cartWatches.length);
     }
   }, [cartWatches, updateCartCount]);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.scrollTo(0, 0);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // --- LOGIQUE ---
 
@@ -104,6 +114,8 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
 
   return (
     <div className="min-h-screen bg-background text-text-primary font-sans pt-24 pb-12">
+      <Nav bg={false}/>
+
       {/* ALERTE */}
       {alert && (
         <Alert
@@ -151,7 +163,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
                       <button
                         key={index}
                         onClick={() => setSelectedWatchIndex(index)}
-                        className={`flex-shrink-0 snap-start w-64 p-4 rounded-xl border transition-all text-left relative group
+                        className={`shrink-0 snap-start w-64 p-4 rounded-xl border transition-all text-left relative group
                           ${isSelected
                             ? "bg-surface border-primary shadow-lg ring-1 ring-primary/20" 
                             : "bg-background border-border/20 opacity-70 hover:opacity-100 hover:border-primary/50"
@@ -176,14 +188,16 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
 
               {/* VISUALISATION */}
               {selectedWatch && (
-                <div className="relative rounded-3xl bg-surface border border-primary/20 p-8 shadow-2xl overflow-hidden group min-h-[400px]">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50" />
-                  <div className="relative z-10 flex items-center justify-center h-full">
+                <div className={`rounded-3xl z-75 bg-surface border border-primary/20 shadow-2xl group transition-all duration-500 ease-in-out ${
+                    scrolled ? "p-1 min-h-62.5 md:min-h-75" : "p-8 min-h-100"
+                  }`}>
+                  <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-transparent opacity-50" />
+                  <div className=" z-10 flex items-center justify-center h-full">
                     {/* Placeholder d'image - À remplacer par ta logique de composition d'images */}
                     <img 
                       src="/Gurv.png" 
                       alt="Montre" 
-                      className="max-h-[350px] w-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 group-hover:scale-105" 
+                      className="max-h-87.5 w-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 group-hover:scale-105" 
                     />
                   </div>
                   <div className="absolute bottom-6 left-6 z-10">
@@ -212,7 +226,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
                           </span>
                         </h2>
                         
-                        <ul className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                        <ul className="space-y-3 max-h-75 overflow-y-auto pr-2 custom-scrollbar">
                           {configEntries.map(([categoryKey, partId], idx) => {
                             // C'est ici que ça change : on cherche dans le tableau plat avec .find()
                             const partDetails = getPartDetails(partId as string);
@@ -222,9 +236,9 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
 
                             return (
                               <li key={`${partId}-${idx}`} className="flex items-center gap-3 bg-background/50 p-2 rounded-lg border border-transparent hover:border-primary/20 transition-colors group">
-                                <div className="h-10 w-10 rounded bg-surface-hover flex-shrink-0 overflow-hidden flex items-center justify-center border border-border/10">
+                                <div className="h-15 w-15 rounded bg-surface-hover flex-shrink-0 overflow-hidden flex items-center justify-center border border-border/10">
                                   {partDetails.thumbnail ? (
-                                    <img src={partDetails.thumbnail} alt={partDetails.name} className="h-full w-full object-cover" />
+                                    <img src={partDetails.thumbnail} alt={partDetails.name} className="h-full scale-400 w-full object-cover" />
                                   ) : (
                                     <div className="w-2 h-2 rounded-full bg-primary/20" />
                                   )}

@@ -1,7 +1,6 @@
 // App.tsx
 import "./App.css";
-import Nav from "./components/Nav";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, HashRouter } from "react-router-dom";
 import AccountPage from "./pages/AccountPage";
 import HomePage from "./pages/HomePage";
 import { useEffect, useState } from "react";
@@ -74,9 +73,8 @@ function App() {
   if (isLoading) return <div>Chargement...</div>;
 
   return (
-    <div className="bg-background min-h-screen flex flex-col">
-      {/* Navbar always visible */}
-        <Nav />
+    <div className="">
+      <HashRouter>
 
       {/* Main Content */}
       <main className="bg-background">
@@ -90,7 +88,7 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/account" element={<AccountPage />} />
           <Route path="/mention" element={<LegalPage/>}/>
-          <Route path="/panier" element={<CartPage />}/>
+          <Route path="/panier" element={<CartPage assets={[]} />}/>
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
@@ -105,6 +103,9 @@ function App() {
 
       {/* Footer */}
       <Footer />
+
+      </HashRouter>
+
     </div>
 
   );

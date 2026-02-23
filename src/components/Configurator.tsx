@@ -3,6 +3,7 @@ import { GoArrowUpRight } from "react-icons/go";
 import { motion, AnimatePresence } from "framer-motion";
 import html2canvas from "html2canvas";
 import type { WatchConfiguratorProps, PartOption } from "../types/Parts";
+import Nav from "./Nav";
 
 // --- Utilities ---
 const fmt = (v: number, ccy: string) => 
@@ -156,17 +157,16 @@ export default function Configurator({ assets, pricing, defaultChoice, selectedR
   );
 
   return (
+    <>
+    
     <section className="bg-dark text-ivory pt-8 min-h-screen font-sans">
+  
       <div className="px-6 md:px-12 py-16 max-w-7xl mx-auto">
         
-        {/* Header */}
-        <header className="text-center mb-10">
+        <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr] items-start">
           <h3 className="font-serif text-3xl md:text-4xl text-primary mb-2">Configurez votre montre</h3>
           <p className="text-text-muted text-sm uppercase tracking-widest">Visualisation 3D • Prix Réel</p>
-        </header>
-
-        <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr] items-start">
-          
+        
           {/* FIX 2: Render EITHER Mobile OR Desktop viewer, never both */}
           {isMobile ? (
              <div className="sticky top-8 space-y-6 z-10 bg-dark pb-3 pt-2">
@@ -193,6 +193,9 @@ export default function Configurator({ assets, pricing, defaultChoice, selectedR
         </div>
       </div>
     </section>
+
+        </>
+
   );
 }
 
@@ -240,5 +243,6 @@ function PartGrid({ title, options, current, onSelect, currency }: any) {
         ))}
       </div>
     </div>
+    
   );
 }

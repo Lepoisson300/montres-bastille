@@ -5,6 +5,7 @@ import {useAuth0} from "@auth0/auth0-react";
 import Alert from '../components/Alert'; 
 import type { AlertType } from '../components/Alert';
 import type { Region, Watch } from "../types/Parts";
+import Nav from "../components/Nav";
 
 // Background grain effect
 const Grain = () => (
@@ -129,6 +130,8 @@ export default function CommunityPage() {
 
   return (
     <div className="font-sans min-h-screen bg-background text-text-secondary">
+      <Nav bg={false}/>
+
       {alert && (
         <Alert
           type={alert.type}

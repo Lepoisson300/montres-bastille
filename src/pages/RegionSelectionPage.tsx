@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import Configurator from "../components/Configurator";
 import type { PartOption, PartsCatalog } from "../types/Parts";
 import { useState } from "react";
+import Nav from "../components/Nav";
 
 
 interface LocationState {
@@ -44,6 +45,8 @@ const handleCheckout = (order: { sku: string; price: number; config: Record<stri
     alert("Ajouté au panier !");
   };
   return (
+    <>
+        <Nav bg={false}/>
     <div className="min-h-screen bg-neutral-950">
       <Configurator
         assets={assets}
@@ -52,5 +55,6 @@ const handleCheckout = (order: { sku: string; price: number; config: Record<stri
         onCheckout={handleCheckout}
       />
     </div>
+    </>
   );
 }

@@ -9,7 +9,7 @@ type HeroCarouselProps = {
 
 const HeroCarousel: React.FC<HeroCarouselProps> = ({
   images,
-  interval = 7000,
+  interval = 6000,
   children,
   roundedBottom = false,
 }) => {
@@ -24,7 +24,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({
 
   return (
     <section
-      className={`relative h-[90vh] w-full overflow-hidden ${
+      className={`relative h-[100vh] w-full overflow-hidden ${
         roundedBottom ? "rounded-b-2xl" : "rounded-b-none"
       }`}
     >
@@ -57,17 +57,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({
       </div>
 
       {/* Bullets */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-30">
-        {images.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrent(i)}
-            className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
-              i === current ? "bg-champagne scale-110" : "bg-white/40 hover:bg-white/70"
-            }`}
-          />
-        ))}
-      </div>
+      
     </section>
   );
 };

@@ -34,12 +34,13 @@ export default function Footer() {
                 Navigation
               </h4>
               <ul className="space-y-3 text-sm font-sans">
-                {['À propos', 'Personnaliser', 'Communauté'].map((item, index) => {
+                {['À propos', 'Votre Montres-Bastille', 'Communauté', 'Contact'].map((item, index) => {
                    // Helper to map names to routes
                    const routes: Record<string, string> = {
                      'À propos': '/about',
-                     'Personnaliser': '/region-page',
-                     'Communauté': '/community'
+                     'Votre Montres-Bastille': '/region-page',
+                     'Communauté': '/community',
+                     'Contact': '/contact'
                    };
                    return (
                      <li key={index}>

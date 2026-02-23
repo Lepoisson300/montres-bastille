@@ -6,9 +6,12 @@ import atelier2 from "/Gurv.png";       // replace with real image
 import atelier3 from "/nico.png";       // replace with real image
 import texture from "/paper_texture.png";    // optional subtle texture
 import eclate from "/eclate.jpg";               // movement image
+import Nav from "../components/Nav";
 
 export default function AboutPage() {
   return (
+     <>
+        <Nav bg={false}/>
     <div className="bg-background text-text-secondary font-sans">
       {/* HERO */}
       <section className="relative overflow-hidden">
@@ -182,5 +185,7 @@ export default function AboutPage() {
         </div>
       </section>
     </div>
+      </>
+
   );
 }

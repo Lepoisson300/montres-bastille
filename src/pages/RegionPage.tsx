@@ -3,6 +3,7 @@ import { WATCH_COMPONENTS, REGION_NAMES } from "../Logic/watchComponents";
 import { MobileCarousel } from "../components/MobileCarousel";
 import { useNavigate } from "react-router-dom";
 import { DesktopMap } from "../components/DesktopMap";
+import Nav from "../components/Nav";
 
 
 export default function RegionPage() {
@@ -146,6 +147,8 @@ export default function RegionPage() {
 
   return (
     <>
+      <Nav bg={false}/>
+
       <div className="relative flex flex-col items-center justify-center min-h-screen px-8 pt-28 pb-16 bg-neutral-950 text-neutral-200 font-[Poppins] tracking-wide overflow-hidden">
         <style>{`
           .selected-region {
@@ -176,11 +179,11 @@ export default function RegionPage() {
           <h1 className="text-2xl sm:text-4xl md:text-5xl font-semibold text-neutral-100 tracking-widest mb-2">
             Montres-Bastille
           </h1>
-          <p className="text-xs sm:text-sm md:text-base text-primary uppercase tracking-[0.35em] mb-2">
+          <p className="text-lg sm:text-sm md:text-base text-primary uppercase tracking-[0.35em] mb-2">
             Les Régions de France
           </p>
-          <p className="text-xs sm:text-sm md:text-base text-neutral-300">
-            {isMobile ? "Parcourez les régions ci-dessous" : "Choisissez une région de France pour concevoir votre pièce du patrimoine"}
+          <p className="text-xl sm:text-sm md:text-base text-neutral-300">
+            Choisissez une région pour concevoir votre Montres-Bastille, en utilisant les matériaux de cette région. 
           </p>
         </div>
           

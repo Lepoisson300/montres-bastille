@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import type { User } from "../types/Parts";
+import Nav from "../components/Nav";
 
 export default function AccountPage() {
   const { user: authUser, isAuthenticated, isLoading, logout } = useAuth0();
@@ -47,6 +48,9 @@ export default function AccountPage() {
   };
 
   return (
+    <>
+        <Nav bg={false}/>
+    
     <div className="min-h-screen bg-background text-text-primary font-sans py-20 px-5">
       <div className="max-w-7xl mx-auto">
         
@@ -113,6 +117,8 @@ export default function AccountPage() {
 
       </div>
     </div>
+        </>
+
   );
 }
 
@@ -151,5 +157,6 @@ function WatchCard({ montre, index }) {
         Modifier
       </button>
     </div>
+    
   );
 }

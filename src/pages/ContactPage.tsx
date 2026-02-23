@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { GoArrowUpRight, GoMail, GoLocation, GoClock, GoDeviceMobile } from "react-icons/go";
+import Nav from "../components/Nav";
 
 // Background grain effect
 const Grain = () => (
@@ -116,14 +117,14 @@ export default function ContactPage() {
 
   return (
     <div className="font-sans min-h-screen bg-background text-text-secondary">
-      <Grain />
+      <Nav bg={false}/>
 
       {/* HERO SECTION */}
       <section className="bg-dark text-text-primary pt-24 pb-20">
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
           <Reveal>
             <div className="text-center max-w-4xl mx-auto">
-              <div className="h-px w-32 bg-gradient-to-r from-transparent via-primary to-transparent mb-8 mx-auto" />
+              <div className="h-px w-32 bg-linear-to-r from-transparent via-primary to-transparent mb-8 mx-auto" />
               <h1 className="font-serif text-4xl md:text-6xl tracking-tight mb-6 text-text-primary">
                 Contactez-Nous
               </h1>

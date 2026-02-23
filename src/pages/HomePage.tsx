@@ -6,6 +6,7 @@ import france from "/franceMap.png";
 import watch2 from "/watch2.png";
 import HeroCarousel from "../components/Carousel";
 import { Link } from "react-router-dom";
+import Nav from "../components/Nav";
 
 // Reveal animation
 const Reveal = ({
@@ -46,6 +47,9 @@ const Reveal = ({
 export default function HomePage() {
 
   return (
+    <>
+    <Nav bg={false}/>
+
     <div className="font-sans min-h-screen bg-background text-text-secondary">
         {/* HERO – Dark with overlay */}
         <HeroCarousel images={[arcClean, france, patrimoine]}>
@@ -230,5 +234,7 @@ export default function HomePage() {
           </div>
         </section>
       </div>
+
+      </>
   );
 }
