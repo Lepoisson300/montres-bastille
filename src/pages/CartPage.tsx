@@ -6,7 +6,7 @@ import Nav from "../components/Nav";
 
 // --- TYPES ---
 interface CartItem {
-  config: Record<string, string>; // ex: { cases: 'c2', straps: 's3' }
+  config: Record<string, string>;
   price: number;
   id?: string; 
   name?: string; 
@@ -14,7 +14,6 @@ interface CartItem {
 
 interface CartPageProps {
   updateCartCount?: (count: number) => void;
-  // MISE À JOUR : assets est maintenant un tableau de pièces, pas un objet de catégories
   assets: PartOption[]; 
 }
 
@@ -34,9 +33,10 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
   const [selectedWatchIndex, setSelectedWatchIndex] = useState<number>(0);
   const [alert, setAlert] = useState<{type: string, message: string} | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const assets = JSON.parse(localStorage.getItem("composants"));
-  const [scrolled, setScrolled] = useState(false);
   
+  // Sécurisation de la lecture des assets depuis le localStorage
+  const assets = JSON.parse(localStorage.getItem("composants") || "[]");
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cartWatches));
@@ -58,23 +58,26 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
   const selectedWatch = cartWatches[selectedWatchIndex];
   const grandTotal = cartWatches.reduce((acc, watch) => acc + watch.price, 0);
 
-  // NOUVELLE FONCTION DE RECHERCHE (Plus simple !)
-  // On cherche directement l'ID dans le grand tableau assets
   const getPartDetails = (partId: string): PartOption | undefined => {
-    return assets.find(p => p.id === partId);
+    return assets.find((p: PartOption) => p.id === partId);
   };
 
   const removeWatch = (indexToRemove: number) => {
     const updatedCart = cartWatches.filter((_, index) => index !== indexToRemove);
     setCartWatches(updatedCart);
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+
+    window.dispatchEvent(new Event('cartRemoved'));
     if (selectedWatchIndex >= updatedCart.length) {
-       setSelectedWatchIndex(Math.max(0, updatedCart.length - 1));
+      setSelectedWatchIndex(Math.max(0, updatedCart.length - 1));
     }
   };
 
   const clearCart = () => {
     setCartWatches([]);
     setSelectedWatchIndex(0);
+    localStorage.removeItem('cart');
+    window.dispatchEvent(new Event('cartRemoved'));
     setAlert({ type: "success", message: "Le panier a été vidé." });
   };
 
@@ -84,10 +87,8 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
     const newCart = [...cartWatches];
     const newConfig = { ...newCart[selectedWatchIndex].config };
     
-    // Suppression de la clé dans la config
     delete newConfig[categoryKey];
 
-    // Calcul du nouveau prix
     const partDetails = getPartDetails(partId);
     const priceDeduction = partDetails ? partDetails.price : 0;
     const newPrice = newCart[selectedWatchIndex].price - priceDeduction;
@@ -154,15 +155,16 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
             {/* LISTE DES MONTRES (Zone Gauche) */}
             <div className="lg:col-span-7 flex flex-col gap-8 sticky top-32">
               
+              {/* Le slider fonctionnera maintenant car la box de la montre ne le chevauche plus */}
               {cartWatches.length > 1 && (
-                <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x">
+                <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x relative z-50">
                   {cartWatches.map((watch, index) => {
                     const isSelected = selectedWatchIndex === index;
                     return (
                       <button
                         key={index}
                         onClick={() => setSelectedWatchIndex(index)}
-                        className={`shrink-0 snap-start w-64 p-4 rounded-xl border transition-all text-left relative group
+                        className={`shrink-0 snap-start w-64 p-4 rounded-xl border transition-all text-left group
                           ${isSelected
                             ? "bg-surface border-primary shadow-lg ring-1 ring-primary/20" 
                             : "bg-background border-border/20 opacity-70 hover:opacity-100 hover:border-primary/50"
@@ -185,21 +187,36 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
                 </div>
               )}
 
-              {/* VISUALISATION */}
               {selectedWatch && (
-                <div className={`rounded-3xl z-75 bg-surface border border-primary/20 shadow-2xl group transition-all duration-500 ease-in-out ${
-                    scrolled ? "p-1 min-h-62.5 md:min-h-75" : "p-8 min-h-100"
-                  }`}>
-                  <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-transparent opacity-50" />
-                  <div className=" z-10 flex items-center justify-center h-full">
-                    {/* Placeholder d'image - À remplacer par ta logique de composition d'images */}
-                    <img 
-                      src="/Gurv.png" 
-                      alt="Montre" 
-                      className="max-h-87.5 w-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 group-hover:scale-105" 
-                    />
+                <div className={`relative overflow-hidden rounded-3xl z-40 bg-surface border border-primary/20 shadow-2xl group transition-all duration-500 ease-in-out aspect-square ${
+                    scrolled ? "p-4" : "p-8"
+                }`}>
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50" />
+                  
+                  {/* AJOUT : Superposition des pièces dans le BON ORDRE pour éviter qu'elles ne se cachent */}
+                  <div className="relative z-10 flex items-center justify-center h-full w-full">
+                    {/* On map sur un tableau fixe pour garantir que les aiguilles soient au-dessus du cadran, etc. */}
+                    {["straps", "cases", "dials", "hands"].map((category) => {
+                      // On récupère l'ID de la pièce pour cette catégorie dans la config de la montre
+                      const partId = selectedWatch.config[category];
+                      if (!partId) return null;
+                      
+                      // On va chercher l'image correspondante
+                      const part = getPartDetails(partId);
+                      if (!part?.thumbnail) return null;
+                      
+                      return (
+                        <img 
+                          key={partId}
+                          src={part.thumbnail} 
+                          alt={part.name || category} 
+                          className="absolute inset-0 w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 scale-175" 
+                        />
+                      );
+                    })}
                   </div>
-                  <div className="absolute bottom-6 left-6 z-10">
+
+                  <div className="absolute bottom-6 left-6 z-20 pointer-events-none">
                     <p className="text-text-muted text-sm uppercase tracking-widest font-sans">Sélection actuelle</p>
                     <p className="text-primary font-serif text-xl">Montre #{selectedWatchIndex + 1}</p>
                   </div>
@@ -210,10 +227,8 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
             {/* DÉTAILS (Zone Droite) */}
             <div className="lg:col-span-5 flex flex-col gap-6">
               {selectedWatch && (
-                <div className="bg-surface rounded-2xl border border-border/10 p-6 shadow-lg">
-                  
+                <div className="bg-surface rounded-2xl border border-border/10 p-6 shadow-lg relative z-40">
                   {(() => {
-                    // On récupère les entrées de la config (ex: [['cases', 'c2'], ['straps', 's3']])
                     const configEntries = Object.entries(selectedWatch.config);
                     
                     return (
@@ -225,26 +240,22 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
                           </span>
                         </h2>
                         
-                        <ul className="space-y-3 max-h-75 overflow-y-auto pr-2 custom-scrollbar">
+                        <ul className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                           {configEntries.map(([categoryKey, partId], idx) => {
-                            // C'est ici que ça change : on cherche dans le tableau plat avec .find()
                             const partDetails = getPartDetails(partId as string);
-
-                            // Si l'ID n'est pas trouvé dans la liste assets, on ignore ou on met un placeholder
                             if (!partDetails) return null; 
 
                             return (
                               <li key={`${partId}-${idx}`} className="flex items-center gap-3 bg-background/50 p-2 rounded-lg border border-transparent hover:border-primary/20 transition-colors group">
-                                <div className="h-15 w-15 rounded bg-surface-hover flex-shrink-0 overflow-hidden flex items-center justify-center border border-border/10">
+                                <div className="h-16 w-16 rounded bg-surface-hover flex-shrink-0 overflow-hidden flex items-center justify-center border border-border/10">
                                   {partDetails.thumbnail ? (
-                                    <img src={partDetails.thumbnail} alt={partDetails.name} className="h-full scale-400 w-full object-cover" />
+                                    <img src={partDetails.thumbnail} alt={partDetails.name} className="h-full scale-[2] w-full object-cover" />
                                   ) : (
                                     <div className="w-2 h-2 rounded-full bg-primary/20" />
                                   )}
                                 </div>
                                 
                                 <div className="flex-1 min-w-0">
-                                  {/* On utilise categoryKey (ex: "cases") ou le type de la pièce */}
                                   <p className="text-[10px] text-text-subtle uppercase tracking-wider">{partDetails.type || categoryKey}</p>
                                   <p className="text-sm font-medium text-text-primary truncate">{partDetails.name}</p>
                                 </div>
@@ -269,7 +280,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
               )}
 
               {/* TOTAL & PAYER */}
-              <div className="bg-dark text-text-primary rounded-2xl p-8 border border-primary/30 shadow-[0_10px_40px_rgba(0,0,0,0.3)] sticky top-32">
+              <div className="bg-dark text-text-primary rounded-2xl p-8 border border-primary/30 shadow-[0_10px_40px_rgba(0,0,0,0.3)] sticky top-32 z-40">
                 <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-4">
                   <span className="text-text-muted font-sans text-sm">Total à payer</span>
                   <span className="font-serif text-3xl md:text-4xl text-primary">{grandTotal} €</span>

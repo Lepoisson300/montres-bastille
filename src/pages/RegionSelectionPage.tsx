@@ -45,6 +45,7 @@ const handleCheckout = (order: { sku: string; price: number; config: Record<stri
     // On sauvegarde la variable updatedCart (qui contient bien le nouvel élément)
     localStorage.setItem('cart', JSON.stringify(updatedCart));
     console.log("Panier sauvegardé :", updatedCart);
+    window.dispatchEvent(new Event('cartUpdated'));
     setAlert({ type: "success", message: "Montre ajouté au panier" });
   };
   return (

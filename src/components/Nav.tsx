@@ -27,15 +27,41 @@ const Nav: React.FC<NavProps> = ({ bg = false }) => {
   const [scrolled, setScrolled] = useState(false);
   const { pathname } = useLocation();
   const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const [ cartNumber, setCartNumber ] = useState(0)
   const navigate = useNavigate();
 
   // Scroll detection
   useEffect(() => {
+    // 1. Fonction pour lire le panier (sécurisée)
+    const updateCartCount = () => {
+      try {
+        const cart = JSON.parse(localStorage.getItem("cart"));
+        setCartNumber(cart?.length || 0);
+      } catch (e) {
+        setCartNumber(0);
+      }
+    };
+
+    // 2. On lit le panier au premier chargement
+    updateCartCount();
+
+    // 3. On écoute un événement personnalisé qu'on va appeler 'cartUpdated'
+    window.addEventListener('cartUpdated', updateCartCount);
+    window.addEventListener('cartRemoved', updateCartCount);
+
+    // 4. Ta logique de scroll existante
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.scrollTo(0, 0);
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+
+    // 5. Nettoyage
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener('cartUpdated', updateCartCount);
+          window.addEventListener('cartRemoved', updateCartCount);
+
+    };
   }, [pathname]);
 
   // Shared classes for mobile menu items to ensure consistency
@@ -147,6 +173,11 @@ const Nav: React.FC<NavProps> = ({ bg = false }) => {
               <path d="M3 6h18" />
               <path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
+            {cartNumber>0 && (
+              <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-danger border-2 border-buffer rounded-full -top-2 -end-2">{cartNumber}</div>
+
+            )}
+
           </button>
           
           {/* Desktop Account Icon (Hidden on mobile) */}
