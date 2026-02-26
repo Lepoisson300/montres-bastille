@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Alert from "../components/Alert"; 
 import type { PartOption } from "../types/Parts";
 import Nav from "../components/Nav";
+import { loadStripe } from '@stripe/stripe-js';
 
 // --- TYPES ---
 interface CartItem {
@@ -106,14 +107,25 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
    const  handleCheckout = async () => {
     if (cartWatches.length === 0) return;
     setIsRedirecting(true);
+    const stripePromise = loadStripe('pk_test_TA_CLE_PUBLIQUE');
     console.log("Commande envoyée :", cartWatches);
+    const watchConfig = cartWatches[0].config;
     try {
-        const res = await fetch("https://montre-bastille-api.onrender.com/api/stripeOrder");
-        const stripeOrd = await res.json();
+        const res = await fetch("https://montre-bastille-api.onrender.com/api/stripeOrder"{
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ config: watchConfig }),
+        });
+        const session = await res.json();
+        // 2. On redirige vers la page de paiement Stripe avec l'ID reçu
+        const stripe = await stripePromise;
+        const result = await stripe.redirectToCheckout({
+          sessionId: session.id,
+        });
 
-        if (stripeOrd) {
-         
-        }
+      if (result.error) {
+        console.error(result.error.message);
+      }
       } catch (error) {
         console.error("Failed to send order", error);
       }

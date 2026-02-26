@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.11.0",
+    "@babel/code-frame": "^7.29.0",
     "@heroicons/react": "^2.2.0",
     "@material-tailwind/react": "^2.1.10",
     "@stripe/stripe-js": "^8.8.0",
