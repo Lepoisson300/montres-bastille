@@ -174,7 +174,7 @@ const Nav: React.FC<NavProps> = ({ bg = false }) => {
               <path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
             {cartNumber>0 && (
-              <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-danger border-2 border-buffer rounded-full -top-2 -end-2">{cartNumber}</div>
+              <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-bordeaux bg-accent border-2 border-buffer rounded-full -top-2 -end-2">{cartNumber}</div>
 
             )}
 

@@ -116,7 +116,7 @@ export default function ContactPage() {
   ];
 
   return (
-    <div className="font-sans min-h-screen bg-background text-text-secondary">
+    <div className="font-sans min-h-screen bg-background text-text-secondary ">
       <Nav bg={false}/>
 
       {/* HERO SECTION */}
@@ -176,9 +176,9 @@ export default function ContactPage() {
       </section>
 
       {/* CONTACT FORM SECTION */}
-      <section className="py-20 bg-dark text-text-primary">
-        <div className="px-6 md:px-12 max-w-7xl mx-auto">
-          <div className="grid gap-16 lg:grid-cols-2 items-start">
+      <section className="py-20 bg-dark text-text-primary ">
+          <div className="px-6 md:px-4 mx-auto">
+            <div className="grid gap-16 lg:grid-cols-2 items-start">
             
             {/* Form */}
             <Reveal>
@@ -323,30 +323,7 @@ export default function ContactPage() {
               </div>
             </Reveal>
 
-            {/* Map and Additional Info */}
-            <Reveal delay={1}>
-              <div className="space-y-8">
-                {/* Map Placeholder */}
-                
-
-                {/* Visit Info */}
-                <div className="bg-surface border border-primary/40 rounded-2xl p-8">
-                  <h3 className="font-serif text-xl mb-4 text-text-primary">Prendre Rendez-vous</h3>
-                  <p className="text-text-muted font-sans text-sm mb-6">
-                    Venez découvrir nos créations et rencontrer nos maîtres horlogers. Sur rendez-vous uniquement pour une expérience personnalisée.
-                  </p>
-                  <button className="inline-flex items-center gap-2 rounded-full border border-primary text-primary font-sans px-6 py-3 text-sm uppercase tracking-[0.2em] 
-                                     transition-all duration-300
-                                     hover:bg-primary hover:text-dark hover:-translate-y-[2px] hover:shadow-lg">
-                    <GoClock />
-                    Réserver un Créneau
-                  </button>
-                </div>
-
-                {/* FAQ Link */}
-                
-              </div>
-            </Reveal>
+           
           </div>
         </div>
       </section>

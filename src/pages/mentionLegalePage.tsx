@@ -1,19 +1,14 @@
 import Reveal from "../Logic/Reveal";
 import { Link } from "react-router-dom";
-import texture from "/paper_texture.png"; // Assure-toi que le chemin est correct
+import texture from "/paper_texture.png";
 
-export default function LegalPage() {
+export default function CgvPage() {
   
-  // Données factices à remplacer par tes vraies infos
-  const legalInfo = {
+  const companyInfo = {
     companyName: "Montres-Bastille",
-    status: "Auto-Entreprise au capital de 10 000 €",
     email: "contact@montres-bastille.fr",
-    phone: "+33 6 23 25 65 46",
-    siret: "123 456 789 00012",
-    rcs: "RCS Bordeaux B 123 456 789",
-    hostName: "OVH", // Ou OVH, AWS, etc.
-    hostAddress: "340 S Lemon Ave #4133 Walnut, CA 91789, USA",
+    mediator: "[Nom de ton médiateur de la consommation - ex: CM2C]",
+    mediatorWebsite: "[Site web du médiateur]",
   };
 
   return (
@@ -21,46 +16,45 @@ export default function LegalPage() {
       
       {/* HEADER SECTION */}
       <section className="relative overflow-hidden pt-32 pb-16 md:pt-40 md:pb-20">
-        {/* Grain / texture overlay */}
         <div 
           className="pointer-events-none absolute inset-0 opacity-[0.08]" 
           style={{ backgroundImage: `url(${texture})`, backgroundSize: "600px" }} 
         />
-        
-        {/* Background Gradients */}
         <div className="absolute top-0 right-0 -z-10 h-[500px] w-[500px] rounded-full bg-primary/5 blur-[120px]" />
         
         <div className="mx-auto max-w-6xl px-6 md:px-12">
           <Reveal>
             <div className="max-w-3xl">
-              <p className="tracking-[.25em] text-xs uppercase text-primary font-sans opacity-90 mb-4">Juridique</p>
-              <h1 className="text-4xl md:text-6xl font-serif leading-tight tracking-tight text-text-primary">
-                Mentions <span className="text-primary">Légales</span>
+              <p className="tracking-[.25em] text-xs uppercase text-primary font-sans opacity-90 mb-4">E-commerce</p>
+              <h1 className="text-4xl md:text-5xl font-serif leading-tight tracking-tight text-text-primary">
+                Conditions Générales <span className="text-primary">de Vente</span>
               </h1>
               <p className="mt-6 text-lg text-text-muted font-sans leading-relaxed">
-                Conformément aux dispositions des articles 6-III et 19 de la Loi n°2004-575 du 21 juin 2004 pour la Confiance dans l'économie numérique, dite L.C.E.N., il est porté à la connaissance des utilisateurs et visiteurs du site Montres-Bastille les présentes mentions légales.
+                Les présentes Conditions Générales de Vente (CGV) régissent l'ensemble des transactions établies sur le site {companyInfo.companyName}. Veuillez les lire attentivement avant de passer commande.
               </p>
             </div>
           </Reveal>
         </div>
       </section>
 
-      {/* CONTENU JURIDIQUE */}
+      {/* CONTENU DES CGV */}
       <section className="pb-24">
         <div className="mx-auto max-w-6xl px-6 md:px-12">
-          
           <div className="grid gap-12 md:grid-cols-12">
             
-            {/* Navigation / Sommaire (Optionnel ou décoratif sur Desktop) */}
+            {/* Sommaire */}
             <div className="hidden md:block md:col-span-4 lg:col-span-3">
               <Reveal>
                 <div className="sticky top-32 border-l border-primary/20 pl-6 py-2">
                   <p className="font-serif text-text-primary mb-4 text-lg">Sommaire</p>
                   <ul className="space-y-3 text-sm text-text-muted font-sans">
-                    <li>1. Éditeur du site</li>
-                    <li>2. Hébergement</li>
-                    <li>3. Propriété intellectuelle</li>
-                    <li>4. Données personnelles</li>
+                    <li>1. Champ d'application</li>
+                    <li>2. Produits & Indépendance</li>
+                    <li>3. Prix & Paiement</li>
+                    <li>4. Fabrication & Livraison</li>
+                    <li>5. Rétractation & Sur-mesure</li>
+                    <li>6. Garanties Horlogères</li>
+                    <li>7. Litiges & Médiation</li>
                   </ul>
                 </div>
               </Reveal>
@@ -69,94 +63,96 @@ export default function LegalPage() {
             {/* Articles */}
             <div className="md:col-span-8 lg:col-span-9 space-y-16">
               
-              {/* 1. ÉDITEUR */}
               <Reveal>
                 <article>
-                  <h2 className="font-serif text-2xl md:text-3xl text-text-primary mb-6 flex items-center gap-4">
-                    <span className="text-primary text-lg font-sans opacity-60">01.</span> Éditeur du site
+                  <h2 className="font-serif text-2xl text-text-primary mb-4 flex items-center gap-4">
+                    <span className="text-primary text-lg font-sans opacity-60">01.</span> Champ d'application
                   </h2>
-                  <div className="rounded-2xl border border-primary/20 bg-surface p-8 shadow-sm">
-                    <dl className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-4 text-sm">
-                      <div>
-                        <dt className="text-text-subtle font-sans uppercase tracking-wider text-xs mb-1">Dénomination</dt>
-                        <dd className="font-serif text-lg text-text-primary">{legalInfo.companyName}</dd>
-                      </div>
-                      <div>
-                        <dt className="text-text-subtle font-sans uppercase tracking-wider text-xs mb-1">Statut Juridique</dt>
-                        <dd className="text-text-primary">{legalInfo.status}</dd>
-                      </div>
-                      <div className="md:col-span-2 border-t border-border/10 my-2"></div>
-                      <div>
-                        <dt className="text-text-subtle font-sans uppercase tracking-wider text-xs mb-1">Siège Social</dt>
-                        <dd className="text-text-muted">{legalInfo.address}</dd>
-                      </div>
-                      <div>
-                        <dt className="text-text-subtle font-sans uppercase tracking-wider text-xs mb-1">Immatriculation</dt>
-                        <dd className="text-text-muted">{legalInfo.rcs} <br/> SIRET : {legalInfo.siret}</dd>
-                      </div>
-                      <div>
-                        <dt className="text-text-subtle font-sans uppercase tracking-wider text-xs mb-1">TVA Intracommunautaire</dt>
-                        <dd className="text-text-muted">{legalInfo.tva}</dd>
-                      </div>
-                      <div>
-                        <dt className="text-text-subtle font-sans uppercase tracking-wider text-xs mb-1">Contact</dt>
-                        <dd className="text-text-muted">
-                          <a href={`mailto:${legalInfo.email}`} className="hover:text-primary transition-colors">{legalInfo.email}</a>
-                          <br />
-                          {legalInfo.phone}
-                        </dd>
-                      </div>
-                    </dl>
+                  <div className="text-text-muted font-sans leading-relaxed space-y-4">
+                    <p>Les présentes CGV s'appliquent, sans restriction ni réserve, à l'ensemble des ventes conclues par <strong>{companyInfo.companyName}</strong> auprès d'acheteurs non professionnels désirant acquérir les montres proposées à la vente sur le site.</p>
+                    <p>La validation d'une commande implique l'acceptation intégrale et sans réserve des présentes CGV par le client.</p>
                   </div>
                 </article>
               </Reveal>
 
-              {/* 2. HÉBERGEMENT */}
               <Reveal>
                 <article>
-                  <h2 className="font-serif text-2xl md:text-3xl text-text-primary mb-6 flex items-center gap-4">
-                    <span className="text-primary text-lg font-sans opacity-60">02.</span> Hébergement
+                  <h2 className="font-serif text-2xl text-text-primary mb-4 flex items-center gap-4">
+                    <span className="text-primary text-lg font-sans opacity-60">02.</span> Produits & Indépendance
                   </h2>
-                  <p className="text-text-muted leading-relaxed font-sans mb-4">
-                    Le site est hébergé par :
-                  </p>
-                  <div className="bg-surface-hover rounded-xl p-6 border-l-2 border-primary">
-                    <p className="font-serif text-lg text-text-primary">{legalInfo.hostName}</p>
-                    <p className="text-text-muted text-sm mt-1">{legalInfo.hostAddress}</p>
+                  <div className="text-text-muted font-sans leading-relaxed space-y-4">
+                    <p><strong>{companyInfo.companyName}</strong> propose des montres assemblées à la main, intégrant des composants horlogers de haute qualité (mouvements, boîtiers, cadrans).</p>
+                    <div className="bg-surface-hover rounded-xl p-6 border-l-2 border-primary mt-4">
+                      <p className="text-sm">
+                        <strong>Avertissement :</strong> {companyInfo.companyName} est un atelier d'assemblage indépendant. Sauf mention contraire explicite, nous n'avons <strong>aucune affiliation, partenariat ou lien commercial</strong> avec les marques des mouvements génériques (ex: Seiko / TMI) ou autres composants tiers pouvant être intégrés dans nos créations.
+                      </p>
+                    </div>
                   </div>
                 </article>
               </Reveal>
 
-              {/* 3. PROPRIÉTÉ INTELLECTUELLE */}
               <Reveal>
                 <article>
-                  <h2 className="font-serif text-2xl md:text-3xl text-text-primary mb-6 flex items-center gap-4">
-                    <span className="text-primary text-lg font-sans opacity-60">03.</span> Propriété Intellectuelle
+                  <h2 className="font-serif text-2xl text-text-primary mb-4 flex items-center gap-4">
+                    <span className="text-primary text-lg font-sans opacity-60">03.</span> Prix & Paiement
                   </h2>
-                  <div className="prose prose-invert prose-p:text-text-muted prose-headings:font-serif max-w-none">
-                    <p className="leading-relaxed">
-                      L'ensemble de ce site relève de la législation française et internationale sur le droit d'auteur et la propriété intellectuelle. Tous les droits de reproduction sont réservés, y compris pour les documents téléchargeables et les représentations iconographiques et photographiques.
-                    </p>
-                    <p className="leading-relaxed mt-4">
-                      La reproduction de tout ou partie de ce site sur un support électronique quel qu'il soit est formellement interdite sauf autorisation expresse du directeur de la publication.
-                    </p>
+                  <div className="text-text-muted font-sans leading-relaxed space-y-4">
+                    <p>Les prix de nos montres sont indiqués en euros (€). [Mentionner "Toutes Taxes Comprises (TTC)" OU "TVA non applicable, art. 293 B du CGI" si tu es en micro-entreprise]. Les frais de livraison sont facturés en supplément et indiqués avant la validation finale de la commande.</p>
+                    <p>Le paiement est exigible immédiatement à la commande. Le règlement s'effectue par carte bancaire via un système sécurisé.</p>
                   </div>
                 </article>
               </Reveal>
 
-              {/* 4. DONNÉES PERSONNELLES */}
               <Reveal>
                 <article>
-                  <h2 className="font-serif text-2xl md:text-3xl text-text-primary mb-6 flex items-center gap-4">
-                    <span className="text-primary text-lg font-sans opacity-60">04.</span> Données & Cookies
+                  <h2 className="font-serif text-2xl text-text-primary mb-4 flex items-center gap-4">
+                    <span className="text-primary text-lg font-sans opacity-60">04.</span> Fabrication & Livraison
                   </h2>
-                  <div className="space-y-4 text-text-muted font-sans leading-relaxed">
-                    <p>
-                      Les informations recueillies sur les formulaires sont enregistrées dans un fichier informatisé par <strong>{legalInfo.companyName}</strong> pour la gestion de la clientèle et le suivi des commandes.
-                    </p>
-                    <p>
-                      Conformément à la loi « informatique et libertés », vous pouvez exercer votre droit d'accès aux données vous concernant et les faire rectifier en contactant : <span className="text-primary">{legalInfo.email}</span>.
-                    </p>
+                  <div className="text-text-muted font-sans leading-relaxed space-y-4">
+                    <p>Pour les modèles assemblés à la demande ou sur-mesure, un délai de fabrication de [X] à [Y] semaines s'ajoute au délai d'expédition. L'Acheteur en est informé lors de la commande.</p>
+                    <p>La livraison est effectuée à l'adresse indiquée par le client. Le transfert des risques de perte et de détérioration s'opère dès la remise physique de la montre au client.</p>
+                  </div>
+                </article>
+              </Reveal>
+
+              <Reveal>
+                <article>
+                  <h2 className="font-serif text-2xl text-text-primary mb-4 flex items-center gap-4">
+                    <span className="text-primary text-lg font-sans opacity-60">05.</span> Droit de Rétractation & Sur-mesure
+                  </h2>
+                  <div className="text-text-muted font-sans leading-relaxed space-y-4">
+                    <p><strong>Montres en stock :</strong> Conformément à la loi, le client dispose d'un délai de 14 jours francs à compter de la réception de la montre pour exercer son droit de rétractation. La montre doit être retournée dans son état d'origine, non portée, avec ses films de protection.</p>
+                    <p><strong>Montres personnalisées / Sur-mesure :</strong> Conformément à l'article L221-28 du Code de la consommation, <strong>le droit de rétractation ne s'applique pas</strong> aux biens confectionnés selon les spécifications du consommateur ou nettement personnalisés (choix spécifique de cadran, d'aiguilles, gravure, etc.).</p>
+                  </div>
+                </article>
+              </Reveal>
+
+              <Reveal>
+                <article>
+                  <h2 className="font-serif text-2xl text-text-primary mb-4 flex items-center gap-4">
+                    <span className="text-primary text-lg font-sans opacity-60">06.</span> Garanties Horlogères
+                  </h2>
+                  <div className="text-text-muted font-sans leading-relaxed space-y-4">
+                    <p>Nos montres bénéficient de la garantie légale de conformité (2 ans) et de la garantie contre les vices cachés. Sont expressément <strong>exclus de la garantie</strong> :</p>
+                    <ul className="list-disc pl-5 space-y-2 mt-2">
+                      <li>L'usure normale de la montre et du bracelet.</li>
+                      <li>Le bris de verre ou les rayures consécutifs à un choc.</li>
+                      <li>Les dommages dus à un défaut d'étanchéité si la couronne n'était pas correctement vissée ou repoussée.</li>
+                      <li>Toute montre ayant été ouverte, modifiée ou réparée par un tiers non autorisé par {companyInfo.companyName}.</li>
+                    </ul>
+                  </div>
+                </article>
+              </Reveal>
+
+              <Reveal>
+                <article>
+                  <h2 className="font-serif text-2xl text-text-primary mb-4 flex items-center gap-4">
+                    <span className="text-primary text-lg font-sans opacity-60">07.</span> Litiges & Médiation
+                  </h2>
+                  <div className="text-text-muted font-sans leading-relaxed space-y-4">
+                    <p>Les présentes CGV sont soumises à la loi française.</p>
+                    <p>En cas de litige, le client s'adressera en priorité à <strong>{companyInfo.companyName}</strong> à l'adresse {companyInfo.email} pour trouver une solution amiable.</p>
+                    <p>À défaut, le client peut recourir gratuitement au service de médiation de la consommation dont nous relevons : {companyInfo.mediator} via le site {companyInfo.mediatorWebsite}.</p>
                   </div>
                 </article>
               </Reveal>
