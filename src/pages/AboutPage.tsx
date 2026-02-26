@@ -1,5 +1,4 @@
 import Reveal from "../Logic/Reveal";
-import { Link } from "react-router-dom";
 import heroImg from "/about_hero.png";      // replace with real image
 import atelier1 from "/atelier1.png";       // replace with real image
 import atelier2 from "/Gurv.png";       // replace with real image
@@ -7,6 +6,7 @@ import atelier3 from "/nico.png";       // replace with real image
 import texture from "/paper_texture.png";    // optional subtle texture
 import eclate from "/eclate.jpg";               // movement image
 import Nav from "../components/Nav";
+import BtnRedirection from "../components/btnRedirect";
 
 export default function AboutPage() {
   return (
@@ -20,7 +20,7 @@ export default function AboutPage() {
         <div className="relative isolate">
           <div className="absolute inset-0 -z-10">
             <img src={heroImg} alt="Atelier parisien" className="h-[60vh] w-full object-cover object-center" />
-            <div className="absolute inset-0 bg-gradient-to-b from-dark/40 via-dark/40 to-dark/65" />
+            <div className="absolute inset-0 bg-linear-to-b from-dark/40 via-dark/40 to-dark/65" />
           </div>
           <div className="mx-auto max-w-6xl px-6 md:px-12 h-[60vh] flex items-end">
             <Reveal>
@@ -85,7 +85,7 @@ export default function AboutPage() {
               {[atelier1, atelier2, atelier3].map((src, i) => (
                 <figure key={i} className="group relative overflow-hidden rounded-2xl shadow-lg border border-border/20">
                   <img src={src} alt="Atelier" className="h-64 w-full scale-110 object-cover transition-transform duration-700 group-hover:scale-130" />
-                  <figcaption className="pointer-events-none absolute inset-0 bg-gradient-to-t from-dark/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <figcaption className="pointer-events-none absolute inset-0 bg-linear-to-t from-dark/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 </figure>
               ))}
             </div>
@@ -105,18 +105,14 @@ export default function AboutPage() {
                   Chez Montres-Bastille, nous voulons faire des montres d'exception une aventure unique pleine d'émotions.
                 </p>
                 <div className="mt-8 flex flex-wrap gap-3">
-                  <Link 
-                    to="/contact" 
-                    className="inline-flex items-center gap-2 rounded-full border border-primary/50 px-6 py-3 text-sm uppercase tracking-[0.2em] text-text-primary font-sans transition-all hover:bg-primary hover:text-dark hover:-translate-y-[2px]"
-                  >
-                    Nous écrire
-                  </Link>
+                  <BtnRedirection text="Nous écrire" redirection="/contact" style="bordered" size={{px:6,py:3}}/>
+                 
                 </div>
               </div>
               <div className="relative">
-                <div className="absolute -inset-6 -z-10 rounded-3xl bg-gradient-to-tr from-primary/10 to-transparent blur-2xl" />
+                <div className="absolute -inset-6 -z-10 rounded-3xl bg-linear-to-tr from-primary/10 to-transparent blur-2xl" />
                 <div className="rounded-2xl border border-primary/30 bg-surface p-2 shadow-[0_10px_40px_rgba(0,0,0,0.45)]">
-                  <div className="aspect-[4/3] rounded-xl bg-gradient-to-b from-surface-hover to-surface-active flex items-center justify-center text-text-muted">
+                  <div className="aspect-4/3 rounded-xl bg-linear-to-b from-surface-hover to-surface-active flex items-center justify-center text-text-muted">
                     <img src={eclate} />
                   </div>
                 </div>
@@ -133,17 +129,17 @@ export default function AboutPage() {
             <h3 className="font-serif text-3xl md:text-4xl tracking-tight text-text-primary">Repères</h3>
             <ol className="mt-8 relative border-l border-primary/40 pl-6 space-y-8">
               <li>
-                <div className="absolute -left-[6px] top-1.5 h-3 w-3 rounded-full bg-primary" />
+                <div className="absolute -left-1.5 top-1.5 h-3 w-3 rounded-full bg-primary" />
                 <p className="font-serif text-text-primary text-lg">2024 — L'idée</p>
                 <p className="text-text-muted text-sm font-sans">Un cahier rempli de cadrans, une obsession pour la lisibilité et les proportions.</p>
               </li>
               <li>
-                <div className="absolute -left-[6px] top-1.5 h-3 w-3 rounded-full bg-primary" />
+                <div className="absolute -left-1.5 top-1.5 h-3 w-3 rounded-full bg-primary" />
                 <p className="font-serif text-text-primary text-lg">2025 — Les premiers prototypes</p>
                 <p className="text-text-muted text-sm font-sans">Boîtiers usinés en petites séries, réglages minutieux, retours des premiers passionnés.</p>
               </li>
               <li>
-                <div className="absolute -left-[6px] top-1.5 h-3 w-3 rounded-full bg-primary" />
+                <div className="absolute -left-1.5 top-1.5 h-3 w-3 rounded-full bg-primary" />
                 <p className="font-serif text-text-primary text-lg">2026 — Lancement</p>
                 <p className="text-text-muted text-sm font-sans">Montres‑Bastille voit le jour à Bordeaux. Vous configurez, nous assemblons.</p>
               </li>
@@ -166,7 +162,7 @@ export default function AboutPage() {
 
       {/* CTA BANNER */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary/20 to-transparent" />
+        <div className="absolute inset-0 -z-10 bg-linear-to-r from-primary/20 to-transparent" />
         <div className="mx-auto max-w-6xl px-6 md:px-12 py-12 md:py-16">
           <Reveal>
             <div className="rounded-2xl border border-primary/40 bg-dark text-text-primary p-8 md:p-12 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
@@ -174,12 +170,7 @@ export default function AboutPage() {
                 <h4 className="font-serif text-2xl md:text-3xl text-text-primary">Prêt(e) à passer au poignet ?</h4>
                 <p className="mt-2 text-text-muted font-sans">Configurez votre Montres‑Bastille en quelques clics. Assemblée à Bordeaux, pour vous.</p>
               </div>
-              <Link 
-                to="/region-page" 
-                className="inline-flex items-center gap-2 rounded-full bg-primary text-dark font-sans px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all hover:-translate-y-[2px] hover:shadow-md hover:bg-primary-dark"
-              >
-                Commencer
-              </Link>
+              <BtnRedirection text="Commencer" redirection="/region-page" style="bordered" size={{px:6,py:3}}/>
             </div>
           </Reveal>
         </div>
