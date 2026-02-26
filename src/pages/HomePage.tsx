@@ -1,12 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
-import { GoArrowUpRight } from "react-icons/go";
+import React, { useRef, useState } from "react";
 import arcClean from "/arc_clean.png";
 import patrimoine from "/patrimoine.png";
 import france from "/franceMap.png";
 import watch2 from "/watch2.png";
 import HeroCarousel from "../components/Carousel";
-import { Link } from "react-router-dom";
 import Nav from "../components/Nav";
+import BtnRedirection from "../components/btnRedirect";
 
 // Reveal animation
 const Reveal = ({
@@ -61,20 +60,9 @@ export default function HomePage() {
               Montres-Bastille
             </h1>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link
-                to="/region-page"
-                className="inline-flex rounded-2xl items-center gap-2 bg-primary text-dark font-sans px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all duration-300 shadow-md hover:bg-primary-dark hover:shadow-lg"
-              >
-                <GoArrowUpRight />
-                Personnaliser
-              </Link>
-              <Link
-                to="/about"
-                className="inline-flex items-center gap-2 rounded-full border border-text-primary text-text-primary font-sans px-6 py-3 text-sm uppercase tracking-[0.2em] transition-all duration-300 hover:bg-primary hover:text-dark  hover:shadow-lg"
-              >
-                <GoArrowUpRight />
-                Découvrir
-              </Link>
+              <BtnRedirection text={"Personnaliser"} style={"full"} redirection="/region-page" size={{px:5,py:3}}/>
+
+              <BtnRedirection text={"Découvrir"} style={"bordered"} redirection="/about" size={{px:5,py:3}}/>
             </div>
           </div>
         </HeroCarousel>
@@ -104,16 +92,7 @@ export default function HomePage() {
                     Découvrez les pièces de notre collection, choisies pour représenter au mieux les régions françaises et leur patrimoine.
                     Créez votre morceau d'histoire unique.
                   </p>
-                  <Link
-                    to="/community"
-                    className="inline-flex items-center gap-2 rounded-full 
-                               border border-primary px-6 py-3 text-sm font-sans uppercase tracking-[0.2em] 
-                               text-primary transition-all duration-300
-                               hover:bg-primary hover:text-dark hover:shadow-lg"
-                  >
-                    <GoArrowUpRight />
-                    Explorer
-                  </Link>
+                  <BtnRedirection text={"Explorer"} style={"bordered"} redirection="/community" size={{px:5,py:3}}/>
                 </div>
 
                 <div className="mx-auto max-w-sm">
@@ -127,7 +106,6 @@ export default function HomePage() {
             </Reveal>
           </div>
         </section>
-        {/* CUSTOM SECTION - Nos valeurs */}
         {/* CUSTOM SECTION - Nos valeurs */}
         <section className="py-20 bg-background relative border-y border-white/5">
           <div className="px-6 md:px-12 max-w-7xl mx-auto">
@@ -219,16 +197,7 @@ export default function HomePage() {
                     </div>
                   ))}
                 </div>
-
-                <Link
-                  to="/region-page"
-                  className="inline-flex items-center gap-2 rounded-full bg-primary text-dark font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
-                             transition-all duration-300 shadow-md font-medium
-                             hover:bg-primary-dark hover:shadow-lg"
-                >
-                  <GoArrowUpRight />
-                  Commencer la Personnalisation
-                </Link>
+                <BtnRedirection text={"Commencer la personnalisation"} style={"full"} redirection="/region-page" size={{px:8,py:4}}/>
               </div>
             </Reveal>
           </div>
