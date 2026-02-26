@@ -103,14 +103,22 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
     setAlert({ type: "warning", message: "Pièce retirée de la configuration." });
   };
 
-  const handleCheckout = () => {
+   const  handleCheckout = async () => {
     if (cartWatches.length === 0) return;
     setIsRedirecting(true);
-    setTimeout(() => {
-      console.log("Commande envoyée :", cartWatches);
-      setIsRedirecting(false);
-      window.alert("Redirection vers le paiement...");
-    }, 2000);
+    console.log("Commande envoyée :", cartWatches);
+    try {
+        const res = await fetch("https://montre-bastille-api.onrender.com/api/stripeOrder");
+        const stripeOrd = await res.json();
+
+        if (stripeOrd) {
+         
+        }
+      } catch (error) {
+        console.error("Failed to send order", error);
+      }
+    setIsRedirecting(false);
+    window.alert("Redirection vers le paiement...");
   };
 
   return (
