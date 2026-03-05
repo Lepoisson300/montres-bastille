@@ -18,6 +18,9 @@ interface CartPageProps {
   assets: PartOption[]; 
 }
 
+const pkStripe = import.meta.env.VITE_STRIPE_PK;
+
+
 export default function CartPage({ updateCartCount }: CartPageProps) {
   
   // 1. STATE
@@ -106,15 +109,14 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
 
    const  handleCheckout = async () => {
     if (cartWatches.length === 0) return;
-    setIsRedirecting(true);
-    const stripePromise = loadStripe('pk_test_TA_CLE_PUBLIQUE');
-    console.log("Commande envoyée :", cartWatches);
+    const stripePromise = await loadStripe(pkStripe);
     const watchConfig = cartWatches[0].config;
+    console.log("config envoyé",cartWatches)
     try {
-        const res = await fetch("https://montre-bastille-api.onrender.com/api/stripeOrder"{
+        const res = await fetch("https://montre-bastille-api.onrender.com/api/stripeOrder",{
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ config: watchConfig }),
+          body: JSON.stringify({ configs: cartWatches }),
         });
         const session = await res.json();
         // 2. On redirige vers la page de paiement Stripe avec l'ID reçu
