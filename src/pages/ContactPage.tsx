@@ -178,7 +178,7 @@ export default function ContactPage() {
       {/* CONTACT FORM SECTION */}
       <section className="py-20 bg-dark text-text-primary ">
           <div className="px-6 md:px-4 mx-auto">
-            <div className="grid gap-16 lg:grid-cols-2 items-start">
+            <div className="mx-40 items-start">
             
             {/* Form */}
             <Reveal>
