@@ -14,15 +14,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+
+      # 1. Installation de pnpm (obligatoire car non inclus par défaut sur Ubuntu)
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9 # Vous pouvez spécifier '8' si vous utilisez une ancienne version
+
+      # 2. Configuration de Node.js avec le cache défini sur 'pnpm'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run build
+          cache: 'pnpm'
+
+      # 3. Installation des dépendances (étape manquante dans votre code initial)
+      - name: Install dependencies
+        run: pnpm install
+
+      # 4. Build du projet
+      - name: Build project
+        run: pnpm run build
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
