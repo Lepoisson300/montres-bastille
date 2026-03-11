@@ -40,7 +40,7 @@ export const DesktopMap = ({ svgContent, availableRegions, onSelect }: Props) =>
           "hover:fill-primary", 
           "cursor-pointer", 
           "opacity-100",
-          "stroke-border/20",
+          "stroke-border/60",
           "hover:stroke-primary/50"
         );
       } else {
@@ -48,7 +48,7 @@ export const DesktopMap = ({ svgContent, availableRegions, onSelect }: Props) =>
           "fill-background", 
           "opacity-70", 
           "pointer-events-none",
-          "stroke-border/10"
+          "stroke-border/60"
         );
       }
     });
@@ -58,7 +58,7 @@ export const DesktopMap = ({ svgContent, availableRegions, onSelect }: Props) =>
   <div 
     ref={mapRef}
     // 2. Added aspect ratio or min-h to ensure the container has a flexible but consistent shape
-    className="relative w-full max-w-6xl min-h-[60vh] p-4 md:p-10 bg-surface/30 rounded-3xl border border-border/20 backdrop-blur-sm shadow-2xl overflow-hidden flex items-center justify-center mx-auto"
+    className="relative w-full max-w-6xl min-h-[60vh] p-4 md:p-10 bg-surface/50 rounded-3xl border border-border/50 backdrop-blur-sm shadow-2xl overflow-hidden flex items-center justify-center mx-auto"
     onClick={(e) => {
       const target = (e.target as HTMLElement).closest("[id^='FR-']");
       if (target && availableRegions.includes(target.id)) onSelect(target.id);
@@ -67,7 +67,7 @@ export const DesktopMap = ({ svgContent, availableRegions, onSelect }: Props) =>
     <img 
       src={mapBG} 
       alt="Map Background" 
-      className="absolute inset-0 w-full h-full object-cover opacity-40 pointer-events-none z-0" 
+      className="absolute inset-0 w-full h-full object-cover opacity-50 pointer-events-none z-0" 
     />
 
     <div 
