@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Alert from "../components/Alert"; 
 import type { PartOption } from "../types/Parts";
 import Nav from "../components/Nav";
-import { loadStripe } from '@stripe/stripe-js';
 
 // --- TYPES ---
 interface CartItem {
@@ -82,50 +81,27 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
     setAlert({ type: "success", message: "Le panier a été vidé." });
   };
 
-  const removePartFromSelected = (categoryKey: string, partId: string) => {
-    if (!selectedWatch) return;
-
-    const newCart = [...cartWatches];
-    const newConfig = { ...newCart[selectedWatchIndex].config };
-    
-    delete newConfig[categoryKey];
-
-    const partDetails = getPartDetails(partId);
-    const priceDeduction = partDetails ? partDetails.price : 0;
-    const newPrice = newCart[selectedWatchIndex].price - priceDeduction;
-
-    newCart[selectedWatchIndex] = {
-      ...newCart[selectedWatchIndex],
-      config: newConfig,
-      price: newPrice
-    };
-
-    setCartWatches(newCart);
-    setAlert({ type: "warning", message: "Pièce retirée de la configuration." });
-  };
-
    const  handleCheckout = async () => {
     if (cartWatches.length === 0) return;
     setIsRedirecting(true);
-    const stripePromise = loadStripe('pk_test_TA_CLE_PUBLIQUE');
     console.log("Commande envoyée :", cartWatches);
     const watchConfig = cartWatches[0].config;
     try {
-        const res = await fetch("https://montre-bastille-api.onrender.com/api/stripeOrder"{
+        const res = await fetch("https://montre-bastille-api.onrender.com/api/stripeOrder",{
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ config: watchConfig }),
+          body: JSON.stringify({ configs: watchConfig }),
         });
-        const session = await res.json();
-        // 2. On redirige vers la page de paiement Stripe avec l'ID reçu
-        const stripe = await stripePromise;
-        const result = await stripe.redirectToCheckout({
-          sessionId: session.id,
-        });
+        const data = await res.json();
 
-      if (result.error) {
-        console.error(result.error.message);
-      }
+        // NOUVELLE MÉTHODE : On redirige directement vers l'URL reçue
+        if (data.url) {
+            window.location.href = data.url; 
+        } else {
+            console.error("Aucune URL de redirection reçue :", data.error);
+            setIsRedirecting(false);
+            window.alert("Erreur lors de la création du paiement.");
+        }
       } catch (error) {
         console.error("Failed to send order", error);
       }
@@ -279,16 +255,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
                                   <p className="text-[10px] text-text-subtle uppercase tracking-wider">{partDetails.type || categoryKey}</p>
                                   <p className="text-sm font-medium text-text-primary truncate">{partDetails.name}</p>
                                 </div>
-                                
-                                <div className="text-right">
-                                  <p className="text-primary text-xs font-serif">{partDetails.price} €</p>
-                                  <button
-                                    onClick={() => removePartFromSelected(categoryKey, partId as string)}
-                                    className="text-[10px] text-red-400 opacity-0 group-hover:opacity-100 hover:underline"
-                                  >
-                                    Retirer
-                                  </button>
-                                </div>
+                              
                               </li>
                             );
                           })}
