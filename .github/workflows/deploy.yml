@@ -35,6 +35,9 @@ jobs:
       # 4. Build du projet
       - name: Build project
         run: pnpm run build
+        env:
+          VITE_AUTH0_DOMAIN: ${{ secrets.VITE_AUTH0_DOMAIN }}
+          VITE_AUTH0_CLIENT_ID: ${{ secrets.VITE_AUTH0_CLIENT_ID }}
 
       - uses: actions/upload-pages-artifact@v3
         with:
