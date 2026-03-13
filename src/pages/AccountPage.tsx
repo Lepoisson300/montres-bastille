@@ -1,11 +1,49 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import type { User } from "../types/Parts";
 import Nav from "../components/Nav";
+import { MeshGradient } from '@paper-design/shaders-react';
+import BtnRedirection from "../components/btnRedirect";
+
+// Animation de Reveal
+const Reveal = ({
+  children,
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  delay?: number;
+}) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => setIsVisible(true), delay * 120);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [delay]);
+
+  return (
+    <div
+      ref={ref}
+      className={`transition-all duration-1000 ease-out ${
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+      }`}
+    >
+      {children}
+    </div>
+  );
+};
 
 export default function AccountPage() {
   const { user: authUser, isAuthenticated, isLoading, logout } = useAuth0();
-  const [dbUser, setDbUser] = useState(null);
+  const [dbUser, setDbUser] = useState<User | null>(null);
   const [loadingData, setLoadingData] = useState(true);
 
   useEffect(() => {
@@ -31,8 +69,9 @@ export default function AccountPage() {
 
   if (isLoading || loadingData) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center text-text-primary font-serif animate-pulse">
-        Chargement de votre espace...
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-primary font-serif">
+        <div className="w-12 h-12 border-2 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
+        <p className="animate-pulse tracking-widest text-sm uppercase">Chargement...</p>
       </div>
     );
   }
@@ -43,120 +82,145 @@ export default function AccountPage() {
     prenom: authUser?.given_name || "Utilisateur",
     email: authUser?.email,
     numero: "Non renseigné",
-    montres_perso: [],
+    montres_perso: [],  
     votes: []
   };
 
   return (
     <>
-        <Nav bg={false}/>
-    
-    <div className="min-h-screen bg-background text-text-primary font-sans py-20 px-5">
-      <div className="max-w-7xl mx-auto">
+      <Nav bg={false}/>
+      
+      <div className="relative min-h-screen bg-background font-sans overflow-hidden pt-24 pb-20">
         
-        {/* Header Section */}
-        <div className="text-center mb-16">
-          <h1 className="font-serif text-5xl md:text-6xl text-text-primary mb-6 tracking-wide">
-            Mon Compte
-          </h1>
-          <button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })} className="bg-primary hover:bg-primary-dark text-background font-medium py-3 px-8 rounded-full transition-colors duration-300 mb-4">
-            Déconnexion
-          </button>
-
-          <p className="text-text-muted text-lg max-w-2xl mx-auto leading-relaxed">
-            Bienvenue dans votre espace personnel, <span className="text-primary">{displayUser.prenom}</span>.<br/>
-            Retrouvez ici vos informations et vos créations horlogères.
-          </p>
+        {/* Le Gradient Horloger en fond absolu */}
+        <div className="absolute top-0 left-0 w-full h-150 opacity-90 z-0 pointer-events-none">
+          <MeshGradient
+            width={typeof window !== 'undefined' ? window.innerWidth : 1280}
+            height={600}
+            colors={["#0a0a0c", "#262626", "#c5a059", "#1c1a17"]}
+            distortion={0.25}
+            swirl={0}
+            speed={0.35}
+          />
+          {/* Un masque pour fondre le gradient vers le bas */}
+          <div className="absolute inset-0 bg-linear-to-b from-transparent to-background"></div>
         </div>
 
-        {/* Personal Info Grid */}
-        <h2 className="font-serif text-3xl text-center mb-10 text-text-secondary">Mes Informations</h2>
-        
-        <div className="flex flex-wrap justify-center gap-8 mb-20">
-          {/* Info Card: Identity */}
-          <InfoCard 
-            icon="👤" 
-            title="Identité" 
-            value={`${displayUser.prenom} ${displayUser.nom}`} 
-          />
+        <div className="relative z-10 max-w-6xl mx-auto px-6">
           
-          {/* Info Card: Email */}
-          <InfoCard 
-            icon="✉️" 
-            title="Email" 
-            value={displayUser.email} 
-          />
-          
-          {/* Info Card: Phone */}
-          <InfoCard 
-            icon="📱" 
-            title="Téléphone" 
-            value={displayUser.numero || "Ajouter un numéro"} 
-          />
-        </div>
-
-        {/* Watches Section */}
-        <div className="border-t border-border pt-16">
-          <h2 className="font-serif text-3xl text-center mb-10 text-text-secondary">Mes Montres Créées</h2>
-          
-          {displayUser.montres_perso && displayUser.montres_perso.length > 0 ? (
-            <div className="flex flex-wrap justify-center gap-8">
-              {displayUser.montres_perso.map((montre, index) => (
-                <WatchCard key={index} montre={montre} index={index} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-10 bg-surface/50 rounded-xl border border-dashed border-border max-w-2xl mx-auto">
-              <p className="text-text-muted mb-6 text-lg">Vous n'avez pas encore configuré de montre.</p>
-              <button className="bg-primary hover:bg-primary-dark text-background font-medium py-3 px-8 rounded-full transition-colors duration-300">
-                Créer ma montre
+          {/* --- EN-TÊTE --- */}
+          <Reveal>
+            <div className="text-center mb-20">
+              <h1 className="font-serif text-5xl md:text-6xl text-text-primary mb-6 tracking-tight">
+                Mon Espace
+              </h1>
+              <div className="h-px w-20 bg-primary mx-auto opacity-60 mb-8" />
+              <p className="text-text-muted text-lg max-w-2xl mx-auto leading-relaxed mb-8">
+                Bienvenue, <span className="text-primary font-serif text-xl">{displayUser.prenom}</span>.<br/>
+                Retrouvez ici vos informations personnelles et votre collection de pièces uniques.
+              </p>
+              
+              <button 
+                onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })} 
+                className="text-xs uppercase tracking-widest border border-amber-400 rounded-full p-3 bg-accent text-dark hover:text-amber-900 transition-colors hover:border-primary"
+              >
+                Se déconnecter
               </button>
             </div>
-          )}
+          </Reveal>
+
+          {/* --- INFORMATIONS PERSONNELLES --- */}
+          <div className="mb-24">
+            <Reveal delay={1}>
+              <h2 className="font-serif text-3xl mb-10 text-text-primary border-l-2 border-primary pl-4">
+                Mes Coordonnées
+              </h2>
+            </Reveal>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Reveal delay={2}><InfoCard title="Identité" value={`${displayUser.prenom} ${displayUser.nom}`} /></Reveal>
+              <Reveal delay={3}><InfoCard title="Email" value={displayUser.email} /></Reveal>
+              <Reveal delay={4}><InfoCard title="Téléphone" value={displayUser.numero || "Non renseigné"} /></Reveal>
+            </div>
+          </div>
+
+          {/* --- COLLECTION DE MONTRES --- */}
+          <div>
+            <Reveal delay={2}>
+              <div className="flex justify-between items-end mb-10 border-b border-white/5 pb-4">
+                <h2 className="font-serif text-3xl text-text-primary border-l-2 border-primary pl-4">
+                  Ma Collection
+                </h2>
+                <BtnRedirection text="Nouvelle Création" style="bordered" redirection="/region-page" size={{px: 5, py: 2}} />
+              </div>
+            </Reveal>
+            
+            {displayUser.montres_perso && displayUser.montres_perso.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {displayUser.montres_perso.map((montre, index) => (
+                  <Reveal key={index} delay={index + 3}>
+                    <WatchCard montre={montre} index={index} />
+                  </Reveal>
+                ))}
+              </div>
+            ) : (
+              <Reveal delay={3}>
+                <div className="text-center py-20 bg-surface/20 rounded-2xl border border-white/5">
+                  <p className="text-text-muted mb-8 text-lg font-serif">Votre collection est actuellement vide.</p>
+                  <BtnRedirection text="Débuter la personnalisation" style="full" redirection="/region-page" size={{px: 8, py: 4}} />
+                </div>
+              </Reveal>
+            )}
+          </div>
         </div>
-
       </div>
-    </div>
-        </>
-
+    </>
   );
 }
 
-// Sub-component for Info Cards to keep code clean
-function InfoCard({ icon, title, value }) {
+// Composant InfoCard épuré et premium
+function InfoCard({ title, value }: { title: string, value: string | undefined }) {
   return (
-    <div className="bg-surface border border-border hover:border-primary w-full max-w-[300px] p-10 rounded-xl text-center transition-all duration-300 hover:-translate-y-1 group">
-      <div className="w-16 h-16 border border-primary rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/10 transition-colors">
-        <span className="text-2xl">{icon}</span>
-      </div>
-      <h3 className="font-serif text-2xl mb-3 text-text-primary">{title}</h3>
-      <p className="text-text-muted">{value}</p>
+    <div className="p-8 rounded-xl bg-surface/40 border border-white/5 transition-colors duration-300 hover:border-primary/30 group">
+      <h3 className="text-xs uppercase tracking-widest text-text-muted mb-2 group-hover:text-primary transition-colors">{title}</h3>
+      <p className="font-serif text-xl text-text-primary">{value}</p>
     </div>
   );
 }
 
-// Sub-component for Watch Cards
-function WatchCard({ montre, index }) {
+// Composant WatchCard luxe
+function WatchCard({ montre, index }: { montre: any, index: number }) {
   return (
-    <div className="bg-surface border border-border rounded-xl p-8 w-full max-w-[350px] relative hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
-      <div className="flex items-center gap-4 mb-6 border-b border-border pb-4">
-        <span className="text-2xl">⌚</span>
+    <div className="p-8 rounded-xl relative transition-all duration-500 bg-surface/40 border border-white/5 hover:border-primary/40 hover:-translate-y-1 group">
+      
+      <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
         <h3 className="font-serif text-xl text-primary">
-          {montre.nom_montre || `Montre #${index + 1}`}
+          {montre.nom_montre || `Création N°${index + 1}`}
         </h3>
+        <span className="text-xs text-text-muted tracking-widest">ÉDITION UNIQUE</span>
       </div>
       
-      <div className="space-y-3 mb-8 text-text-secondary text-sm">
-        <div className="flex justify-between"><span className="text-text-muted">Cadran:</span> <span>{montre.configuration.cadran_id}</span></div>
-        <div className="flex justify-between"><span className="text-text-muted">Bracelet:</span> <span>{montre.configuration.bracelet_id}</span></div>
-        <div className="flex justify-between"><span className="text-text-muted">Boîtier:</span> <span>{montre.configuration.boitier_id}</span></div>
-        <div className="flex justify-between"><span className="text-text-muted">Mouvement:</span> <span>{montre.configuration.mouvement_id}</span></div>
+      <div className="space-y-4 mb-10">
+        <DetailRow label="Cadran" value={montre.configuration?.cadran_id || "Standard"} />
+        <DetailRow label="Boîtier" value={montre.configuration?.boitier_id || "Acier"} />
+        <DetailRow label="Bracelet" value={montre.configuration?.bracelet_id || "Cuir"} />
+        <DetailRow label="Mouvement" value={montre.configuration?.mouvement_id || "Automatique"} />
       </div>
 
-      <button className="w-full bg-transparent border border-primary text-primary hover:bg-primary hover:text-surface-active font-medium py-2.5 rounded-full transition-all duration-300">
-        Modifier
+      <button className="w-full bg-transparent border border-white/10 text-text-primary hover:bg-primary hover:text-dark hover:border-primary text-sm tracking-widest uppercase py-3 rounded transition-all duration-300">
+        Voir les détails
       </button>
     </div>
-    
+  );
+}
+
+// Sous-composant pour les lignes de détails de la montre
+function DetailRow({ label, value }: { label: string, value: string }) {
+  return (
+    <div className="flex justify-between items-end">
+      <span className="text-sm text-text-muted">{label}</span>
+      <div className="flex-grow border-b border-dotted border-white/10 mx-4 mb-1"></div>
+      <span className="font-serif text-text-primary">{value}</span>
+    </div>
   );
 }

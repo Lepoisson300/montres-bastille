@@ -111,9 +111,27 @@ export default function HomePage() {
           <div className="px-6 md:px-12 max-w-7xl mx-auto">
             <Reveal>
               <div className="text-center mb-16">
+                <div className="flex flex-row justify-center">
                 <h2 className="font-serif text-3xl md:text-4xl text-text-primary mb-4">
                   Hissons nos couleurs
                 </h2>
+                <div className=" mx-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="45" height="45">
+                    <defs>
+                      <clipPath id="circle-mask">
+                        <circle cx="50" cy="50" r="50" />
+                      </clipPath>
+                    </defs>
+                    <g clip-path="url(#circle-mask)">
+                      <rect x="0" y="0" width="33.333" height="100" fill="#002654" />
+                      <rect x="33.333" y="0" width="33.334" height="100" fill="#FFFFFF" />
+                      <rect x="66.667" y="0" width="33.333" height="100" fill="#ED2939" />
+                    </g>
+                  </svg>
+                </div>
+                </div>
+                
+                
                 <div className="h-px w-20 bg-primary mx-auto opacity-60" />
               </div>
 

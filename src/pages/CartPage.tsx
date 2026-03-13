@@ -17,6 +17,9 @@ interface CartPageProps {
   assets: PartOption[]; 
 }
 
+const pkStripe = import.meta.env.VITE_STRIPE_PK;
+
+
 export default function CartPage({ updateCartCount }: CartPageProps) {
   
   // 1. STATE
@@ -86,6 +89,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
     setIsRedirecting(true);
     console.log("Commande envoyée :", cartWatches);
     const watchConfig = cartWatches[0].config;
+    console.log("config envoyé",cartWatches)
     try {
         const res = await fetch("https://montre-bastille-api.onrender.com/api/stripeOrder",{
           method: 'POST',

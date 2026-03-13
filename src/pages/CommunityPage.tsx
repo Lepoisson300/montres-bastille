@@ -62,12 +62,12 @@ const Reveal = ({
 };
 
 export default function CommunityPage() {
-  const [likedCreations, setLikedCreations] = useState(new Set());
+  //const [likedCreations, setLikedCreations] = useState(new Set());
   const [votedRegions, setVotedRegions] = useState(new Set());
   const { user,isAuthenticated } = useAuth0();
   const [alert, setAlert] = useState<{ type: AlertType; message: string } | null>(null);
   const [regionsVotes, setRegionsVotes] = React.useState<Region[]>([]);
-  const [watches,setWatches] = React.useState<Watch[]>([]);
+  //const [watches,setWatches] = React.useState<Watch[]>([]);
 
   useEffect(() => {
     fetch('https://montre-bastille-api.onrender.com/api/votes', {
@@ -79,9 +79,7 @@ export default function CommunityPage() {
       .then(response => response.json())
       .then(data => {
         setRegionsVotes(data.regions);
-        console.log('Vote get successfully:', data);
-        // set the regions voted of the current user if authenticated
-        
+        console.log('Vote get successfully:', data);        
       })
       .catch((error) => {
         console.error('Error updating vote:', error);
@@ -160,7 +158,9 @@ export default function CommunityPage() {
       </section>
 
       {/* USER CREATIONS SECTION */}
+            {/*
       <section className="py-20 bg-background">
+  
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
           <Reveal>
             <div className="text-center mb-16">
@@ -178,18 +178,21 @@ export default function CommunityPage() {
               <Reveal key={creation.id} delay={index + 1}>
                 <div className="bg-surface rounded-2xl shadow-lg border border-border/20 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:bg-surface-hover">
                   {/* Watch Preview */}
+                     {/**
                   <div className="p-8  from-surface-hover to-surface-active">
                     <div className="w-40 h-40 mx-auto mb-4 rounded-full border-4 border-primary/30 shadow-lg flex items-center justify-center">
                       <div className={`w-32 h-32 rounded-full ${creation.image} shadow-inner flex items-center justify-center relative`}>
-                        {/* Watch hands */}
+                        {/* Watch hands
                         <div className="absolute w-1 h-12 bg-white rounded-full opacity-90"></div>
                         <div className="absolute w-12 h-1 bg-white rounded-full opacity-90"></div>
                         <div className="absolute w-2 h-2 bg-white rounded-full"></div>
                       </div>
                     </div>
                   </div>
+                */}
 
                   {/* Creation Details */}
+                  {/*
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-serif text-xl text-text-primary">{creation.name}</h3>
@@ -251,6 +254,8 @@ export default function CommunityPage() {
         </div>
       </section>
 
+       */}
+
       {/* VOTING SECTION */}
       <section className="py-20 bg-dark text-text-primary">
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
@@ -276,20 +281,15 @@ export default function CommunityPage() {
                       {region.votes} votes
                     </div>
                   </div>
-                  
-                  <div className="mb-4">
-                    <div className="w-full bg-surface-active rounded-full h-2">
-                      <div 
-                        className="from-primary to-primary-dark h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${Math.min((region.votes / 250) * 100, 100)}%` }}
-                      />
-                    </div>
-                  </div>
 
+                  <div className="w-full h-[160px] overflow-hidden rounded-lg">
+                      <img src={region.img} className="h-full w-full rounded-lg" alt="" />
+                  </div>
+                  
                   <button
                     onClick={() => LikeRegion(region.name)}
                     disabled={votedRegions.has(region.name)}
-                    className={`w-full py-3 rounded-full text-sm font-sans uppercase tracking-wider transition-all duration-300 ${
+                    className={`w-full py-3 mt-4 rounded-full text-sm font-sans uppercase tracking-wider transition-all duration-300 ${
                       votedRegions.has(region.name)
                         ? 'bg-primary/20 text-primary/50 cursor-not-allowed'
                         : 'border border-primary text-primary hover:bg-primary hover:text-dark'
@@ -305,7 +305,7 @@ export default function CommunityPage() {
           <Reveal delay={7}>
             <div className="text-center mt-16">
               <p className="text-text-subtle font-sans text-sm mb-6">
-                Le vote se termine le 31 octobre 2025
+                Le vote se termine le 21 Juin 2026
               </p>
               <Link
                 to="/region-page"
@@ -341,12 +341,7 @@ export default function CommunityPage() {
                 <GoArrowUpRight />
                 Créer Ma Montre
               </Link>
-              <button className="inline-flex items-center gap-2 rounded-full border border-primary text-primary font-sans px-8 py-4 text-base uppercase tracking-[0.2em] 
-                                transition-all duration-300
-                                hover:bg-primary hover:text-dark hover:shadow-lg">
-                <GoArrowUpRight />
-                S'inscrire à la Newsletter
-              </button>
+              
             </div>
           </Reveal>
         </div>
