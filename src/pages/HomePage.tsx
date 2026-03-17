@@ -122,7 +122,7 @@ export default function HomePage() {
                         <circle cx="50" cy="50" r="50" />
                       </clipPath>
                     </defs>
-                    <g clip-path="url(#circle-mask)">
+                    <g clipPath="url(#circle-mask)">
                       <rect x="0" y="0" width="33.333" height="100" fill="#002654" />
                       <rect x="33.333" y="0" width="33.334" height="100" fill="#FFFFFF" />
                       <rect x="66.667" y="0" width="33.333" height="100" fill="#ED2939" />

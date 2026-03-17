@@ -60,7 +60,7 @@ function App() {
       const component = await fetch("https://montre-bastille-api.onrender.com/api/components")
       const comp = await component.json();
       localStorage.setItem("composants", JSON.stringify(comp))
-      console.log(JSON.parse(localStorage.getItem("composants")));
+      console.log(JSON.parse(localStorage.getItem("composants") as string));
     }
     getComponents();
   },[])

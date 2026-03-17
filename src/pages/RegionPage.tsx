@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { WATCH_COMPONENTS, REGION_NAMES } from "../Logic/watchComponents";
 import { MobileCarousel } from "../components/MobileCarousel";
 import { useNavigate } from "react-router-dom";
+import { REGION_NAMES } from "../Logic/watchComponents";
 import { DesktopMap } from "../components/DesktopMap";
 import Nav from "../components/Nav";
 
 
 export default function RegionPage() {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId] = useState<string | null>(null);
   const [svgContent, setSvgContent] = useState<string>("");
   const [isMobile, setIsMobile] = useState(false);
-    const navigate = useNavigate();
+  const [WATCH_COMPONENTS, setWatchComponents] = useState();
+  const navigate = useNavigate();
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const svgRootRef = useRef<SVGSVGElement | null>(null);
@@ -54,8 +55,16 @@ export default function RegionPage() {
           .then(setSvgContent)
           .catch(() => console.error("SVG not found in any location"));
       });
-
-       
+    const saved = localStorage.getItem("composants");
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            setWatchComponents(parsed);
+        } catch (e) {
+            console.error("Erreur de parsing JSON", e);
+        }
+    }    
+    console.log("watch components ", WATCH_COMPONENTS);
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
@@ -81,18 +90,23 @@ export default function RegionPage() {
 
   // Count available components for a region
   // Wrapped in function for reuse
-  const getComponentCount = (regionCode: string) => {
-    return (
-      WATCH_COMPONENTS.cases.filter(c => c.regions?.includes(regionCode)).length +
-      WATCH_COMPONENTS.dials.filter(d => d.regions?.includes(regionCode)).length +
-      WATCH_COMPONENTS.hands.filter(h => h.regions?.includes(regionCode)).length +
-      WATCH_COMPONENTS.straps.filter(s => s.regions?.includes(regionCode)).length
-    );
+  const getComponentCount = ():number => {
+    return (WATCH_COMPONENTS.length() ?? 0);
   };
+
+  const getComponentByRegion = (regionCode: string)=> {
+    let count = 0;
+    WATCH_COMPONENTS.map((component: any) => {
+      if(component.regions.includes(regionCode)){
+        count += 1;
+      }
+    });
+    return count;
+  }
 
   // Get available regions (with components)
   const availableRegions = useMemo(() => {
-    return Object.keys(REGION_NAMES).filter(code => getComponentCount(code) > 0);
+    return Object.keys(REGION_NAMES).filter(code => getComponentByRegion(code) > 0);
   }, []);
 
   // Extract individual region from full SVG

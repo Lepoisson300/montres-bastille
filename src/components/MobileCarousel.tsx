@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { REGION_NAMES, WATCH_COMPONENTS } from "../Logic/watchComponents";
+//import { REGION_NAMES, WATCH_COMPONENTS } from "../Logic/watchComponents";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
