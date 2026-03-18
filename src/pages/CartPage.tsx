@@ -14,7 +14,7 @@ interface CartItem {
 
 interface CartPageProps {
   updateCartCount?: (count: number) => void;
-  assets: PartOption[]; 
+  assets?: PartOption[]; 
 }
 
 const pkStripe = import.meta.env.VITE_STRIPE_PK;

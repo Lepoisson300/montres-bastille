@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import Configurator from "../components/Configurator";
 import type { PartOption, PartsCatalog } from "../types/Parts";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Nav from "../components/Nav";
 import Alert from "../components/Alert";
 
@@ -9,7 +9,7 @@ import Alert from "../components/Alert";
 interface LocationState {
   selectedRegion?: string;
   regionName?: string;
-  watchComponents?: PartOption;
+  watchComponents?: PartOption[];
 }
 
 export default function ConfiguratorPage() {
@@ -25,17 +25,22 @@ export default function ConfiguratorPage() {
     }
   });
     const assets: PartsCatalog = {
-    mouvement: state?.watchComponents?.mouvement || [],
-    cases: state?.watchComponents?.cases || [],
-    straps: state?.watchComponents?.straps || [],
-    dials: state?.watchComponents?.dials || [],
-    hands: state?.watchComponents?.hands || [],
+      // Remplacez '.type' par le vrai nom de la propriété dans votre base de données (ex: .categorie)
+      mouvement: state.watchComponents?.filter((part) => part.type === 'mouvement'),
+      cases:     state.watchComponents?.filter((part) => part.type === 'case' || part.type === 'boitier'),
+      straps:    state.watchComponents?.filter((part) => part.type === 'strap' || part.type === 'bracelet'),
+      dials:     state.watchComponents?.filter((part) => part.type === 'dial' || part.type === 'cadran'),
+      hands:     state.watchComponents?.filter((part) => part.type === 'hands' || part.type === 'aiguilles'),
   };
 
   const pricing = {
-    base: 450,
+    base: 0,
     currency: "EUR"
   };
+
+  useEffect(()=>{
+    
+  })
 
 const handleCheckout = (order: { sku: string; price: number; config: Record<string, string> }) => {
     // On crée d'abord la nouvelle liste dans une variable

@@ -4,45 +4,64 @@ import { useNavigate } from "react-router-dom";
 import { REGION_NAMES } from "../Logic/watchComponents";
 import { DesktopMap } from "../components/DesktopMap";
 import Nav from "../components/Nav";
-
+import type { PartOption } from "../types/Parts";
 
 export default function RegionPage() {
   const [selectedId] = useState<string | null>(null);
   const [svgContent, setSvgContent] = useState<string>("");
   const [isMobile, setIsMobile] = useState(false);
-  const [WATCH_COMPONENTS, setWatchComponents] = useState();
   const navigate = useNavigate();
-
   const containerRef = useRef<HTMLDivElement | null>(null);
   const svgRootRef = useRef<SVGSVGElement | null>(null);
+  
+  // Plus besoin de useState pour availableRegions, useMemo s'en charge !
+  const [watchComponents, setWatchComponents] = useState<PartOption[]>([]);
 
   // Gold highlight style (Montres‑Bastille aesthetic)
   const HIGHLIGHT_COLOR = "#D4AF37"; // rich gold
 
-
-    //function to go on the configurator page with the selected components
+  // Navigation vers le configurateur
   const handleConfigureClick = (regionId: string) => {
-        navigate('/configurator', { 
-            state: { 
-            selectedRegion: regionId,
-            regionName: REGION_NAMES[regionId] || regionId,
-            watchComponents: WATCH_COMPONENTS 
-            } 
-        });
-        };
+    const components = getComponentByRegion(regionId);
+    console.log(components)
+    navigate('/configurator', { 
+      state: { 
+        selectedRegion: regionId,
+        regionName: REGION_NAMES[regionId] || regionId,
+        watchComponents: components
+      } 
+    });
+  };
 
+  // Récupération depuis l'API
+  async function getComponents() {
+    try {
+      const response = await fetch("https://montre-bastille-api.onrender.com/api/components");
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log("result : ",result)
+      return result; 
+      
+    } catch (error) {
+      console.error("Erreur lors de la récupération des composants:", error);
+      return []; 
+    }
+  }
 
-  // Get array of ALL region codes (for Desktop reference)
-
-  // Detect mobile
+  // Detect mobile & Fetch Data
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
-      if (isMobile) return;
     };
     checkMobile();
+    window.addEventListener('resize', checkMobile);
 
-     fetch("/france.svg")
+    // 1. Récupération du SVG
+    fetch("/france.svg")
       .then((res) => {
         if (!res.ok) throw new Error("SVG not found");
         return res.text();
@@ -55,19 +74,19 @@ export default function RegionPage() {
           .then(setSvgContent)
           .catch(() => console.error("SVG not found in any location"));
       });
-    const saved = localStorage.getItem("composants");
-    if (saved) {
-        try {
-            const parsed = JSON.parse(saved);
-            setWatchComponents(parsed);
-        } catch (e) {
-            console.error("Erreur de parsing JSON", e);
-        }
-    }    
-    console.log("watch components ", WATCH_COMPONENTS);
-    window.addEventListener('resize', checkMobile);
+
+    // 2. CORRECTION : Encapsulation de l'appel asynchrone
+    const fetchAndSetComponents = async () => {
+      const components = await getComponents();
+      console.log("components : ", components)
+      setWatchComponents(components);
+    };
+    
+    fetchAndSetComponents();
+
     return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  }, []); // Exécuté une seule fois au montage
+
 
   // Keep reference to SVG
   useEffect(() => {
@@ -87,27 +106,35 @@ export default function RegionPage() {
     if (el) el.classList.add("selected-region");
   }, [selectedId, isMobile]);
 
-
-  // Count available components for a region
-  // Wrapped in function for reuse
-  const getComponentCount = ():number => {
-    return (WATCH_COMPONENTS.length() ?? 0);
+  const getComponentCount = (): number => {
+    return watchComponents.length ?? 0;
   };
 
   const getComponentByRegion = (regionCode: string)=> {
-    let count = 0;
-    WATCH_COMPONENTS.map((component: any) => {
-      if(component.regions.includes(regionCode)){
-        count += 1;
+    return watchComponents.filter(elem => {
+      if (elem.regions && Array.isArray(elem.regions)) {
+        return elem.regions.includes(regionCode);
       }
+      return false;
     });
-    return count;
   }
 
-  // Get available regions (with components)
+  // CORRECTION : useMemo calcule automatiquement les régions dès que watchComponents change
+  // Utilisation d'un "Set" pour éviter les doublons automatiquement et proprement
   const availableRegions = useMemo(() => {
-    return Object.keys(REGION_NAMES).filter(code => getComponentByRegion(code) > 0);
-  }, []);
+    const regions = new Set<string>();
+    
+    watchComponents.forEach((component: PartOption) => {
+      if (component.regions && Array.isArray(component.regions)) {
+        component.regions.forEach((region: string) => {
+          regions.add(region);
+        });
+      }
+    });
+    
+    return Array.from(regions); // Convertit le Set en tableau classique
+  }, [watchComponents]);
+
 
   // Extract individual region from full SVG
   const extractRegionSVG = (regionCode: string) => {
@@ -158,12 +185,11 @@ export default function RegionPage() {
     return new XMLSerializer().serializeToString(newSvg);
   };
 
-
   return (
     <>
       <Nav bg={false}/>
 
-      <div className="relative flex flex-col items-center justify-center min-h-screen px-8 pt-28 pb-16 bg-neutral-950 text-neutral-200 font-[Poppins] tracking-wide overflow-hidden">
+      <div className="relative flex flex-col items-center justify-center min-h-screen px-8 pt-28 pb-16 bg-neutral-950 text-neutral-200 font-[Poppins] tracking-wide overflow-hidden" ref={containerRef}>
         <style>{`
           .selected-region {
             stroke: ${HIGHLIGHT_COLOR};
@@ -215,8 +241,6 @@ export default function RegionPage() {
             />
         )}
       </div>
-
-      
     </>
   );
 }

@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
-//import { REGION_NAMES, WATCH_COMPONENTS } from "../Logic/watchComponents";
+import { REGION_NAMES} from "../Logic/watchComponents";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 interface MobileCarouselProps {
   availableRegions: string[];
@@ -16,7 +15,6 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, extractReg
 
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [selectedId] = useState<string | null>(null);
-  const navigate = useNavigate();
 
   const selectedName = useMemo(() => {
     if (!selectedId) return null;

@@ -2,14 +2,14 @@
 // ---------- Types ----------
 export type PartOption = {
   id: string;
+  material: string;
   name: string;
   price: number; // delta over base
+  regions: string[]; // list of region codes where this part is available
+  size: string;
+  stock:number;
   thumbnail: string; // small preview image
-  stock: "in" | "low" | "oos"; // inventory badge
-  material?: string;
-  color?: string;
-  regions?: string[]; // list of region codes where this part is available
-  [key: string]: any;
+  type:string
 };
 
 export type PartsCatalog = {

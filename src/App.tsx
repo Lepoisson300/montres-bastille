@@ -15,6 +15,7 @@ import OnboardingModal from "./components/OnboardingModal";
 import Footer from "./components/Footer";
 import LegalPage from "./pages/mentionLegalePage";
 import CartPage from "./pages/CartPage";
+import type { PartOption } from "./types/Parts";
 
 // --- Main App Component ---
 
@@ -23,7 +24,6 @@ function App() {
   const { user, isAuthenticated, isLoading } = useAuth0();
   const [dbUser, setDbUser] = useState<any>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
-
   // 1. Fetch User Data whenever Auth0 User changes
   useEffect(() => {
     async function fetchUserData() {
@@ -49,21 +49,28 @@ function App() {
     }
     fetchUserData();
   }, [isAuthenticated, user]);
+  
 
-  useEffect(()=>{
-    async function startServer(){
-      const start = await fetch("https://montre-bastille-api.onrender.com/api/site")
-      console.log(start.json)
+  useEffect(() => {
+    async function startServer() {
+      try {
+        const start = await fetch("https://montre-bastille-api.onrender.com/api/site");
+        const data = await start.json(); // Added await and ()
+        console.log("Server start data:", data);
+      } catch (error) {
+         console.error("Failed to ping server", error);
+      }
     }
-    startServer();
-    async function getComponents(){
-      const component = await fetch("https://montre-bastille-api.onrender.com/api/components")
-      const comp = await component.json();
-      localStorage.setItem("composants", JSON.stringify(comp))
-      console.log(JSON.parse(localStorage.getItem("composants") as string));
+    
+    // Create an async wrapper function inside the useEffect
+    async function fetchAllData() {
+      // We can run the ping in the background without waiting for it
+      startServer(); 
     }
-    getComponents();
-  },[])
+    
+    fetchAllData();
+  }, []);
+
 
   const handleOnboardingSuccess = (updatedUser: any) => {
     setDbUser(updatedUser); // Update local state immediately
@@ -88,7 +95,7 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/account" element={<AccountPage />} />
           <Route path="/mention" element={<LegalPage/>}/>
-          <Route path="/panier" element={<CartPage assets={[]} />}/>
+          <Route path="/panier" element={<CartPage />}/>
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
