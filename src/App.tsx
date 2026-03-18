@@ -1,6 +1,6 @@
 // App.tsx
 import "./App.css";
-import { Routes, Route, Navigate, HashRouter } from "react-router-dom";
+import { Routes, Route, Navigate, HashRouter, data } from "react-router-dom";
 import AccountPage from "./pages/AccountPage";
 import HomePage from "./pages/HomePage";
 import { useEffect, useState } from "react";
@@ -24,7 +24,8 @@ function App() {
   const { user, isAuthenticated, isLoading } = useAuth0();
   const [dbUser, setDbUser] = useState<any>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  // 1. Fetch User Data whenever Auth0 User changes
+  const [components, setComponents] = useState<PartOption[]>([]);  // 1. Fetch User Data whenever Auth0 User changes
+  
   useEffect(() => {
     async function fetchUserData() {
       if (isAuthenticated && user?.email) {
@@ -55,10 +56,9 @@ function App() {
     async function startServer() {
       try {
         const start = await fetch("https://montre-bastille-api.onrender.com/api/site");
-        const data = await start.json(); // Added await and ()
-        console.log("Server start data:", data);
+        console.log("Server start OK :", start.ok);
       } catch (error) {
-         console.error("Failed to ping server", error);
+        console.error("Failed to ping server", error);
       }
     }
     
@@ -66,10 +66,30 @@ function App() {
     async function fetchAllData() {
       // We can run the ping in the background without waiting for it
       startServer(); 
+      setComponents(await getComponents());
     }
-    
+    console.log(components)
     fetchAllData();
   }, []);
+
+    // Récupération depuis l'API
+  async function getComponents() {
+    try {
+      const response = await fetch("https://montre-bastille-api.onrender.com/api/components");
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log("result : ",result)
+      return result; 
+      
+    } catch (error) {
+      console.error("Erreur lors de la récupération des composants:", error);
+      return []; 
+    }
+  }
 
 
   const handleOnboardingSuccess = (updatedUser: any) => {
@@ -89,7 +109,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/not-implemented" element={<NotImplementedPage />} />
-          <Route path="/region-page" element={<RegionPage />} />
+          <Route path="/region-page" element={<RegionPage components={components} />} />
           <Route path="/configurator" element={<ConfiguratorPage />} />
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/contact" element={<ContactPage />} />

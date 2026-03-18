@@ -6,7 +6,12 @@ import { DesktopMap } from "../components/DesktopMap";
 import Nav from "../components/Nav";
 import type { PartOption } from "../types/Parts";
 
-export default function RegionPage() {
+
+interface RegionPageProps {
+  components: PartOption[];
+}
+
+export default function RegionPage({components}:RegionPageProps) {
   const [selectedId] = useState<string | null>(null);
   const [svgContent, setSvgContent] = useState<string>("");
   const [isMobile, setIsMobile] = useState(false);
@@ -20,6 +25,11 @@ export default function RegionPage() {
   // Gold highlight style (Montres‑Bastille aesthetic)
   const HIGHLIGHT_COLOR = "#D4AF37"; // rich gold
 
+
+  if (!components || components.length === 0) {
+    return <div>Chargement des composants...</div>;
+  }
+  
   // Navigation vers le configurateur
   const handleConfigureClick = (regionId: string) => {
     const components = getComponentByRegion(regionId);
@@ -33,24 +43,7 @@ export default function RegionPage() {
     });
   };
 
-  // Récupération depuis l'API
-  async function getComponents() {
-    try {
-      const response = await fetch("https://montre-bastille-api.onrender.com/api/components");
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const result = await response.json();
-      console.log("result : ",result)
-      return result; 
-      
-    } catch (error) {
-      console.error("Erreur lors de la récupération des composants:", error);
-      return []; 
-    }
-  }
+
 
   // Detect mobile & Fetch Data
   useEffect(() => {
@@ -75,14 +68,7 @@ export default function RegionPage() {
           .catch(() => console.error("SVG not found in any location"));
       });
 
-    // 2. CORRECTION : Encapsulation de l'appel asynchrone
-    const fetchAndSetComponents = async () => {
-      const components = await getComponents();
-      console.log("components : ", components)
-      setWatchComponents(components);
-    };
-    
-    fetchAndSetComponents();
+    setWatchComponents(components)
 
     return () => window.removeEventListener('resize', checkMobile);
   }, []); // Exécuté une seule fois au montage
