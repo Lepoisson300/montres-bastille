@@ -1,44 +1,55 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Alert from "../components/Alert"; 
-import type { PartOption } from "../types/Parts";
+import Alert from "../components/Alert";
+import type { PartOption, CartItem } from "../types/Parts";
 import Nav from "../components/Nav";
 
-// --- TYPES ---
-interface CartItem {
-  config: Record<string, string>;
-  price: number;
-  id?: string; 
-  name?: string; 
-}
 
 interface CartPageProps {
   updateCartCount?: (count: number) => void;
-  assets?: PartOption[]; 
 }
 
-const pkStripe = import.meta.env.VITE_STRIPE_PK;
-
-
 export default function CartPage({ updateCartCount }: CartPageProps) {
-  
+
   // 1. STATE
   const [cartWatches, setCartWatches] = useState<CartItem[]>(() => {
     try {
       const saved = localStorage.getItem('cart');
+      console.log(saved)
       return saved ? JSON.parse(saved) : [];
     } catch (e) {
       console.error("Erreur lecture localStorage:", e);
       return [];
     }
   });
-  
+
+  const Livraison: PartOption = {
+    price: 30,
+    id: "liv1",
+    material: "",
+    name: "",
+    regions: ["FR-E", "FR-U", "FR-A"],
+    size: "",
+    stock: 1,
+    thumbnail: "",
+    type: ""
+  };
+
+  const BoiteRangement: PartOption = {
+    id: "boit1",
+    material: "",
+    name: "",
+    price: 0,
+    regions: ["FR-E", "FR-U", "FR-A"],
+    size: "",
+    stock: 1,
+    thumbnail: "",
+    type: ""
+  };
+
   const [selectedWatchIndex, setSelectedWatchIndex] = useState<number>(0);
-  const [alert, setAlert] = useState<{type: string, message: string} | null>(null);
+  const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
-  
-  // Sécurisation de la lecture des assets depuis le localStorage
-  const assets = JSON.parse(localStorage.getItem("composants") || "[]");
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -61,15 +72,10 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
   const selectedWatch = cartWatches[selectedWatchIndex];
   const grandTotal = cartWatches.reduce((acc, watch) => acc + watch.price, 0);
 
-  const getPartDetails = (partId: string): PartOption | undefined => {
-    return assets.find((p: PartOption) => p.id === partId);
-  };
-
   const removeWatch = (indexToRemove: number) => {
     const updatedCart = cartWatches.filter((_, index) => index !== indexToRemove);
     setCartWatches(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
-
     window.dispatchEvent(new Event('cartRemoved'));
     if (selectedWatchIndex >= updatedCart.length) {
       setSelectedWatchIndex(Math.max(0, updatedCart.length - 1));
@@ -84,38 +90,44 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
     setAlert({ type: "success", message: "Le panier a été vidé." });
   };
 
-   const  handleCheckout = async () => {
+  const handleCheckout = async () => {
     if (cartWatches.length === 0) return;
     setIsRedirecting(true);
-    console.log("Commande envoyée :", cartWatches);
-    const watchConfig = cartWatches[0].config;
-    console.log("config envoyé",cartWatches)
-    try {
-        const res = await fetch("https://montre-bastille-api.onrender.com/api/stripeOrder",{
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ configs: watchConfig }),
-        });
-        const data = await res.json();
 
-        // NOUVELLE MÉTHODE : On redirige directement vers l'URL reçue
-        if (data.url) {
-            window.location.href = data.url; 
-        } else {
-            console.error("Aucune URL de redirection reçue :", data.error);
-            setIsRedirecting(false);
-            window.alert("Erreur lors de la création du paiement.");
-        }
-      } catch (error) {
-        console.error("Failed to send order", error);
+    // FIX: Clone to avoid mutating state directly
+    const watchConfig = [
+      ...cartWatches[selectedWatchIndex].composants,
+      Livraison,
+      BoiteRangement,
+    ];
+
+    try {
+      const res = await fetch("https://montre-bastille-api.onrender.com/api/stripeOrder", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ configs: watchConfig }),
+      });
+      const data = await res.json();
+
+      if (data.url) {
+        // FIX: Return immediately after redirect — don't run code below
+        window.location.href = data.url;
+        return;
+      } else {
+        console.error("Aucune URL de redirection reçue :", data.error);
+        setAlert({type:'error', message:"Erreur lors de la création du paiement"});
       }
+    } catch (error) {
+      console.error("Failed to send order", error);
+      setAlert({type:'error', message:"Une erreur est survenue. Veuillez réessayer."});
+    }
+
     setIsRedirecting(false);
-    window.alert("Redirection vers le paiement...");
   };
 
   return (
     <div className="min-h-screen bg-background text-text-primary font-sans pt-24 pb-12">
-      <Nav bg={false}/>
+      <Nav bg={false} />
 
       {/* ALERTE */}
       {alert && (
@@ -131,9 +143,9 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
           <h1 className="font-serif text-3xl md:text-5xl">
             Votre <span className="text-primary">Panier</span> ({cartWatches.length})
           </h1>
-          
+
           {cartWatches.length > 0 && (
-            <button 
+            <button
               onClick={clearCart}
               className="text-xs text-red-400 border border-red-500/30 px-3 py-1 rounded hover:bg-red-500/10 transition"
             >
@@ -143,19 +155,18 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
         </div>
 
         {cartWatches.length === 0 ? (
-           <div className="text-center py-20 bg-surface rounded-3xl border border-border/10">
-             <p className="text-xl text-text-muted mb-4">Votre panier est vide.</p>
-             <Link to="/region-page" className="text-primary underline hover:text-white transition">
-                Créer une montre
-             </Link>
-           </div>
+          <div className="text-center py-20 bg-surface rounded-3xl border border-border/10">
+            <p className="text-xl text-text-muted mb-4">Votre panier est vide.</p>
+            <Link to="/region-page" className="text-primary underline hover:text-white transition">
+              Créer une montre
+            </Link>
+          </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
+
             {/* LISTE DES MONTRES (Zone Gauche) */}
             <div className="lg:col-span-7 flex flex-col gap-8 sticky top-32">
-              
-              {/* Le slider fonctionnera maintenant car la box de la montre ne le chevauche plus */}
+
               {cartWatches.length > 1 && (
                 <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x relative z-50">
                   {cartWatches.map((watch, index) => {
@@ -166,13 +177,13 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
                         onClick={() => setSelectedWatchIndex(index)}
                         className={`shrink-0 snap-start w-64 p-4 rounded-xl border transition-all text-left group
                           ${isSelected
-                            ? "bg-surface border-primary shadow-lg ring-1 ring-primary/20" 
+                            ? "bg-surface border-primary shadow-lg ring-1 ring-primary/20"
                             : "bg-background border-border/20 opacity-70 hover:opacity-100 hover:border-primary/50"
                           }`}
                       >
                         <div className="flex justify-between items-start mb-2">
                           <span className="text-xs font-bold text-primary uppercase tracking-wider">Config</span>
-                          <div 
+                          <div
                             onClick={(e) => { e.stopPropagation(); removeWatch(index); }}
                             className="text-text-muted hover:text-red-500 p-1 rounded-full hover:bg-red-500/10 transition"
                           >
@@ -188,37 +199,33 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
               )}
 
               {selectedWatch && (
-                <div className={`relative overflow-hidden rounded-3xl z-40 bg-surface border border-primary/20 shadow-2xl group transition-all duration-500 ease-in-out aspect-square ${
+                <div className="w-full flex justify-center">
+                  <div className={`relative overflow-hidden rounded-3xl z-40 bg-surface border border-primary/20 shadow-2xl group transition-all duration-500 ease-in-out aspect-square w-full max-w-[450px] max-h-[450px] ${
                     scrolled ? "p-4" : "p-8"
-                }`}>
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50" />
-                  
-                  {/* AJOUT : Superposition des pièces dans le BON ORDRE pour éviter qu'elles ne se cachent */}
-                  <div className="relative z-10 flex items-center justify-center h-full w-full">
-                    {/* On map sur un tableau fixe pour garantir que les aiguilles soient au-dessus du cadran, etc. */}
-                    {["straps", "cases", "dials", "hands"].map((category) => {
-                      // On récupère l'ID de la pièce pour cette catégorie dans la config de la montre
-                      const partId = selectedWatch.config[category];
-                      if (!partId) return null;
-                      
-                      // On va chercher l'image correspondante
-                      const part = getPartDetails(partId);
-                      if (!part?.thumbnail) return null;
-                      
-                      return (
-                        <img 
-                          key={partId}
-                          src={part.thumbnail} 
-                          alt={part.name || category} 
-                          className="absolute inset-0 w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 scale-175" 
-                        />
-                      );
-                    })}
-                  </div>
+                  }`}>
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50" />
 
-                  <div className="absolute bottom-6 left-6 z-20 pointer-events-none">
-                    <p className="text-text-muted text-sm uppercase tracking-widest font-sans">Sélection actuelle</p>
-                    <p className="text-primary font-serif text-xl">Montre #{selectedWatchIndex + 1}</p>
+                    <div className="relative z-10 flex items-center justify-center h-full w-full">
+                      {["case", "dial", "strap", "hands"].map((category) => {
+                        const part = selectedWatch.composants?.find((c) => c.type === category);
+                        if (!part || !part.thumbnail) return null;
+                        console.log("parts : ",part)
+                        return (
+                          <img
+                            key={part.id || category}
+                            src={part.thumbnail}
+                            alt={part.name || category}
+                            // J'ai aussi légèrement réduit le scale-175 à scale-150 pour éviter que la montre sorte du conteneur réduit
+                            className="absolute inset-0 w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 scale-[1.7]"
+                          />
+                        );
+                      })}
+                    </div>
+
+                    <div className="absolute bottom-6 left-6 z-20 pointer-events-none">
+                      <p className="text-text-muted text-sm uppercase tracking-widest font-sans">Sélection actuelle</p>
+                      <p className="text-primary font-serif text-xl">Montre #{selectedWatchIndex + 1}</p>
+                    </div>
                   </div>
                 </div>
               )}
@@ -228,63 +235,91 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
             <div className="lg:col-span-5 flex flex-col gap-6">
               {selectedWatch && (
                 <div className="bg-surface rounded-2xl border border-border/10 p-6 shadow-lg relative z-40">
-                  {(() => {
-                    const configEntries = Object.entries(selectedWatch.config);
-                    
-                    return (
-                      <>
-                        <h2 className="font-serif text-xl mb-4 flex justify-between items-center">
-                          <span>Composants</span>
-                          <span className="text-sm font-sans text-text-muted font-normal">
-                            {configEntries.length} pièces
-                          </span>
-                        </h2>
-                        
-                        <ul className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                          {configEntries.map(([categoryKey, partId], idx) => {
-                            const partDetails = getPartDetails(partId as string);
-                            if (!partDetails) return null; 
+                  {/* FIX: Iterate directly over the PartOption array — no Object.entries needed */}
+                  <h2 className="font-serif text-xl mb-4 flex justify-between items-center">
+                    <span>Composants</span>
+                    <span className="text-sm font-sans text-text-muted font-normal">
+                      {selectedWatch.composants.length} pièces
+                    </span>
+                  </h2>
 
-                            return (
-                              <li key={`${partId}-${idx}`} className="flex items-center gap-3 bg-background/50 p-2 rounded-lg border border-transparent hover:border-primary/20 transition-colors group">
-                                <div className="h-16 w-16 rounded bg-surface-hover flex-shrink-0 overflow-hidden flex items-center justify-center border border-border/10">
-                                  {partDetails.thumbnail ? (
-                                    <img src={partDetails.thumbnail} alt={partDetails.name} className="h-full scale-[2] w-full object-cover" />
-                                  ) : (
-                                    <div className="w-2 h-2 rounded-full bg-primary/20" />
-                                  )}
-                                </div>
-                                
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-[10px] text-text-subtle uppercase tracking-wider">{partDetails.type || categoryKey}</p>
-                                  <p className="text-sm font-medium text-text-primary truncate">{partDetails.name}</p>
-                                </div>
-                              
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </>
-                    );
-                  })()}
+                  <ul className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                    {selectedWatch.composants.map((part, idx) => {
+                      // FIX: `part` is already a full PartOption — no lookup needed
+                      if (!part) return null;
+
+                      return (
+                        <li
+                          key={`${part.id ?? idx}`}
+                          className="flex items-center gap-3 bg-background/50 p-2 rounded-lg border border-transparent hover:border-primary/20 transition-colors group"
+                        >
+                          <div className="h-16 w-16 rounded bg-surface-hover flex-shrink-0 overflow-hidden flex items-center justify-center border border-border/10">
+                            {part.thumbnail ? (
+                              <img
+                                src={part.thumbnail}
+                                alt={part.name}
+                                className="h-full scale-[2] w-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-2 h-2 rounded-full bg-primary/20" />
+                            )}
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[10px] text-text-subtle uppercase tracking-wider">{part.type}</p>
+                            <p className="text-sm font-medium text-text-primary truncate">{part.name}</p>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
                 </div>
               )}
 
               {/* TOTAL & PAYER */}
               <div className="bg-dark text-text-primary rounded-2xl p-8 border border-primary/30 shadow-[0_10px_40px_rgba(0,0,0,0.3)] sticky top-32 z-40">
-                <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-4">
-                  <span className="text-text-muted font-sans text-sm">Total à payer</span>
-                  <span className="font-serif text-3xl md:text-4xl text-primary">{grandTotal} €</span>
+
+                {/* Détails de la commande */}
+                <div className="space-y-4 mb-6 pb-6 border-b border-white/10">
+                  <div className="flex justify-between items-center">
+                    <span className="text-text-muted font-sans text-sm">Livraison sécurisée</span>
+                    <span className="font-serif text-lg text-text-primary">30 €</span>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <div className="flex flex-col">
+                      <span className="text-text-primary font-sans text-sm flex items-center gap-3">
+                        Boîte de remontage automatique
+                      </span>
+                    </div>
+                    <span className="font-sans text-xs uppercase tracking-widest text-primary border border-primary/40 bg-primary/10 px-3 py-1 rounded-full">
+                      Offert
+                    </span>
+                  </div>
                 </div>
+
+                {/* Total à payer */}
+                <div className="flex justify-between items-end mb-8">
+                  <span className="text-text-muted font-sans text-sm pb-1">Total à payer</span>
+                  <span className="font-serif text-3xl md:text-4xl text-primary leading-none">{grandTotal + 30} €</span>
+                </div>
+
+                {/* Bouton de paiement */}
                 <button
                   onClick={handleCheckout}
                   disabled={isRedirecting}
-                  className="w-full mt-6 py-4 px-6 rounded-full text-sm uppercase tracking-[0.2em] font-bold bg-primary text-dark hover:bg-primary-dark transition-all duration-300 flex items-center justify-center gap-3"
+                  className="w-full py-4 px-6 rounded-full text-sm uppercase tracking-[0.2em] font-bold bg-primary text-dark hover:bg-primary-dark transition-all duration-300 flex items-center justify-center gap-3"
                 >
-                  {isRedirecting ? "Chargement..." : "Payer la commande"}
+                  {isRedirecting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-dark/20 border-t-dark rounded-full animate-spin"></div>
+                      Chargement...
+                    </>
+                  ) : (
+                    "Payer la commande"
+                  )}
                 </button>
               </div>
-
             </div>
           </div>
         )}

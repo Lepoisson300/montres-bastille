@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import Configurator from "../components/Configurator";
-import type { PartOption, PartsCatalog } from "../types/Parts";
+import type { CartItem, PartOption, PartsCatalog } from "../types/Parts";
 import { useEffect, useState } from "react";
 import Nav from "../components/Nav";
 import Alert from "../components/Alert";
@@ -25,7 +25,6 @@ export default function ConfiguratorPage() {
     }
   });
     const assets: PartsCatalog = {
-      // Remplacez '.type' par le vrai nom de la propriété dans votre base de données (ex: .categorie)
       mouvement: state.watchComponents?.filter((part) => part.type === 'mouvement'),
       cases:     state.watchComponents?.filter((part) => part.type === 'case' || part.type === 'boitier'),
       straps:    state.watchComponents?.filter((part) => part.type === 'strap' || part.type === 'bracelet'),
@@ -42,17 +41,22 @@ export default function ConfiguratorPage() {
     
   })
 
-const handleCheckout = (order: { sku: string; price: number; config: Record<string, string> }) => {
-    // On crée d'abord la nouvelle liste dans une variable
-    const updatedCart = [...cartList, order];
-    // On met à jour l'état (pour l'affichage)
+  const handleCheckout = (order: { sku: string; price: number; config: PartOption[] }) => {
+    // Build a CartItem with the resolved PartOption array
+    const cartItem: CartItem = {
+      id: order.sku,
+      price: order.price,
+      composants: order.config,
+    };
+    const updatedCart = [...cartList, cartItem];
     setCartList(updatedCart);
-    // On sauvegarde la variable updatedCart (qui contient bien le nouvel élément)
     localStorage.setItem('cart', JSON.stringify(updatedCart));
     console.log("Panier sauvegardé :", updatedCart);
     window.dispatchEvent(new Event('cartUpdated'));
-    setAlert({ type: "success", message: "Montre ajouté au panier" });
+    setAlert({ type: "success", message: "Montre ajoutée au panier" });
   };
+
+
   return (
     <>
     <Nav bg={true}/>

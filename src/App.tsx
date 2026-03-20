@@ -1,6 +1,6 @@
 // App.tsx
 import "./App.css";
-import { Routes, Route, Navigate, HashRouter, data } from "react-router-dom";
+import { Routes, Route, Navigate, HashRouter } from "react-router-dom";
 import AccountPage from "./pages/AccountPage";
 import HomePage from "./pages/HomePage";
 import { useEffect, useState } from "react";
@@ -110,7 +110,7 @@ function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/not-implemented" element={<NotImplementedPage />} />
           <Route path="/region-page" element={<RegionPage components={components} />} />
-          <Route path="/configurator" element={<ConfiguratorPage />} />
+          <Route path="/configurator" element={<ConfiguratorPage/>} />
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/account" element={<AccountPage />} />

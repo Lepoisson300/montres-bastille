@@ -1,25 +1,27 @@
 import { useEffect, useMemo, useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";import html2canvas from "html2canvas";
+import { motion, AnimatePresence} from "framer-motion";import html2canvas from "html2canvas";
 import type { WatchConfiguratorProps, PartOption } from "../types/Parts";
 
-// --- Utilities ---
-const fmt = (v: number, ccy: string) => 
-  new Intl.NumberFormat("fr-FR", { style: "currency", currency: ccy }).format(v);
+// Converts PartOption[] → ?mouvement=mov-001&cases=case-42&...
+const toQuery = (conf: PartOption[]) => {
+  const params = conf.reduce<Record<string, string>>((acc, part) => {
+    if (part.type && part.id) acc[part.type] = part.id;
+    return acc;
+  }, {});
+  return `?${new URLSearchParams(params).toString()}`;
+};
 
-const toQuery = (conf: Record<string, string>) => 
-  `?${new URLSearchParams(conf).toString()}`;
-
-// FIX 1: Safe Window Access
+// Unchanged — still returns Record<string, string> of id strings
 const fromQuery = (): Record<string, string> => {
   if (typeof window === "undefined") return {};
   return Object.fromEntries(new URLSearchParams(window.location.search));
 };
 
-export default function Configurator({ assets, pricing, defaultChoice, selectedRegion, onCheckout }: WatchConfiguratorProps) {
+
+
+export default function Configurator({ assets, defaultChoice, selectedRegion, onCheckout }: WatchConfiguratorProps) {
   
-  // FIX 3: Initialize isMobile safely to avoid hydration errors (optional but recommended)
-  // Ideally, use a CSS media query for layout, but for logic:
   const [isMobile, setIsMobile] = useState(false);
   const filtered = useMemo(() => {
   console.log("assets : ", assets);
@@ -33,40 +35,36 @@ export default function Configurator({ assets, pricing, defaultChoice, selectedR
     };
   }, [assets, selectedRegion]);
 
-  const { scrollY } = useScroll();
-  
-  // 2. On map cette position : 
-  // - à 0px de scroll -> scale = 1 (taille normale)
-  // - à 500px de scroll -> scale = 0.6 (taille réduite à 60%)
-  const scrollScale = useTransform(scrollY, [0, 500], [1, 0.6]);
-
   // 2. Configuration State
-  const [config, setConfig] = useState<Record<string, string>>(() => {
-    const query = fromQuery(); // Uses the safe version now
-    return {
-      mouvement: query.mouvement || defaultChoice?.mouvement || filtered.mouvement[0]?.id || "",
-      cases: query.cases || defaultChoice?.cases || filtered.cases[0]?.id || "",
-      straps: query.straps || defaultChoice?.straps || filtered.straps[0]?.id || "",
-      dials: query.dials || defaultChoice?.dials || filtered.dials[0]?.id || "",
-      hands: query.hands || defaultChoice?.hands || filtered.hands[0]?.id || "",
-    };
-  });
+  const [config, setConfig] = useState<PartOption[]>(() => {
+  const query = fromQuery();
+
+  const resolvedParts = [
+    assets.mouvement?.find(p => p.id === (query.mouvement || defaultChoice?.mouvement)) ?? assets.mouvement?.[0],
+    assets.cases?.find(p => p.id === (query.cases         || defaultChoice?.cases))     ?? assets.cases?.[0],
+    assets.straps?.find(p => p.id === (query.straps       || defaultChoice?.straps))    ?? assets.straps?.[0],
+    assets.dials?.find(p => p.id === (query.dials         || defaultChoice?.dials))     ?? assets.dials?.[0],
+    assets.hands?.find(p => p.id === (query.hands         || defaultChoice?.hands))     ?? assets.hands?.[0],
+  ];
+
+  return resolvedParts.filter((p): p is PartOption => p !== undefined);
+});
 
   const [zoom, setZoom] = useState(1.5);
   const [showPreview, setShowPreview] = useState(true);
 
   // 3. Derived Data
   const selections = useMemo(() => ({
-    mouvement: filtered.mouvement.find(o => o.id === config.mouvement),
-    cases: filtered.cases.find(o => o.id === config.cases),
-    straps: filtered.straps.find(o => o.id === config.straps),
-    dials: filtered.dials.find(o => o.id === config.dials),
-    hands: filtered.hands.find(o => o.id === config.hands),
+    mouvement: filtered.mouvement.find(o => o.id === config[0].id),
+    cases: filtered.cases.find(o => o.id === config[1].id),
+    straps: filtered.straps.find(o => o.id === config[2].id),
+    dials: filtered.dials.find(o => o.id === config[3].id),
+    hands: filtered.hands.find(o => o.id === config[4].id),
   }), [config, filtered]);
 
   const totalPrice = useMemo(() => 
-    pricing.base + Object.values(selections).reduce((acc, curr) => acc + (curr?.price || 0), 0)
-  , [selections, pricing.base]);
+    Object.values(selections).reduce((acc, curr) => acc + (curr?.price || 0), 0)
+  , [selections]);
 
   const sku = Object.values(config).filter(Boolean).join("-");
 
@@ -132,6 +130,17 @@ export default function Configurator({ assets, pricing, defaultChoice, selectedR
     link.click();
   };
 
+  const handleSelectPart = (index: number, id: string, options: PartOption[]) => {
+    const selectedPart = options.find(opt => opt.id === id);
+    if (selectedPart) {
+      setConfig(prevConfig => {
+        const newConfig = [...prevConfig]; // On clone le tableau
+        newConfig[index] = selectedPart;   // On remplace la pièce au bon index
+        return newConfig;                  // On sauvegarde le nouveau tableau
+      });
+    }
+  };
+
   // Helper to render the Viewer content to avoid code duplication
   const renderViewer = () => (
     <div className="bg-surface/20 rounded-3xl border border-white/10 p-4 shadow-lg backdrop-blur-sm">
@@ -160,8 +169,7 @@ export default function Configurator({ assets, pricing, defaultChoice, selectedR
           >
             <div className="pt-4"> {/* Marge interne pour séparer du bouton */}
               
-              {/* TON ANCIEN BLOC DE MONTRE (Intact) */}
-              <div id="watch-viewer" className="relative bg-background aspect-square rounded-2xl border border-white/5 overflow-hidden">
+              <div className=" bg-background aspect-square rounded-2xl border border-white/5 overflow-hidden">
                 <div className="relative h-full w-full transition-transform duration-300" style={{ transform: `scale(${zoom})` }}>
                   <AnimatePresence mode="popLayout">
                     {[selections.cases, selections.dials, selections.straps, selections.hands].map((part, i) => (
@@ -219,14 +227,19 @@ export default function Configurator({ assets, pricing, defaultChoice, selectedR
 
           {/* RIGHT: Selection Controls */}
           <div className="space-y-8">
-            <SummaryCard sku={sku} selections={selections} price={totalPrice} currency={pricing.currency} onCheckout={() => onCheckout?.({price: totalPrice, config})} />
+            <SummaryCard sku={sku} selections={selections} price={totalPrice} onCheckout={() => onCheckout?.({price: totalPrice, config})} />
             
             <div className="space-y-10 bg-surface/30 p-6 rounded-2xl border border-white/5">
-              <PartGrid title="Mouvement" part="mouvement" options={filtered.mouvement} current={config.mouvement} onSelect={(id: string) => setConfig(prev => ({...prev, mouvement: id}))} currency={pricing.currency} />
-              <PartGrid title="Boîtier" part="cases" options={filtered.cases} current={config.cases} onSelect={(id: string) => setConfig(prev => ({...prev, cases: id}))} currency={pricing.currency} />
-              <PartGrid title="Bracelet" part="straps" options={filtered.straps} current={config.straps} onSelect={(id: string) => setConfig(prev => ({...prev, straps: id}))} currency={pricing.currency} />
-              <PartGrid title="Cadran" part="dials" options={filtered.dials} current={config.dials} onSelect={(id: string) => setConfig(prev => ({...prev, dials: id}))} currency={pricing.currency} />
-              <PartGrid title="Aiguilles" part="hands" options={filtered.hands} current={config.hands} onSelect={(id: string) => setConfig(prev => ({...prev, hands: id}))} currency={pricing.currency} />
+              <PartGrid title="Mouvement" part="mouvement" options={filtered.mouvement} current={config[0]} 
+              onSelect={(id: string) => handleSelectPart(0, id, filtered.mouvement)}/>
+              <PartGrid title="Boîtier" part="cases" options={filtered.cases} current={config[1]} 
+              onSelect={(id: string) => handleSelectPart(1, id, filtered.cases)} />
+              <PartGrid title="Bracelet" part="straps" options={filtered.straps} current={config[2]} 
+              onSelect={(id: string) => handleSelectPart(2, id, filtered.straps)}/>
+              <PartGrid title="Cadran" part="dials" options={filtered.dials} current={config[3]} 
+              onSelect={(id: string) => handleSelectPart(3, id, filtered.dials)} />
+              <PartGrid title="Aiguilles" part="hands" options={filtered.hands} current={config[4]} 
+              onSelect={(id: string) => handleSelectPart(0, id, filtered.hands  )} />
             </div>
           </div>
 
@@ -244,16 +257,15 @@ function ZoomBtn({ label, onClick }: { label: string; onClick: () => void }) {
   return <button onClick={onClick} className="w-8 h-8 rounded-full hover:bg-white/10 transition flex items-center justify-center">{label}</button>;
 }
 
-function SummaryCard({ sku, price, currency, onCheckout }: any) {
+function SummaryCard({ sku, price, onCheckout }: any) {
   return (
     <div className="bg-surface p-6 rounded-2xl border border-primary/20 shadow-2xl">
       <div className="flex justify-between items-start mb-6">
         <div>
           <h4 className="text-primary font-serif text-xl">Votre Composition</h4>
-          <p className="text-[10px] text-text-subtle uppercase tracking-widest mt-1">Ref: {sku}</p>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-serif text-primary">{fmt(price, currency)}</p>
+          <p className="text-2xl font-serif text-primary">{price}</p>
         </div>
       </div>
       <button onClick={onCheckout} className="w-full bg-primary text-dark font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-primary-dark transition shadow-lg shadow-primary/20">
@@ -263,7 +275,7 @@ function SummaryCard({ sku, price, currency, onCheckout }: any) {
   );
 }
 
-function PartGrid({ title, options, current, onSelect, currency }: any) {
+function PartGrid({ title, options, current, onSelect }: any) {
   return (
     <div>
       <h5 className="font-serif text-lg mb-4 text-ivory/90">{title}</h5>
@@ -278,7 +290,7 @@ function PartGrid({ title, options, current, onSelect, currency }: any) {
               <img src={opt.thumbnail} alt={opt.name} className="w-full h-full scale-500 object-contain group-hover:scale-600 transition-transform" />
             </div>
             <p className="text-[10px] text-center uppercase tracking-tighter truncate">{opt.name}</p>
-            {opt.price ? <p className="text-[9px] text-center text-primary mt-1">{fmt(opt.price, currency)}</p> : null}
+            {opt.price ? <p className="text-[9px] text-center text-primary mt-1">{opt.price}</p> : null}
           </button>
         ))}
       </div>

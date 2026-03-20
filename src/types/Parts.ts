@@ -20,6 +20,13 @@ export type PartsCatalog = {
   straps: PartOption[];
 };
 
+export type CartItem ={
+  composants: PartOption[];
+  price: number;
+  id?: string;
+  name?: string;
+}
+
 export type User = {
   id: string;
   email: string;
@@ -61,6 +68,6 @@ export type WatchConfiguratorProps = {
   brand?: string;
   onCheckout?: (payload: {
     price: number;
-    config: Record<string, string>;
+    config: PartOption[];
   }) => void;
 };
