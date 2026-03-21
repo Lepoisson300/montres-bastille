@@ -117,7 +117,7 @@ function App() {
           <Route path="/account" element={<AccountPage />} />
           <Route path="/mention" element={<LegalPage/>}/>
           <Route path="/panier" element={<CartPage />}/>
-          <Route path="/sucess" element={<SuccessPage/>}/>
+          <Route path="/success" element={<SuccessPage/>}/>
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
