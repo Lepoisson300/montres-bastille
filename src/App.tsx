@@ -16,6 +16,7 @@ import Footer from "./components/Footer";
 import LegalPage from "./pages/mentionLegalePage";
 import CartPage from "./pages/CartPage";
 import type { PartOption } from "./types/Parts";
+import SuccessPage from "./pages/SuccessPaiementPage";
 
 // --- Main App Component ---
 
@@ -116,6 +117,7 @@ function App() {
           <Route path="/account" element={<AccountPage />} />
           <Route path="/mention" element={<LegalPage/>}/>
           <Route path="/panier" element={<CartPage />}/>
+          <Route path="/sucess" element={<SuccessPage/>}/>
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
