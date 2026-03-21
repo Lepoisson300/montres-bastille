@@ -239,7 +239,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
               <PartGrid title="Cadran" part="dials" options={filtered.dials} current={config[3]} 
               onSelect={(id: string) => handleSelectPart(3, id, filtered.dials)} />
               <PartGrid title="Aiguilles" part="hands" options={filtered.hands} current={config[4]} 
-              onSelect={(id: string) => handleSelectPart(0, id, filtered.hands  )} />
+              onSelect={(id: string) => handleSelectPart(4, id, filtered.hands)} />
             </div>
           </div>
 

@@ -100,7 +100,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
       Livraison,
       BoiteRangement,
     ];
-
+    console.log("envoie de la commande : ",watchConfig)
     try {
       const res = await fetch("https://montre-bastille-api.onrender.com/api/stripeOrder", {
         method: 'POST',
