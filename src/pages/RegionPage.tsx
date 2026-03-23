@@ -5,6 +5,7 @@ import { REGION_NAMES } from "../Logic/watchComponents";
 import { DesktopMap } from "../components/DesktopMap";
 import Nav from "../components/Nav";
 import type { PartOption } from "../types/Parts";
+import { Helmet } from "react-helmet-async";
 
 
 interface RegionPageProps {
@@ -173,6 +174,32 @@ export default function RegionPage({components}:RegionPageProps) {
 
   return (
     <>
+      <Helmet>
+        <title>Choisir ma Région | Personnalisez votre Montre Bastille</title>
+        <meta name="description" content="Sélectionnez une région française sur notre carte interactive pour configurer votre montre unique. Matériaux locaux et artisanat français de précision." />
+        <meta property="og:title" content="Carte des Régions - Créez votre Montre Bastille" />
+        <meta property="og:description" content="Découvrez les composants horlogers issus du patrimoine de nos régions françaises." />
+        <link rel="canonical" href="https://montre-bastille.fr/region-page" />
+      </Helmet>
+
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "Personnalisation de montres par région",
+          "provider": {
+            "@type": "LocalBusiness",
+            "name": "Montre Bastille",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Bordeaux",
+              "addressCountry": "FR"
+            }
+          },
+          "areaServed": "FR",
+          "description": "Service de configuration de montres utilisant des matériaux issus des régions françaises."
+        })}
+      </script>
       <Nav bg={false}/>
 
       <div className="relative flex flex-col items-center justify-center min-h-screen px-8 pt-28 pb-16 bg-neutral-950 text-neutral-200 font-[Poppins] tracking-wide overflow-hidden" ref={containerRef}>
@@ -201,31 +228,33 @@ export default function RegionPage({components}:RegionPageProps) {
       </style>
 
         {/* Branding header */}
-        <div className="text-center mb-6 sm:mb-10 px-4">
+        <header className="text-center mb-6 sm:mb-10 px-4">
           <h1 className="text-2xl sm:text-4xl md:text-5xl font-semibold text-neutral-100 tracking-widest mb-2">
             Montres-Bastille
           </h1>
-          <p className="text-lg sm:text-sm md:text-base text-primary uppercase tracking-[0.35em] mb-2">
-            Les Régions de France
+          <h2 className="text-lg sm:text-sm md:text-base text-primary uppercase tracking-[0.35em] mb-2">
+            Le Patrimoine des Régions de France
+          </h2>
+          <p className="text-xl sm:text-sm md:text-base text-neutral-300 max-w-2xl mx-auto">
+            Sélectionnez votre région sur la carte pour concevoir une montre unique à partir de matériaux locaux (bois, pierre, cuir). 
           </p>
-          <p className="text-xl sm:text-sm md:text-base text-neutral-300">
-            Choisissez une région pour concevoir votre Montres-Bastille, en utilisant les matériaux de cette région. 
-          </p>
-        </div>
+        </header>
           
         {/* Desktop: Full Map */}
-        {!isMobile && (
-          <DesktopMap svgContent={svgContent} availableRegions={availableRegions} onSelect={handleConfigureClick}/>
-        )}
+        <main className="w-full" role="main" aria-label="Carte interactive des régions de France">
+          {!isMobile && (
+            <DesktopMap svgContent={svgContent} availableRegions={availableRegions} onSelect={handleConfigureClick}/>
+          )}
 
-        {isMobile && (
-          <MobileCarousel
-            availableRegions={availableRegions}
-            getComponentCount={getComponentCount}
-            extractRegionSVG={extractRegionSVG}
-            onSelect={handleConfigureClick}
-            />
-        )}
+          {isMobile && (
+            <MobileCarousel
+              availableRegions={availableRegions}
+              getComponentCount={getComponentCount}
+              extractRegionSVG={extractRegionSVG}
+              onSelect={handleConfigureClick}
+              />
+          )}
+        </main>
       </div>
     </>
   );

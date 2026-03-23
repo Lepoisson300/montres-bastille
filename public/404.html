@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Montre Bastille</title>
+    <script type="text/javascript">
+      // Ce script transforme l'URL demandée (ex: /about) en paramètre de recherche (ex: /?/about)
+      // Cela permet à GitHub Pages de rediriger vers l'index sans perdre la route choisie.
+      
+      // Si tu as un nom de domaine personnalisé (montre-bastille.fr), laisse 0.
+      // Si ton site est sur pseudo.github.io/nom-du-repo/, mets 1.
+      var pathSegmentsToKeep = 0;
+
+      var l = window.location;
+      l.replace(
+        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+        l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
+        l.pathname.split('/').slice(1 + pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+        (l.search ? '&' + l.search.replace(/&/g, '~and~') : '') +
+        l.hash
+      );
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

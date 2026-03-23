@@ -1,10 +1,10 @@
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import Configurator from "../components/Configurator";
 import type { CartItem, PartOption, PartsCatalog } from "../types/Parts";
 import { useEffect, useState } from "react";
 import Nav from "../components/Nav";
 import Alert from "../components/Alert";
-
+import { Helmet } from "react-helmet-async";
 
 interface LocationState {
   selectedRegion?: string;
@@ -16,6 +16,11 @@ export default function ConfiguratorPage() {
   const location = useLocation();
   const state = location.state as LocationState;
   const [alert, setAlert] = useState<{type: string, message: string} | null>(null);
+
+  if (!state || !state.watchComponents) {
+    return <Navigate to="/region-page" replace />;
+  }
+  
   const [cartList, setCartList] = useState<any[]>(() => {
     try {
       const saved = localStorage.getItem('cart');
@@ -36,10 +41,6 @@ export default function ConfiguratorPage() {
     base: 0,
     currency: "EUR"
   };
-
-  useEffect(()=>{
-    
-  })
 
   const handleCheckout = (order: { sku: string; price: number; config: PartOption[] }) => {
     // Build a CartItem with the resolved PartOption array

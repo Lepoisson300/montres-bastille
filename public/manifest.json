@@ -1,0 +1,27 @@
+{
+  "short_name": "Bastille",
+  "name": "Montre Bastille - Horlogerie Bordeaux",
+  "description": "Créez votre montre unique inspirée du patrimoine français. Artisanat et précision à Bordeaux.",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "logo.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#C5A059",
+  "background_color": "#0A0A0C"
+}

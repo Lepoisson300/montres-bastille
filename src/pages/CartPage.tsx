@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Alert from "../components/Alert";
 import type { PartOption, CartItem } from "../types/Parts";
 import Nav from "../components/Nav";
+import { Helmet } from "react-helmet-async";
 
 
 interface CartPageProps {
@@ -128,7 +129,10 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
   return (
     <div className="min-h-screen bg-background text-text-primary font-sans pt-24 pb-12">
       <Nav bg={false} />
-
+      <Helmet>
+        <title>Votre Panier | Montre Bastille - Paiement Sécurisé</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       {/* ALERTE */}
       {alert && (
         <Alert
@@ -214,8 +218,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
                           <img
                             key={part.id || category}
                             src={part.thumbnail}
-                            alt={part.name || category}
-                            // J'ai aussi légèrement réduit le scale-175 à scale-150 pour éviter que la montre sorte du conteneur réduit
+                            alt={`Composant ${category} : ${part.name}`}                            
                             className="absolute inset-0 w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 scale-[1.7]"
                           />
                         );

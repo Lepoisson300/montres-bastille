@@ -4,6 +4,7 @@ import type { User } from "../types/Parts";
 import Nav from "../components/Nav";
 import { MeshGradient } from '@paper-design/shaders-react';
 import BtnRedirection from "../components/btnRedirect";
+import { Helmet } from "react-helmet-async";
 
 // Animation de Reveal
 const Reveal = ({
@@ -88,21 +89,23 @@ export default function AccountPage() {
 
   return (
     <>
+      <Helmet>
+        <title>Mon Espace Personnel | Montre Bastille</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <Nav bg={false}/>
       
       <div className="relative min-h-screen bg-background font-sans overflow-hidden pt-24 pb-20">
         
-        {/* Le Gradient Horloger en fond absolu */}
-        <div className="absolute top-0 left-0 w-full h-150 opacity-90 z-0 pointer-events-none">
+        {/* Le Gradient Horloger - Optimisation : on s'assure qu'il ne bloque pas le focus */}
+        <div className="absolute top-0 left-0 w-full h-150 opacity-90 z-0 pointer-events-none" aria-hidden="true">
           <MeshGradient
             width={typeof window !== 'undefined' ? window.innerWidth : 1280}
             height={600}
             colors={["#0a0a0c", "#262626", "#c5a059", "#1c1a17"]}
             distortion={0.25}
-            swirl={0}
             speed={0.35}
           />
-          {/* Un masque pour fondre le gradient vers le bas */}
           <div className="absolute inset-0 bg-linear-to-b from-transparent to-background"></div>
         </div>
 
@@ -116,13 +119,12 @@ export default function AccountPage() {
               </h1>
               <div className="h-px w-20 bg-primary mx-auto opacity-60 mb-8" />
               <p className="text-text-muted text-lg max-w-2xl mx-auto leading-relaxed mb-8">
-                Bienvenue, <span className="text-primary font-serif text-xl">{displayUser.prenom}</span>.<br/>
-                Retrouvez ici vos informations personnelles et votre collection de pièces uniques.
+                Bienvenue, <span className="text-primary font-serif text-xl">{displayUser.prenom}</span>.
               </p>
               
               <button 
                 onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })} 
-                className="text-xs uppercase tracking-widest border border-amber-400 rounded-full p-3 bg-accent text-dark hover:text-amber-900 transition-colors hover:border-primary"
+                className="text-xs uppercase tracking-widest border border-primary/40 rounded-full px-6 py-3 bg-surface/50 text-text-primary hover:bg-primary hover:text-dark transition-all duration-300"
               >
                 Se déconnecter
               </button>

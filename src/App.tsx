@@ -1,6 +1,6 @@
 // App.tsx
 import "./App.css";
-import { Routes, Route, Navigate, HashRouter } from "react-router-dom";
+import { Routes, Route, Navigate, HashRouter, BrowserRouter } from "react-router-dom";
 import AccountPage from "./pages/AccountPage";
 import HomePage from "./pages/HomePage";
 import { useEffect, useState } from "react";
@@ -8,7 +8,6 @@ import ConfiguratorPage from "./pages/RegionSelectionPage";
 import AboutPage from "./pages/AboutPage";
 import CommunityPage from "./pages/CommunityPage";
 import ContactPage from "./pages/ContactPage";
-import NotImplementedPage from "./pages/NotImplementedPage";
 import RegionPage from "./pages/RegionPage"
 import { useAuth0 } from "@auth0/auth0-react";
 import OnboardingModal from "./components/OnboardingModal";
@@ -17,6 +16,7 @@ import LegalPage from "./pages/mentionLegalePage";
 import CartPage from "./pages/CartPage";
 import type { PartOption } from "./types/Parts";
 import SuccessPage from "./pages/SuccessPaiementPage";
+import { HelmetProvider } from 'react-helmet-async';
 
 // --- Main App Component ---
 
@@ -102,14 +102,14 @@ function App() {
 
   return (
     <div className="">
-      <HashRouter>
+      <HelmetProvider>
+      <BrowserRouter>
 
       {/* Main Content */}
       <main className="bg-background">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
-          <Route path="/not-implemented" element={<NotImplementedPage />} />
           <Route path="/region-page" element={<RegionPage components={components} />} />
           <Route path="/configurator" element={<ConfiguratorPage/>} />
           <Route path="/community" element={<CommunityPage />} />
@@ -133,8 +133,8 @@ function App() {
       {/* Footer */}
       <Footer />
 
-      </HashRouter>
-
+      </BrowserRouter>
+</HelmetProvider>
     </div>
 
   );

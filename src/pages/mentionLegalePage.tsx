@@ -1,6 +1,8 @@
 import Reveal from "../Logic/Reveal";
 import { Link } from "react-router-dom";
 import texture from "/paper_texture.png";
+import Nav from "../components/Nav";
+import { Helmet } from "react-helmet-async";
 
 export default function CgvPage() {
   
@@ -13,7 +15,15 @@ export default function CgvPage() {
 
   return (
     <div className="bg-background text-text-secondary font-sans min-h-screen">
-      
+      <Helmet>
+        <title>Conditions Générales de Vente (CGV) | Montres-Bastille</title>
+        <meta name="description" content="Consultez les conditions générales de vente de l'atelier Montres-Bastille : modalités de commande, garanties horlogères, livraison et droit de rétractation." />
+        {/* On autorise l'indexation car cela renforce la confiance du site (E-E-A-T) */}
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://montre-bastille.fr/mention" />
+      </Helmet>
+
+      <Nav bg={false} />
       {/* HEADER SECTION */}
       <section className="relative overflow-hidden pt-32 pb-16 md:pt-40 md:pb-20">
         <div 
@@ -44,27 +54,29 @@ export default function CgvPage() {
             
             {/* Sommaire */}
             <div className="hidden md:block md:col-span-4 lg:col-span-3">
+              <nav className="hidden md:block md:col-span-4 lg:col-span-3">
               <Reveal>
                 <div className="sticky top-32 border-l border-primary/20 pl-6 py-2">
                   <p className="font-serif text-text-primary mb-4 text-lg">Sommaire</p>
                   <ul className="space-y-3 text-sm text-text-muted font-sans">
-                    <li>1. Champ d'application</li>
-                    <li>2. Produits & Indépendance</li>
-                    <li>3. Prix & Paiement</li>
-                    <li>4. Fabrication & Livraison</li>
-                    <li>5. Rétractation & Sur-mesure</li>
-                    <li>6. Garanties Horlogères</li>
-                    <li>7. Litiges & Médiation</li>
+                    <li><a href="#art1" className="hover:text-primary transition-colors">1. Champ d'application</a></li>
+                    <li><a href="#art2" className="hover:text-primary transition-colors">2. Produits & Indépendance</a></li>
+                    <li><a href="#art3" className="hover:text-primary transition-colors">3. Prix & Paiement</a></li>
+                    <li><a href="#art4" className="hover:text-primary transition-colors">4. Fabrication & Livraison</a></li>
+                    <li><a href="#art5" className="hover:text-primary transition-colors">5. Rétractation & Sur-mesure</a></li>
+                    <li><a href="#art6" className="hover:text-primary transition-colors">6. Garanties Horlogères</a></li>
+                    <li><a href="#art7" className="hover:text-primary transition-colors">7. Litiges & Médiation</a></li>
                   </ul>
                 </div>
               </Reveal>
+            </nav>
             </div>
 
             {/* Articles */}
             <div className="md:col-span-8 lg:col-span-9 space-y-16">
               
               <Reveal>
-                <article>
+                <article id="art1">
                   <h2 className="font-serif text-2xl text-text-primary mb-4 flex items-center gap-4">
                     <span className="text-primary text-lg font-sans opacity-60">01.</span> Champ d'application
                   </h2>
@@ -76,7 +88,7 @@ export default function CgvPage() {
               </Reveal>
 
               <Reveal>
-                <article>
+                <article id="art2">
                   <h2 className="font-serif text-2xl text-text-primary mb-4 flex items-center gap-4">
                     <span className="text-primary text-lg font-sans opacity-60">02.</span> Produits & Indépendance
                   </h2>
@@ -92,7 +104,7 @@ export default function CgvPage() {
               </Reveal>
 
               <Reveal>
-                <article>
+                <article id="art3">
                   <h2 className="font-serif text-2xl text-text-primary mb-4 flex items-center gap-4">
                     <span className="text-primary text-lg font-sans opacity-60">03.</span> Prix & Paiement
                   </h2>
@@ -104,7 +116,7 @@ export default function CgvPage() {
               </Reveal>
 
               <Reveal>
-                <article>
+                <article id="art4">
                   <h2 className="font-serif text-2xl text-text-primary mb-4 flex items-center gap-4">
                     <span className="text-primary text-lg font-sans opacity-60">04.</span> Fabrication & Livraison
                   </h2>
@@ -116,7 +128,7 @@ export default function CgvPage() {
               </Reveal>
 
               <Reveal>
-                <article>
+                <article id="art5">
                   <h2 className="font-serif text-2xl text-text-primary mb-4 flex items-center gap-4">
                     <span className="text-primary text-lg font-sans opacity-60">05.</span> Droit de Rétractation & Sur-mesure
                   </h2>
@@ -128,7 +140,7 @@ export default function CgvPage() {
               </Reveal>
 
               <Reveal>
-                <article>
+                <article id="art6">
                   <h2 className="font-serif text-2xl text-text-primary mb-4 flex items-center gap-4">
                     <span className="text-primary text-lg font-sans opacity-60">06.</span> Garanties Horlogères
                   </h2>
@@ -145,8 +157,8 @@ export default function CgvPage() {
               </Reveal>
 
               <Reveal>
-                <article>
-                  <h2 className="font-serif text-2xl text-text-primary mb-4 flex items-center gap-4">
+                <article id="art7">
+                    <h2 className="font-serif text-2xl text-text-primary mb-4 flex items-center gap-4">
                     <span className="text-primary text-lg font-sans opacity-60">07.</span> Litiges & Médiation
                   </h2>
                   <div className="text-text-muted font-sans leading-relaxed space-y-4">

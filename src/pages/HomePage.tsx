@@ -6,6 +6,7 @@ import watch2 from "/watch2.png";
 import HeroCarousel from "../components/Carousel";
 import Nav from "../components/Nav";
 import BtnRedirection from "../components/btnRedirect";
+import { Helmet } from "react-helmet-async";
 
 // Reveal animation
 const Reveal = ({
@@ -47,6 +48,14 @@ export default function HomePage() {
 
   return (
     <>
+    <Helmet>
+        <title>Montre Bastille | Créateur de Montres Personnalisées à Bordeaux</title>
+        <meta name="description" content="Configurez votre montre Montre Bastille à partir de composants symbolique d'un région Francaise. Artisanat Bordelais, composants de précision et design unique." />
+        <meta property="og:title" content="Montre Bastille - Votre Garde-Temps du patrimoine" />
+        <meta property="og:image" content="/logo.png" />
+
+        <link rel="canonical" href="https://montre-bastille.fr/" />
+      </Helmet>
     <Nav bg={false}/>
 
     <div className="font-sans min-h-screen bg-background text-text-secondary">

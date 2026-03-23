@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /account
+Disallow: /panier
+Disallow: /success
+
+# Indique l'emplacement de ton futur sitemap
+Sitemap: https://montre-bastille.fr/sitemap.xml

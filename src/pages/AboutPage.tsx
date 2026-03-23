@@ -1,25 +1,41 @@
 import Reveal from "../Logic/Reveal";
-import heroImg from "/about_hero.png";      // replace with real image
-import atelier1 from "/atelier1.png";       // replace with real image
-import atelier2 from "/Gurv.png";       // replace with real image
-import atelier3 from "/nico.png";       // replace with real image
-import texture from "/paper_texture.png";    // optional subtle texture
-import eclate from "/eclate.jpg";               // movement image
+import heroImg from "/about_hero.png"; 
+import atelier1 from "/atelier1.png"; 
+import atelier2 from "/Gurv.png"; 
+import atelier3 from "/nico.png"; 
+import texture from "/paper_texture.png"; 
+import eclate from "/eclate.jpg"; 
 import Nav from "../components/Nav";
 import BtnRedirection from "../components/btnRedirect";
+import { Helmet } from "react-helmet-async"; // Import indispensable
 
 export default function AboutPage() {
   return (
-     <>
+      <>
+        <Helmet>
+          <title>Notre Histoire | Montre Bastille - L'Art de l'Horlogerie à Bordeaux</title>
+          <meta name="description" content="Découvrez l'origine de Montre Bastille. Deux passionnés créant des montres uniques inspirées du patrimoine français et assemblées avec précision à Bordeaux." />
+          <meta property="og:title" content="L'histoire de Montre Bastille - Savoir-faire et Patrimoine" />
+          <meta property="og:description" content="De l'idée aux premiers prototypes : découvrez les coulisses de notre atelier bordelais." />
+          <meta property="og:image" content="https://montre-bastille.fr/about_hero.png" />
+          <link rel="canonical" href="https://montre-bastille.fr/about" />
+        </Helmet>
+
         <Nav bg={false}/>
+
     <div className="bg-background text-text-secondary font-sans">
       {/* HERO */}
       <section className="relative overflow-hidden">
-        {/* grain / texture overlay */}
         <div className="pointer-events-none absolute inset-0 opacity-[0.08]" style={{ backgroundImage: `url(${texture})`, backgroundSize: "600px" }} />
         <div className="relative isolate">
           <div className="absolute inset-0 -z-10">
-            <img src={heroImg} alt="Atelier parisien" className="h-[60vh] w-full object-cover object-center" />
+            {/* SEO: Ajout d'un Alt descriptif et chargement prioritaire (eager) car c'est le haut de page */}
+            <img 
+                src={heroImg} 
+                alt="Intérieur de l'atelier d'horlogerie Montre Bastille à Bordeaux" 
+                className="h-[60vh] w-full object-cover object-center" 
+                loading="eager"
+            />
             <div className="absolute inset-0 bg-linear-to-b from-dark/40 via-dark/40 to-dark/65" />
           </div>
           <div className="mx-auto max-w-6xl px-6 md:px-12 h-[60vh] flex items-end">
@@ -27,7 +43,7 @@ export default function AboutPage() {
               <div className="pb-14 text-text-primary">
                 <p className="tracking-[.25em] text-xs uppercase text-primary font-sans opacity-90">Bordeaux — Est. 2025</p>
                 <h1 className="mt-4 text-4xl md:text-6xl font-serif leading-tight tracking-tight text-text-primary">L'histoire de <span className="text-primary">Montres‑Bastille</span></h1>
-                <p className="mt-4 max-w-2xl text-text-muted font-sans">Si vous êtes arrivé là, c'est que vous êtes curieux de savoir comment sont fabriquées nos montres et ce que nous faisons. Alors allons-y</p>
+                <p className="mt-4 max-w-2xl text-text-muted font-sans">Si vous êtes arrivé là, c'est que vous êtes curieux de savoir comment sont fabriquées nos montres et ce que nous faisons. Alors allons-y.</p>
               </div>
             </Reveal>
           </div>
@@ -51,6 +67,7 @@ export default function AboutPage() {
               <div className="md:col-span-5">
                 <div className="rounded-2xl border border-primary/40 bg-surface p-2 shadow-lg">
                   <div className="rounded-xl bg-surface-hover p-6">
+                    {/* SEO: Utilisation de <dl> (Description List) excellente pour la structure sémantique */}
                     <dl className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <dt className="text-text-subtle font-sans">Assemblage</dt>
@@ -82,9 +99,18 @@ export default function AboutPage() {
         <div className="mx-auto max-w-6xl px-6 md:px-12">
           <Reveal>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[atelier1, atelier2, atelier3].map((src, i) => (
+              {[
+                { src: atelier1, alt: "Outils de précision d'horloger - Atelier Bastille" },
+                { src: atelier2, alt: "Artisan horloger en plein travail sur un mouvement" },
+                { src: atelier3, alt: "Réglage minutieux d'une montre Bastille" }
+              ].map((img, i) => (
                 <figure key={i} className="group relative overflow-hidden rounded-2xl shadow-lg border border-border/20">
-                  <img src={src} alt="Atelier" className="h-64 w-full scale-110 object-cover transition-transform duration-700 group-hover:scale-130" />
+                  <img 
+                    src={img.src} 
+                    alt={img.alt} 
+                    className="h-64 w-full scale-110 object-cover transition-transform duration-700 group-hover:scale-130" 
+                    loading="lazy" 
+                  />
                   <figcaption className="pointer-events-none absolute inset-0 bg-linear-to-t from-dark/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 </figure>
               ))}
@@ -106,14 +132,18 @@ export default function AboutPage() {
                 </p>
                 <div className="mt-8 flex flex-wrap gap-3">
                   <BtnRedirection text="Nous écrire" redirection="/contact" style="bordered" size={{px:6,py:3}}/>
-                 
                 </div>
               </div>
               <div className="relative">
                 <div className="absolute -inset-6 -z-10 rounded-3xl bg-linear-to-tr from-primary/10 to-transparent blur-2xl" />
                 <div className="rounded-2xl border border-primary/30 bg-surface p-2 shadow-[0_10px_40px_rgba(0,0,0,0.45)]">
-                  <div className="aspect-4/3 rounded-xl bg-linear-to-b from-surface-hover to-surface-active flex items-center justify-center text-text-muted">
-                    <img src={eclate} />
+                  <div className="aspect-4/3 rounded-xl bg-linear-to-b from-surface-hover to-surface-active flex items-center justify-center text-text-muted overflow-hidden">
+                    <img 
+                        src={eclate} 
+                        alt="Vue éclatée du mécanisme d'une montre Bastille" 
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                    />
                   </div>
                 </div>
               </div>
@@ -153,7 +183,9 @@ export default function AboutPage() {
         <div className="mx-auto max-w-5xl px-6 md:px-12">
           <Reveal>
             <figure className="rounded-3xl border border-primary/30 bg-surface p-8 md:p-12 shadow-lg">
-                <blockquote className="font-serif text-2xl md:text-3xl leading-relaxed text-text-primary">"Une montre n'indique pas seulement l'heure, elle révèle la personnalité de celui qui la porte."</blockquote>
+                <blockquote className="font-serif text-2xl md:text-3xl leading-relaxed text-text-primary italic">
+                  "Une montre n'indique pas seulement l'heure, elle révèle la personnalité de celui qui la porte."
+                </blockquote>
                 <figcaption className="mt-4 text-sm text-text-subtle font-sans">— Le fondateur</figcaption>
             </figure>
           </Reveal>
@@ -161,7 +193,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA BANNER */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden mb-12">
         <div className="absolute inset-0 -z-10 bg-linear-to-r from-primary/20 to-transparent" />
         <div className="mx-auto max-w-6xl px-6 md:px-12 py-12 md:py-16">
           <Reveal>
@@ -177,6 +209,5 @@ export default function AboutPage() {
       </section>
     </div>
       </>
-
   );
 }

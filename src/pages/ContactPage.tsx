@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { GoArrowUpRight, GoMail, GoLocation, GoClock, GoDeviceMobile } from "react-icons/go";
 import Nav from "../components/Nav";
+import { Helmet } from "react-helmet-async";
 
 // Background grain effect
 const Grain = () => (
@@ -117,6 +118,14 @@ export default function ContactPage() {
 
   return (
     <div className="font-sans min-h-screen bg-background text-text-secondary ">
+      <Helmet>
+        <title>Contact & SAV | Montre Bastille - Horlogerie à Bordeaux</title>
+        <meta name="description" content="Une question sur nos montres personnalisées ? Besoin d'un service après-vente ou d'un partenariat ? Contactez l'atelier Montre Bastille. Réponse sous 24h." />
+        <meta property="og:title" content="Contactez l'Atelier Montre Bastille" />
+        <meta property="og:description" content="Experts en horlogerie à votre écoute pour vos projets de montres uniques." />
+        <meta property="og:image" content="https://montre-bastille.fr/logo.png" />
+        <link rel="canonical" href="https://montre-bastille.fr/contact" />
+      </Helmet>
       <Nav bg={false}/>
 
       {/* HERO SECTION */}
