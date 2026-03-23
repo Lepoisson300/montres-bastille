@@ -1,8 +1,10 @@
 User-agent: *
 Allow: /
+
+# Pages à ne pas indexer
 Disallow: /account
 Disallow: /panier
 Disallow: /success
 
-# Indique l'emplacement de ton futur sitemap
+# Lien vers le sitemap
 Sitemap: https://montre-bastille.fr/sitemap.xml
