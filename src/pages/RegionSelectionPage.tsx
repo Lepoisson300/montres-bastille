@@ -4,6 +4,7 @@ import type { CartItem, PartOption, PartsCatalog } from "../types/Parts";
 import { useState } from "react";
 import Nav from "../components/Nav";
 import Alert from "../components/Alert";
+import { useAlert } from "../Logic/AlertContext";
 
 interface LocationState {
   selectedRegion?: string;
@@ -14,8 +15,7 @@ interface LocationState {
 export default function ConfiguratorPage() {
   const location = useLocation();
   const state = location.state as LocationState;
-  const [alert, setAlert] = useState<{type: string, message: string} | null>(null);
-
+  const { showAlert } = useAlert();
   if (!state || !state.watchComponents) {
     return <Navigate to="/region-page" replace />;
   }
@@ -53,7 +53,7 @@ export default function ConfiguratorPage() {
     localStorage.setItem('cart', JSON.stringify(updatedCart));
     console.log("Panier sauvegardé :", updatedCart);
     window.dispatchEvent(new Event('cartUpdated'));
-    setAlert({ type: "success", message: "Montre ajoutée au panier" });
+    showAlert( "success", "Montre ajoutée au panier" );
   };
 
 
@@ -61,14 +61,6 @@ export default function ConfiguratorPage() {
     <>
     <Nav bg={true}/>
       <div className="min-h-screen bg-neutral-950">
-
-      {alert && (
-          <Alert
-            type={alert.type as "success" | "warning" | "error" | "info"}
-            message={alert.message}
-            duration={4000}
-          />
-        )}
         
       <Configurator
         assets={assets}

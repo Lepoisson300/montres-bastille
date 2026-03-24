@@ -3,18 +3,18 @@ import React, { useState,  useEffect } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 import {useAuth0} from "@auth0/auth0-react";
 import Alert from '../components/Alert'; 
-import type { AlertType } from '../components/Alert';
 import type { Region } from "../types/Parts";
 import Nav from "../components/Nav";
 import { Helmet } from "react-helmet-async"; // Ajout de Helmet
 import Reveal from "../Logic/Reveal";
+import { useAlert } from "../Logic/AlertContext";
 
 // ... (Gardez vos composants Grain et Reveal tels quels)
 
 export default function CommunityPage() {
   const [votedRegions, setVotedRegions] = useState(new Set());
   const { user, isAuthenticated } = useAuth0();
-  const [alert, setAlert] = useState<{ type: AlertType; message: string } | null>(null);
+  const {showAlert} = useAlert();
   const [regionsVotes, setRegionsVotes] = React.useState<Region[]>([]);
 
   useEffect(() => {
@@ -28,12 +28,12 @@ export default function CommunityPage() {
   
   const LikeRegion = (regionName: string) => {
     if(!isAuthenticated){
-      setAlert({ type: 'warning', message: 'Vous devez être connecté pour voter pour une région.' });
+      showAlert('warning', 'Vous devez être connecté pour voter pour une région.' );
       return;
     }
     const region = regionsVotes.find(r => r.name === regionName);
     if (!region) return;
-
+    region.votes +=1 ;
     const voteData = { email: user?.email, region: region.name };
 
     fetch('https://montre-bastille-api.onrender.com/api/users/vote', {
@@ -44,10 +44,10 @@ export default function CommunityPage() {
     .then(response => response.json())
     .then(data => {
       if(data.error){
-        setAlert({ type: 'info', message: data.error });
+        showAlert('info', data.error );
         return;
       }
-      setAlert({ type: 'success', message: `Votre vote pour la région ${region.name} a été enregistré !` });
+      showAlert('success', `Votre vote pour la région ${region.name} a été enregistré !` );
       setVotedRegions(prev => new Set(prev).add(region.name));
     })
     .catch((error) => console.error('Error updating vote:', error));
@@ -65,14 +65,6 @@ export default function CommunityPage() {
       </Helmet>
 
       <Nav bg={false}/>
-
-      {alert && (
-        <Alert
-          type={alert.type}
-          message={alert.message}
-          onClose={() => setAlert(null)}
-        />
-      )}
 
       {/* HERO SECTION */}
       <section className="bg-dark text-text-primary pt-24 pb-20">

@@ -4,7 +4,7 @@ import Alert from "../components/Alert";
 import type { PartOption, CartItem } from "../types/Parts";
 import Nav from "../components/Nav";
 import { Helmet } from "react-helmet-async";
-
+import { useAlert } from "../Logic/AlertContext";
 
 interface CartPageProps {
   updateCartCount?: (count: number) => void;
@@ -49,7 +49,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
   };
 
   const [selectedWatchIndex, setSelectedWatchIndex] = useState<number>(0);
-  const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
+  const { showAlert } = useAlert();
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -88,7 +88,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
     setSelectedWatchIndex(0);
     localStorage.removeItem('cart');
     window.dispatchEvent(new Event('cartRemoved'));
-    setAlert({ type: "success", message: "Le panier a été vidé." });
+    showAlert("success", "Le panier à bien été vidé");
   };
 
   const handleCheckout = async () => {
@@ -116,11 +116,11 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
         return;
       } else {
         console.error("Aucune URL de redirection reçue :", data.error);
-        setAlert({type:'error', message:"Erreur lors de la création du paiement"});
+        showAlert('error', "Erreur lors de la création du paiement");
       }
     } catch (error) {
       console.error("Failed to send order", error);
-      setAlert({type:'error', message:"Une erreur est survenue. Veuillez réessayer."});
+      showAlert('error',"Une erreur est survenue. Veuillez réessayer.");
     }
 
     setIsRedirecting(false);
@@ -132,16 +132,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
       <Helmet>
         <title>Votre Panier | Montre Bastille - Paiement Sécurisé</title>
         <meta name="robots" content="noindex, nofollow" />
-      </Helmet>
-      {/* ALERTE */}
-      {alert && (
-        <Alert
-          type={alert.type as "success" | "warning" | "error" | "info"}
-          message={alert.message}
-          duration={4000}
-        />
-      )}
-
+      </Helmet>      
       <div className="mx-auto max-w-7xl px-6 md:px-12">
         <div className="flex justify-between items-end mb-12">
           <h1 className="font-serif text-3xl md:text-5xl">

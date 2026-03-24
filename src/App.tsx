@@ -17,6 +17,7 @@ import CartPage from "./pages/CartPage";
 import type { PartOption } from "./types/Parts";
 import SuccessPage from "./pages/SuccessPaiementPage";
 import { HelmetProvider } from 'react-helmet-async';
+import { AlertProvider } from "./Logic/AlertContext";
 
 // --- Main App Component ---
 
@@ -104,7 +105,7 @@ function App() {
     <div className="">
       <HelmetProvider>
       <BrowserRouter>
-
+      <AlertProvider>
       {/* Main Content */}
       <main className="bg-background">
         <Routes>
@@ -132,7 +133,7 @@ function App() {
 
       {/* Footer */}
       <Footer />
-
+      </AlertProvider>
       </BrowserRouter>
 </HelmetProvider>
     </div>

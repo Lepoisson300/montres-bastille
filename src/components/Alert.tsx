@@ -5,14 +5,11 @@ export type AlertType = "success" | "error" | "info" | "warning";
 interface AlertProps {
   type: AlertType;
   message: string;
-  duration?: number; // Time in ms (default 3000)
+  duration?: number;
+  onClose: (id: string) => void; // Time in ms (default 3000)
 }
 
-const Alert: React.FC<AlertProps> = ({ 
-  type, 
-  message, 
-  duration = 3000, 
-}) => {
+const Alert: React.FC<AlertProps> = ({ id, type, message, duration = 3000, onClose }) => {
   const [isExiting, setIsExiting] = useState(false);
   const [progress, setProgress] = useState(100);
 
@@ -78,16 +75,14 @@ const Alert: React.FC<AlertProps> = ({
     }, duration - 300); // Start fading out 300ms before close
 
     // 3. Unmount component
-    const closeTimer = setTimeout(() => {
-    }, duration);
+    const closeTimer = setTimeout(() => onClose(id), duration);
 
     return () => {
       clearInterval(progressInterval);
       clearTimeout(exitTimer);
       clearTimeout(closeTimer);
     };
-  }, [duration]);
-
+  }, [duration, id, onClose]);
   return (
     <div
       className={`fixed top-24 right-4 z-50 flex flex-col overflow-hidden w-80 md:w-96 rounded-lg shadow-2xl border-l-4 ${currentStyle.bg} ${currentStyle.border} transition-all duration-300 transform ${
