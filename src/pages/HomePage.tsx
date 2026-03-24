@@ -52,7 +52,7 @@ export default function HomePage() {
         <title>Montre Bastille | Créateur de Montres Personnalisées à Bordeaux</title>
         <meta name="description" content="Configurez votre montre Montre Bastille à partir de composants symbolique d'un région Francaise. Artisanat Bordelais, composants de précision et design unique." />
         <meta property="og:title" content="Montre Bastille - Votre Garde-Temps du patrimoine" />
-        <meta property="og:image" content="/logo.png" />
+        <meta property="og:image" content="/logo.webp" />
 
         <link rel="canonical" href="https://montre-bastille.fr/" />
       </Helmet>

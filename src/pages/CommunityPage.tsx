@@ -60,7 +60,7 @@ export default function CommunityPage() {
         <meta name="description" content="Rejoignez la communauté Montre Bastille. Votez pour les prochaines régions françaises qui inspireront nos futurs cadrans et montres personnalisées." />
         <meta property="og:title" content="Communauté Montre Bastille - Quel sera notre prochain cadran ?" />
         <meta property="og:description" content="Participez au processus de création et votez pour votre patrimoine régional préféré." />
-        <meta property="og:image" content="https://montre-bastille.fr/logo.png" />
+        <meta property="og:image" content="https://montre-bastille.fr/logo.webp" />
         <link rel="canonical" href="https://montre-bastille.fr/community" />
       </Helmet>
 
