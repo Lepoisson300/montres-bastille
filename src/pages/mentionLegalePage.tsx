@@ -1,6 +1,5 @@
 import Reveal from "../Logic/Reveal";
 import { Link } from "react-router-dom";
-import texture from "/paper_texture.png";
 import Nav from "../components/Nav";
 import { Helmet } from "react-helmet-async";
 
@@ -28,7 +27,6 @@ export default function CgvPage() {
       <section className="relative overflow-hidden pt-32 pb-16 md:pt-40 md:pb-20">
         <div 
           className="pointer-events-none absolute inset-0 opacity-[0.08]" 
-          style={{ backgroundImage: `url(${texture})`, backgroundSize: "600px" }} 
         />
         <div className="absolute top-0 right-0 -z-10 h-[500px] w-[500px] rounded-full bg-primary/5 blur-[120px]" />
         

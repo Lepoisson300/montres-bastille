@@ -1,9 +1,8 @@
 import Reveal from "../Logic/Reveal";
-import heroImg from "/about_hero.png"; 
-import atelier1 from "/atelier1.png"; 
+import heroImg from "/about_hero.webp"; 
+import atelier1 from "/atelier1.webp"; 
 import atelier2 from "/Gurv.png"; 
-import atelier3 from "/nico.png"; 
-import texture from "/paper_texture.png"; 
+import atelier3 from "/nico.webp"; 
 import eclate from "/eclate.jpg"; 
 import Nav from "../components/Nav";
 import BtnRedirection from "../components/btnRedirect";
@@ -26,7 +25,7 @@ export default function AboutPage() {
     <div className="bg-background text-text-secondary font-sans">
       {/* HERO */}
       <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 opacity-[0.08]" style={{ backgroundImage: `url(${texture})`, backgroundSize: "600px" }} />
+        <div className="pointer-events-none absolute inset-0 opacity-[0.08]" />
         <div className="relative isolate">
           <div className="absolute inset-0 -z-10">
             {/* SEO: Ajout d'un Alt descriptif et chargement prioritaire (eager) car c'est le haut de page */}

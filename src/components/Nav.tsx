@@ -1,7 +1,7 @@
 // NavbarLuxury.tsx
 import React, { useEffect, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
-import logo from "/logo.png";
+import logo from "/logo.webp";
 import { useAuth0 } from '@auth0/auth0-react';
 // import CartButton from "./cartsBouton"; // Décommenter si utilisé
 

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useMemo } from "react";
-import mapBG from "/mapBG.png"
+import mapBG from "/mapBG.webp"
 
 interface Props {
   svgContent: string;

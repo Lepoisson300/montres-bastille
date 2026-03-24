@@ -1,10 +1,9 @@
 import { Navigate, useLocation } from "react-router-dom";
 import Configurator from "../components/Configurator";
 import type { CartItem, PartOption, PartsCatalog } from "../types/Parts";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Nav from "../components/Nav";
 import Alert from "../components/Alert";
-import { Helmet } from "react-helmet-async";
 
 interface LocationState {
   selectedRegion?: string;
