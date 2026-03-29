@@ -110,7 +110,7 @@ export default function SuccessPage() {
             <div className="h-px w-20 bg-primary mx-auto opacity-60 mb-8" />
             
             <p className="font-sans text-lg text-text-muted leading-relaxed max-w-lg mx-auto mb-12">
-              Votre morceau d'histoire est désormais en cours de préparation dans nos ateliers bordelais. Un email de confirmation vient de vous être envoyé.
+              Votre morceau d'histoire est désormais en cours de préparation dans nos ateliers. Un email de confirmation vient de vous être envoyé.
             </p>
 
             <div className="flex flex-wrap justify-center gap-6">

@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Alert from "../components/Alert";
 import type { PartOption, CartItem } from "../types/Parts";
 import Nav from "../components/Nav";
 import { Helmet } from "react-helmet-async";
 import { useAlert } from "../Logic/AlertContext";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface CartPageProps {
   updateCartCount?: (count: number) => void;
@@ -23,6 +23,8 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
       return [];
     }
   });
+
+  const { user, isAuthenticated } = useAuth0();
 
   const Livraison: PartOption = {
     price: 30,
@@ -95,7 +97,6 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
     if (cartWatches.length === 0) return;
     setIsRedirecting(true);
 
-    // FIX: Clone to avoid mutating state directly
     const watchConfig = [
       ...cartWatches[selectedWatchIndex].composants,
       Livraison,
@@ -106,7 +107,10 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
       const res = await fetch("https://montre-bastille-api.onrender.com/api/stripeOrder", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ configs: watchConfig }),
+        body: JSON.stringify({ 
+          configs: watchConfig,
+          userEmail: isAuthenticated ? user?.email : undefined 
+        }),      
       });
       const data = await res.json();
 
