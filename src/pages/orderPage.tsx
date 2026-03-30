@@ -143,43 +143,10 @@ async function fetchOrder(orderNumber: string): Promise<Order | null> {
     );
     if (!response.ok) return null;
     return await response.json();
-  } catch {
+  } catch(error) {
     // Pour le dev, on retourne un mock si l'API échoue
-    if (orderNumber === "MB-2024-001") {
-      return {
-        id: "1",
-        numero_commande: "MB-2024-001",
-        nom_montre: "L'Impératrice Dorée",
-        date_commande: "2024-11-15",
-        etape_actuelle: 3,
-        configuration: {
-          cadran_id: "Champagne Guilloché",
-          boitier_id: "Or Rose 18K",
-          bracelet_id: "Alligator Bordeaux",
-          mouvement_id: "Automatique Manufacture",
-        },
-      };
-    }
-    if (orderNumber === "MB-2024-007") {
-      return {
-        id: "7",
-        numero_commande: "MB-2024-007",
-        nom_montre: "Le Chevalier Noir",
-        date_commande: "2024-10-02",
-        etape_actuelle: 5,
-        numero_suivi: "FR123456789FR",
-        transporteur: "Chronopost",
-        lien_suivi: "https://www.chronopost.fr/tracking-no-cms/suivi-page",
-        configuration: {
-          cadran_id: "Ardoise Mate",
-          boitier_id: "Acier DLC Noir",
-          bracelet_id: "Caoutchouc Tissé",
-          mouvement_id: "Automatique Squelette",
-        },
-      };
-    }
-    return null;
-  }
+    console.log(error)
+}
 }
 
 // ─── Composant principal ──────────────────────────────────────────────────────
@@ -257,10 +224,7 @@ export default function OrderTrackingPage() {
           >
             <path d="M0,100 C360,200 1080,0 1440,100 L1440,200 L0,200 Z" fill="#C9A96E" />
           </svg>
-          {/* Filigrane engrenage */}
-          <svg className="absolute top-1/4 right-10 opacity-5 w-96 h-96 animate-[spin_60s_linear_infinite]" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <path fill="#C9A96E" d="M43.1,3.6l-1.2,8.3C38.1,12.8,34.6,14.7,31.5,17l-7.9-3L16.4,21l3,7.9C17.1,32.1,15.3,35.6,14.4,39.4l-8.2,1.3L6,50l8.2,1.3c0.9,3.8,2.7,7.3,5.1,10.4l-3,7.9l7.2,7.2l7.9-3c3.1,2.3,6.6,4.2,10.3,5l1.3,8.2l9.3,0l1.2-8.3c3.8-0.9,7.3-2.7,10.4-5.1l7.9,3l7.2-7.2l-3-7.9c2.3-3.1,4.2-6.6,5-10.3l8.3-1.3L94,50l-8.3-1.2c-0.9-3.8-2.7-7.3-5.1-10.4l3-7.9L76.4,23l-7.9,3c-3.1-2.3-6.6-4.2-10.4-5l-1.2-8.3L43.1,3.6z M50,33c9.4,0,17,7.6,17,17c0,9.4-7.6,17-17,17c-9.4,0-17-7.6-17-17C33,40.6,40.6,33,50,33z"/>
-          </svg>
+
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto px-6">
@@ -296,7 +260,7 @@ export default function OrderTrackingPage() {
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                      placeholder="ex. MB-2024-001"
+                      placeholder="ex. MB-"
                       className="flex-1 bg-background/60 border border-white/10 rounded-xl px-5 py-3.5 text-text-primary placeholder:text-text-subtle font-sans text-sm focus:outline-none focus:border-primary/50 transition-colors"
                     />
                     <button
@@ -324,13 +288,6 @@ export default function OrderTrackingPage() {
                     </p>
                   )}
                 </div>
-
-                {/* Astuce dev */}
-                <p className="text-center text-xs text-text-subtle mt-4 opacity-60">
-                  Essayez : <span className="text-primary cursor-pointer hover:underline" onClick={() => { setInputValue("MB-2024-001"); handleSearch("MB-2024-001"); }}>MB-2024-001</span>
-                  {" "}ou{" "}
-                  <span className="text-primary cursor-pointer hover:underline" onClick={() => { setInputValue("MB-2024-007"); handleSearch("MB-2024-007"); }}>MB-2024-007</span>
-                </p>
               </div>
             </Reveal>
           )}
@@ -396,26 +353,38 @@ export default function OrderTrackingPage() {
                 </Reveal>
               )}
 
-              {/* Récapitulatif configuration */}
+              {/* Récapitulatif configuration corrigé */}
               {order.configuration && (
                 <Reveal delay={4}>
                   <div>
                     <h3 className="font-serif text-2xl text-text-primary border-l-2 border-primary pl-4 mb-6">
                       Votre Configuration
                     </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {[
-                        { label: "Cadran", value: order.configuration.cadran_id },
-                        { label: "Boîtier", value: order.configuration.boitier_id },
-                        { label: "Bracelet", value: order.configuration.bracelet_id },
-                        { label: "Mouvement", value: order.configuration.mouvement_id },
-                      ].map((item) => item.value && (
-                        <div key={item.label} className="p-5 rounded-xl bg-surface/40 border border-white/5 hover:border-primary/20 transition-colors">
-                          <p className="text-xs uppercase tracking-widest text-text-muted mb-2">{item.label}</p>
-                          <p className="font-serif text-text-primary">{item.value}</p>
-                        </div>
-                      ))}
-                    </div>
+                    
+                    {/* Si le backend renvoie un résumé texte (votre système actuel) */}
+                    {(order.configuration as any).resume ? (
+                      <div className="p-5 rounded-xl bg-surface/40 border border-white/5">
+                        <p className="text-xs uppercase tracking-widest text-text-muted mb-2">Composants choisis</p>
+                        <p className="font-serif text-text-primary leading-relaxed">
+                          {(order.configuration as any).resume.split(' + ').join(' • ')}
+                        </p>
+                      </div>
+                    ) : (
+                      /* L'ancien système avec les colonnes (si vous l'utilisez un jour) */
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {[
+                          { label: "Cadran", value: order.configuration.cadran_id },
+                          { label: "Boîtier", value: order.configuration.boitier_id },
+                          { label: "Bracelet", value: order.configuration.bracelet_id },
+                          { label: "Mouvement", value: order.configuration.mouvement_id },
+                        ].map((item) => item.value && (
+                          <div key={item.label} className="p-5 rounded-xl bg-surface/40 border border-white/5 hover:border-primary/20 transition-colors">
+                            <p className="text-xs uppercase tracking-widest text-text-muted mb-2">{item.label}</p>
+                            <p className="font-serif text-text-primary">{item.value}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </Reveal>
               )}
