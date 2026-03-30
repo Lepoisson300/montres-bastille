@@ -1,6 +1,6 @@
 // App.tsx
 import "./App.css";
-import { Routes, Route, Navigate, HashRouter, BrowserRouter } from "react-router-dom";
+import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import AccountPage from "./pages/AccountPage";
 import HomePage from "./pages/HomePage";
 import { useEffect, useState } from "react";
@@ -18,6 +18,7 @@ import type { PartOption } from "./types/Parts";
 import SuccessPage from "./pages/SuccessPaiementPage";
 import { HelmetProvider } from 'react-helmet-async';
 import { AlertProvider } from "./Logic/AlertContext";
+import OrderTrackingPage from "./pages/orderPage";
 
 // --- Main App Component ---
 
@@ -119,6 +120,7 @@ function App() {
           <Route path="/mention" element={<LegalPage/>}/>
           <Route path="/panier" element={<CartPage />}/>
           <Route path="/success" element={<SuccessPage/>}/>
+          <Route path="/order" element={<OrderTrackingPage/>}/>
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
