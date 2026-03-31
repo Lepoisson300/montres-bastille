@@ -256,7 +256,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
                               <img
                                 src={part.thumbnail}
                                 alt={part.name}
-                                className="h-full scale-[2] w-full object-cover"
+                                className="h-full scale-[4] w-full object-cover "
                               />
                             ) : (
                               <div className="w-2 h-2 rounded-full bg-primary/20" />
