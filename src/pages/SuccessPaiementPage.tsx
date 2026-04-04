@@ -36,7 +36,7 @@ const Reveal = ({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 };
 
 export default function SuccessPage() {
-  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const {isAuthenticated, loginWithRedirect } = useAuth0();
   const navigate = useNavigate();
 
   // 1. Vider le panier au chargement

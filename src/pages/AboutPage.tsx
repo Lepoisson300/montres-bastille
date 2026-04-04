@@ -4,6 +4,7 @@ import atelier1 from "/atelier1.webp";
 import atelier2 from "/Gurv.png"; 
 import atelier3 from "/nico.webp"; 
 import eclate from "/eclate.jpg"; 
+import yema from "/YEMA_Manufacture_logo_Webp-01.png"
 import Nav from "../components/Nav";
 import BtnRedirection from "../components/btnRedirect";
 import { Helmet } from "react-helmet-async"; // Import indispensable
@@ -22,7 +23,7 @@ export default function AboutPage() {
 
         <Nav bg={false}/>
 
-    <div className="bg-background text-text-secondary font-sans">
+    <div className="bg-background overflow-hidden text-text-secondary font-sans">
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 opacity-[0.08]" />
@@ -173,6 +174,36 @@ export default function AboutPage() {
                 <p className="text-text-muted text-sm font-sans">Montres‑Bastille voit le jour à Bordeaux. Vous configurez, nous assemblons.</p>
               </li>
             </ol>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* De la qualité / QUOTE */}
+      <section className="mt-24 bg-dark text-text-primary shadow-xl mb-4">
+        <div className="mx-auto max-w-6xl px-6 md:px-12 py-16 md:py-24">
+          <Reveal>
+            <div className="grid gap-12 md:grid-cols-2 items-center">
+              <div>
+                <h3 className="font-serif text-3xl md:text-4xl tracking-tight text-text-primary">De le qualité</h3>
+                <p className="mt-4 text-text-muted leading-relaxed font-sans">Une de nos valeurs les plus importantes est de proposer des composants fabriqués et assemblé en France. Les mouvements sont fabriqué par l'entreprise Yema et les bracelet sont concus par la maison Fevre. </p>
+                <p className="mt-4 text-text-muted leading-relaxed font-sans">
+                  Chez Montres-Bastille, nous voulons faire des montres d'exception une aventure unique pleine d'émotions.
+                </p>
+              </div>
+              <div className="relative">
+                <div className="absolute -inset-6 -z-10 rounded-3xl bg-linear-to-tr from-primary/10 to-transparent blur-2xl" />
+                <div className="rounded-2xl border border-primary/30 bg-surface p-2 shadow-[0_10px_40px_rgba(0,0,0,0.45)]">
+                  <div className="aspect-4/3 rounded-xl bg-linear-to-b from-surface-hover to-surface-active flex items-center justify-center text-text-muted overflow-hidden">
+                    <img 
+                        src={yema} 
+                        alt="logo de la marque Yema" 
+                        className="object-cover"
+                        loading="lazy"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </Reveal>
         </div>
       </section>

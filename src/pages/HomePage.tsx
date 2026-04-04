@@ -180,7 +180,7 @@ export default function HomePage() {
                   </div>
                   <h3 className="font-serif text-xl text-text-primary mb-3">Conçu pour Durer</h3>
                   <p className="font-sans text-sm text-text-muted leading-relaxed max-w-xs">
-                    Des composants robustes sélectionnés pour résister au temps. Ici, pas d'obsolescence programmée.
+                    Des composants robustes sélectionnés pour résister au temps avec une attention particulière pour les finitions. 
                   </p>
                 </div>
               </div>
@@ -207,10 +207,10 @@ export default function HomePage() {
 
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 max-w-3xl mx-auto mb-12">
                   {[
-                    { title: "Cadrans", desc: "12 modèles" },
-                    { title: "Aiguilles", desc: "8 styles" },
-                    { title: "Boîtiers", desc: "6 finitions" },
-                    { title: "Bracelets", desc: "15 options" },
+                    { title: "Cadrans", desc: "9 modèles" },
+                    { title: "Aiguilles", desc: "4 styles" },
+                    { title: "Boîtiers", desc: "9 finitions" },
+                    { title: "Bracelets", desc: "12 options" },
                   ].map((item) => (
                     <div
                       key={item.title}
