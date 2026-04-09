@@ -25,7 +25,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
   const [isMobile, setIsMobile] = useState(false);
   const filtered = useMemo(() => {
   console.log("assets : ", assets);
-  const filter = (items: PartOption[]) => items.filter(i => !i.regions || !selectedRegion || i.regions.includes(selectedRegion));
+  const filter = (items: PartOption[]) => items.filter(i => !i.regions || !selectedRegion || Object.values(i.regions).includes(selectedRegion));
     return {
       mouvement:filter(assets.mouvement),
       cases: filter(assets.cases),
@@ -172,7 +172,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
               <div className=" bg-background aspect-square rounded-2xl border border-white/5 overflow-hidden">
                 <div className="relative h-full w-full transition-transform duration-300" style={{ transform: `scale(${zoom})` }}>
                   <AnimatePresence mode="popLayout">
-                    {[selections.cases, selections.dials, selections.straps, selections.hands].map((part, i) => (
+                    {[ selections.dials,selections.cases, selections.straps, selections.hands].map((part, i) => (
                       part?.thumbnail && (
                         <motion.img 
                           key={`${part.id}-${i}`}

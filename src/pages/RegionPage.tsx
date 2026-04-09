@@ -97,10 +97,11 @@ export default function RegionPage({components}:RegionPageProps) {
     return watchComponents.length ?? 0;
   };
 
-  const getComponentByRegion = (regionCode: string)=> {
+const getComponentByRegion = (regionCode: string) => {
     return watchComponents.filter(elem => {
-      if (elem.regions && Array.isArray(elem.regions)) {
-        return elem.regions.includes(regionCode);
+      // On ajoute "elem.regions &&" pour éviter les crashs si la propriété est manquante
+      if (elem.regions && typeof elem.regions === 'object') {
+        return Object.values(elem.regions).includes(regionCode);
       }
       return false;
     });
@@ -112,10 +113,16 @@ export default function RegionPage({components}:RegionPageProps) {
     const regions = new Set<string>();
     
     watchComponents.forEach((component: PartOption) => {
-      if (component.regions && Array.isArray(component.regions)) {
-        component.regions.forEach((region: string) => {
-          regions.add(region);
+      // On s'assure que regions existe et est un objet (ou un tableau)
+      if (component.regions && typeof component.regions === 'object') {
+        
+        // Object.values va extraire ["FR-E", "FR-A"] à partir de { 0: "FR-E", 1: "FR-A" }
+        Object.values(component.regions).forEach((val: any) => {
+          if (typeof val === 'string') {
+            regions.add(val);
+          }
         });
+        
       }
     });
     

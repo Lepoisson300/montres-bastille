@@ -33,7 +33,7 @@ export default function ConfiguratorPage() {
       cases:     state.watchComponents?.filter((part) => part.type === 'case' || part.type === 'boitier'),
       straps:    state.watchComponents?.filter((part) => part.type === 'strap' || part.type === 'bracelet'),
       dials:     state.watchComponents?.filter((part) => part.type === 'dial' || part.type === 'cadran'),
-      hands:     state.watchComponents?.filter((part) => part.type === 'hands' || part.type === 'aiguilles'),
+      hands:     state.watchComponents?.filter((part) => part.type === 'hand' || part.type === 'aiguilles'),
   };
 
   const pricing = {
