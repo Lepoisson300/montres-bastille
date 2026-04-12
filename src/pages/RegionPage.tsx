@@ -7,54 +7,78 @@ import Nav from "../components/Nav";
 import type { PartOption } from "../types/Parts";
 import { Helmet } from "react-helmet-async";
 
-
 interface RegionPageProps {
   components: PartOption[];
 }
 
-export default function RegionPage({components}:RegionPageProps) {
+export default function RegionPage({ components }: RegionPageProps) {
   const [selectedId] = useState<string | null>(null);
   const [svgContent, setSvgContent] = useState<string>("");
   const [isMobile, setIsMobile] = useState(false);
+  
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const svgRootRef = useRef<SVGSVGElement | null>(null);
   
-  // Plus besoin de useState pour availableRegions, useMemo s'en charge !
-  const [watchComponents, setWatchComponents] = useState<PartOption[]>([]);
+  // L'esthétique Montres-Bastille
+  const HIGHLIGHT_COLOR = "#bda041";
 
-  // Gold highlight style (Montres‑Bastille aesthetic)
-  const HIGHLIGHT_COLOR = "#D4AF37"; // rich gold
+  // --- 1. HOOKS ET LOGIQUE DIRECTEMENT LIÉS AUX PROPS ---
 
+  // On utilise directement "components" (la prop) au lieu d'un state "watchComponents"
+  const availableRegions = useMemo(() => {
+    const regions = new Set<string>();
+    
+    // Si components n'est pas encore chargé, on renvoie un tableau vide
+    if (!components) return [];
 
-  if (!components || components.length === 0) {
-    return <div>Chargement des composants...</div>;
-  }
-  
-  // Navigation vers le configurateur
+    components.forEach((component: PartOption) => {
+      if (component.regions && typeof component.regions === 'object') {
+        Object.values(component.regions).forEach((val: any) => {
+          if (typeof val === 'string') {
+            regions.add(val);
+          }
+        });
+      }
+    });
+    
+    return Array.from(regions);
+  }, [components]); // Dès que la prop "components" change, on recalcule !
+
+  const getComponentByRegion = (regionCode: string) => {
+    if (!components) return [];
+    return components.filter(elem => {
+      if (elem.regions && typeof elem.regions === 'object') {
+        return Object.values(elem.regions).includes(regionCode);
+      }
+      return false;
+    });
+  };
+
+  const getComponentCount = (): number => {
+    return components?.length ?? 0;
+  };
+
   const handleConfigureClick = (regionId: string) => {
-    const components = getComponentByRegion(regionId);
-    console.log(components)
+    const regionComponents = getComponentByRegion(regionId);
+    console.log(regionComponents);
+    (window as any).isValidNavigation = true;
     navigate('/configurator', { 
       state: { 
         selectedRegion: regionId,
         regionName: REGION_NAMES[regionId] || regionId,
-        watchComponents: components
+        watchComponents: regionComponents // On passe les composants filtrés
       } 
     });
   };
 
+  // --- 2. EFFETS SECONDAIRES (useEffect) ---
 
-
-  // Detect mobile & Fetch Data
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
 
-    // 1. Récupération du SVG
     fetch("/france.svg")
       .then((res) => {
         if (!res.ok) throw new Error("SVG not found");
@@ -69,20 +93,15 @@ export default function RegionPage({components}:RegionPageProps) {
           .catch(() => console.error("SVG not found in any location"));
       });
 
-    setWatchComponents(components)
-
     return () => window.removeEventListener('resize', checkMobile);
-  }, []); // Exécuté une seule fois au montage
+  }, []);
 
-
-  // Keep reference to SVG
   useEffect(() => {
     if (!containerRef.current) return;
     const svg = containerRef.current.querySelector("svg");
     if (svg) svgRootRef.current = svg as unknown as SVGSVGElement;
   }, [svgContent]);
 
-  // Highlight selected region on desktop map
   useEffect(() => {
     if (isMobile) return;
     const svg = svgRootRef.current;
@@ -93,47 +112,9 @@ export default function RegionPage({components}:RegionPageProps) {
     if (el) el.classList.add("selected-region");
   }, [selectedId, isMobile]);
 
-  const getComponentCount = (): number => {
-    return watchComponents.length ?? 0;
-  };
-
-const getComponentByRegion = (regionCode: string) => {
-    return watchComponents.filter(elem => {
-      // On ajoute "elem.regions &&" pour éviter les crashs si la propriété est manquante
-      if (elem.regions && typeof elem.regions === 'object') {
-        return Object.values(elem.regions).includes(regionCode);
-      }
-      return false;
-    });
-  }
-
-  // CORRECTION : useMemo calcule automatiquement les régions dès que watchComponents change
-  // Utilisation d'un "Set" pour éviter les doublons automatiquement et proprement
-  const availableRegions = useMemo(() => {
-    const regions = new Set<string>();
-    
-    watchComponents.forEach((component: PartOption) => {
-      // On s'assure que regions existe et est un objet (ou un tableau)
-      if (component.regions && typeof component.regions === 'object') {
-        
-        // Object.values va extraire ["FR-E", "FR-A"] à partir de { 0: "FR-E", 1: "FR-A" }
-        Object.values(component.regions).forEach((val: any) => {
-          if (typeof val === 'string') {
-            regions.add(val);
-          }
-        });
-        
-      }
-    });
-    
-    return Array.from(regions); // Convertit le Set en tableau classique
-  }, [watchComponents]);
-
-
-  // Extract individual region from full SVG
+  // Extraction SVG pour mobile
   const extractRegionSVG = (regionCode: string) => {
     if (!svgContent) return null;
-    
     const parser = new DOMParser();
     const doc = parser.parseFromString(svgContent, "image/svg+xml");
     const svgElement = doc.querySelector("svg");
@@ -141,7 +122,6 @@ const getComponentByRegion = (regionCode: string) => {
     
     if (!regionElement || !svgElement) return null;
     
-    // Create a temporary SVG to calculate bounding box
     const tempDiv = document.createElement('div');
     tempDiv.style.position = 'absolute';
     tempDiv.style.visibility = 'hidden';
@@ -149,7 +129,6 @@ const getComponentByRegion = (regionCode: string) => {
     
     const tempSvg = svgElement.cloneNode(true) as SVGSVGElement;
     tempDiv.appendChild(tempSvg);
-    
     const tempPath = tempSvg.querySelector(`#${CSS.escape(regionCode)}`) as SVGGraphicsElement;
     
     if (!tempPath) {
@@ -157,11 +136,9 @@ const getComponentByRegion = (regionCode: string) => {
       return null;
     }
     
-    // Get bounding box
     const bbox = tempPath.getBBox();
     document.body.removeChild(tempDiv);
     
-    // Create new SVG with just this region
     const newSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     const padding = 10;
     newSvg.setAttribute("viewBox", `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + padding * 2} ${bbox.height + padding * 2}`);
@@ -175,9 +152,28 @@ const getComponentByRegion = (regionCode: string) => {
     clone.setAttribute("stroke-width", "3");
     
     newSvg.appendChild(clone);
-    
     return new XMLSerializer().serializeToString(newSvg);
   };
+
+  // --- 3. CONDITIONS D'AFFICHAGE ---
+
+  // Affichage du loader SEULEMENT après avoir initialisé tous les Hooks !
+  if (!components || components.length === 0) {
+    return (
+      <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#050505]">
+        <div className="relative flex items-center justify-center w-16 h-16 mb-8">
+          <div className="absolute inset-0 border border-[#d4af37]/10 rounded-full"></div>
+          <div className="absolute inset-0 border border-transparent border-t-[#d4af37] rounded-full animate-[spin_1.2s_cubic-bezier(0.5,0.1,0.4,0.9)_infinite]"></div>
+        </div>
+        <div className="flex flex-col items-center">
+          <p className="text-[#d4af37] text-xs sm:text-sm uppercase tracking-[0.4em] font-serif animate-pulse ml-[0.4em]">
+            Chargement des composants
+          </p>
+          <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/60 to-transparent mt-4 opacity-50"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -210,31 +206,6 @@ const getComponentByRegion = (regionCode: string) => {
       <Nav bg={false}/>
 
       <div className="relative flex flex-col items-center justify-center min-h-screen px-8 pt-28 pb-16 bg-neutral-950 text-neutral-200 font-[Poppins] tracking-wide overflow-hidden" ref={containerRef}>
-        <style>{`
-          .selected-region {
-            stroke: ${HIGHLIGHT_COLOR};
-            stroke-width: 2.5;
-            transition: all 0.3s ease;
-          }
-          [id^='FR-']:hover {
-            cursor: pointer;
-            fill: ${HIGHLIGHT_COLOR};
-            stroke-width: 8px;
-            stroke: 2px solid ${HIGHLIGHT_COLOR};
-            transition: all 0.2s ease;
-          }
-          svg {
-            display: block;
-            margin: 0 auto;
-            max-width: 90%;
-            height: auto;
-            transition: transform 0.3s ease;
-          }
-          svg:hover { transform: scale(1.02); }
-        `}
-      </style>
-
-        {/* Branding header */}
         <header className="text-center mb-6 sm:mb-10 px-4">
           <h1 className="text-2xl sm:text-4xl md:text-5xl font-semibold text-neutral-100 tracking-widest mb-2">
             Montres-Bastille
@@ -247,19 +218,17 @@ const getComponentByRegion = (regionCode: string) => {
           </p>
         </header>
           
-        {/* Desktop: Full Map */}
         <main className="w-full" role="main" aria-label="Carte interactive des régions de France">
           {!isMobile && (
             <DesktopMap svgContent={svgContent} availableRegions={availableRegions} onSelect={handleConfigureClick}/>
           )}
-
           {isMobile && (
             <MobileCarousel
               availableRegions={availableRegions}
               getComponentCount={getComponentCount}
               extractRegionSVG={extractRegionSVG}
               onSelect={handleConfigureClick}
-              />
+            />
           )}
         </main>
       </div>

@@ -50,7 +50,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
   return resolvedParts.filter((p): p is PartOption => p !== undefined);
 });
 
-  const [zoom, setZoom] = useState(1.5);
+  const [zoom, setZoom] = useState(3);
   const [showPreview, setShowPreview] = useState(true);
 
   // 3. Derived Data
@@ -170,7 +170,13 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
             <div className="pt-4"> {/* Marge interne pour séparer du bouton */}
               
               <div className=" bg-background aspect-square rounded-2xl border border-white/5 overflow-hidden">
+                
                 <div className="relative h-full w-full transition-transform duration-300" style={{ transform: `scale(${zoom})` }}>
+                  <img 
+                  src="/fondConfigurateur.png" 
+                  alt="Fond du configurateur"
+                  className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-90"
+                />
                   <AnimatePresence mode="popLayout">
                     {[ selections.dials,selections.cases, selections.straps, selections.hands].map((part, i) => (
                       part?.thumbnail && (
@@ -234,12 +240,12 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
               onSelect={(id: string) => handleSelectPart(0, id, filtered.mouvement)}/>
               <PartGrid title="Boîtier" part="cases" options={filtered.cases} current={config[1]} 
               onSelect={(id: string) => handleSelectPart(1, id, filtered.cases)} />
-              <PartGrid title="Bracelet" part="straps" options={filtered.straps} current={config[2]} 
-              onSelect={(id: string) => handleSelectPart(2, id, filtered.straps)}/>
               <PartGrid title="Cadran" part="dials" options={filtered.dials} current={config[3]} 
               onSelect={(id: string) => handleSelectPart(3, id, filtered.dials)} />
               <PartGrid title="Aiguilles" part="hands" options={filtered.hands} current={config[4]} 
               onSelect={(id: string) => handleSelectPart(4, id, filtered.hands)} />
+               <PartGrid title="Bracelet" part="straps" options={filtered.straps} current={config[2]} 
+              onSelect={(id: string) => handleSelectPart(2, id, filtered.straps)}/>
             </div>
           </div>
 

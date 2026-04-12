@@ -4,7 +4,7 @@ import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import AccountPage from "./pages/AccountPage";
 import HomePage from "./pages/HomePage";
 import { useEffect, useState } from "react";
-import ConfiguratorPage from "./pages/RegionSelectionPage";
+import ConfiguratorPage from "./pages/ConfiguratorPage";
 import AboutPage from "./pages/AboutPage";
 import CommunityPage from "./pages/CommunityPage";
 import ContactPage from "./pages/ContactPage";
