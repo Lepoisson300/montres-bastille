@@ -8,6 +8,7 @@ export type PartOption = {
   regions: string[]; // list of region codes where this part is available
   size: string;
   stock:number;
+  description:string
   thumbnail: string; // small preview image
   type:string
 };

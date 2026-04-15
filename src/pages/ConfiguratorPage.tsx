@@ -4,7 +4,6 @@ import type { CartItem, PartOption, PartsCatalog } from "../types/Parts";
 import { useState } from "react";
 import Nav from "../components/Nav";
 import { useAlert } from "../Logic/AlertContext";
-import RegionPage from "./RegionPage";
 
 interface LocationState {
   selectedRegion?: string;

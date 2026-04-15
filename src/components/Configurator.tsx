@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 import { motion, AnimatePresence} from "framer-motion";import html2canvas from "html2canvas";
 import type { WatchConfiguratorProps, PartOption } from "../types/Parts";
+import LuxuryDescription from './ComponentsDesc';
 
 // Converts PartOption[] → ?mouvement=mov-001&cases=case-42&...
 const toQuery = (conf: PartOption[]) => {
@@ -52,7 +53,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
 
   const [zoom, setZoom] = useState(3);
   const [showPreview, setShowPreview] = useState(true);
-
+  const [focusedPart, setFocusedPart] = useState<PartOption | null>(null);
   // 3. Derived Data
   const selections = useMemo(() => ({
     mouvement: filtered.mouvement.find(o => o.id === config[0].id),
@@ -138,6 +139,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
         newConfig[index] = selectedPart;   // On remplace la pièce au bon index
         return newConfig;                  // On sauvegarde le nouveau tableau
       });
+      setFocusedPart(selectedPart);
     }
   };
 
@@ -224,10 +226,15 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
           {isMobile ? (
              <div className="sticky top-8 space-y-6 z-10 bg-dark pb-3 pt-2">
                {renderViewer()}
+               
              </div>
           ) : (
             <div className="top-8 space-y-6 z-10 pb-3 pt-2">
                {renderViewer()}
+              <LuxuryDescription 
+                title={focusedPart?.name || "nom de la pièce"}  
+                description={focusedPart?.description || "Description de la pièce"} 
+              />
             </div>
           )}
 
@@ -271,7 +278,7 @@ function SummaryCard({ sku, price, onCheckout }: any) {
           <h4 className="text-primary font-serif text-xl">Votre Composition</h4>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-serif text-primary">{price}</p>
+          <p className="text-2xl font-serif text-primary">{price}€</p>
         </div>
       </div>
       <button onClick={onCheckout} className="w-full bg-primary text-dark font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-primary-dark transition shadow-lg shadow-primary/20">
@@ -296,7 +303,7 @@ function PartGrid({ title, options, current, onSelect }: any) {
               <img src={opt.thumbnail} alt={opt.name} className="w-full h-full scale-500 object-contain group-hover:scale-600 transition-transform" />
             </div>
             <p className="text-[10px] text-center uppercase tracking-tighter truncate">{opt.name}</p>
-            {opt.price ? <p className="text-[9px] text-center text-primary mt-1">{opt.price}</p> : null}
+            {opt.price ? <p className="text-[9px] text-center text-primary mt-1">{opt.price}€</p> : null}
           </button>
         ))}
       </div>
