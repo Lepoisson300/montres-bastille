@@ -3,6 +3,7 @@ import { GoArrowUpRight } from "react-icons/go";
 import { motion, AnimatePresence} from "framer-motion";import html2canvas from "html2canvas";
 import type { WatchConfiguratorProps, PartOption } from "../types/Parts";
 import LuxuryDescription from './ComponentsDesc';
+import MobileLuxuryModal from './DescriptionModal';
 
 // Converts PartOption[] → ?mouvement=mov-001&cases=case-42&...
 const toQuery = (conf: PartOption[]) => {
@@ -54,6 +55,8 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
   const [zoom, setZoom] = useState(3);
   const [showPreview, setShowPreview] = useState(true);
   const [focusedPart, setFocusedPart] = useState<PartOption | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   // 3. Derived Data
   const selections = useMemo(() => ({
     mouvement: filtered.mouvement.find(o => o.id === config[0].id),
@@ -140,6 +143,10 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
         return newConfig;                  // On sauvegarde le nouveau tableau
       });
       setFocusedPart(selectedPart);
+
+      if(isMobile){
+        setIsModalOpen(true)
+      }
     }
   };
 
@@ -259,7 +266,12 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
         </div>
       </div>
     </section>
-
+          <MobileLuxuryModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        title={focusedPart?.name || "Nom de la pièce"}
+        description={focusedPart?.description || "Sélectionnez une pièce pour voir ses détails."}
+      />
         </>
 
   );
