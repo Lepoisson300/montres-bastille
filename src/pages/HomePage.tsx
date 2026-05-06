@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import arcClean from "/arc_clean.webp";
 import patrimoine from "/patrimoine.webp";
 import france from "/franceMap.webp";
-import watch2 from "/watch2.png";
+import watch2 from "/gurv.png";
 import HeroCarousel from "../components/Carousel";
 import Nav from "../components/Nav";
 import BtnRedirection from "../components/btnRedirect";
@@ -104,11 +104,11 @@ export default function HomePage() {
                   <BtnRedirection text={"Explorer"} style={"bordered"} redirection="/community" size={{px:5,py:3}}/>
                 </div>
 
-                <div className="mx-auto max-w-sm">
-                  <img
-                    src={watch2}
+                <div className="mx-auto max-w-sm rounded-sm">
+                    <img
+                    src={watch2} // watch2 doit maintenant pointer vers une version de l'image intégrée ou un graphique
                     alt="Collection"
-                    className="drop-shadow-2xl"
+                    className="mask-image-blur drop-shadow-diffuse rounded-4xl"
                   />
                 </div>
               </div>

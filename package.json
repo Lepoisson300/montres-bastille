@@ -17,6 +17,8 @@
     "@heroicons/react": "^2.2.0",
     "@material-tailwind/react": "^2.1.10",
     "@paper-design/shaders-react": "^0.0.71",
+    "@splinetool/react-spline": "^4.1.0",
+    "@splinetool/runtime": "^1.12.91",
     "@stripe/stripe-js": "^8.8.0",
     "@tailwindcss/vite": "^4.1.12",
     "express": "^5.2.1",

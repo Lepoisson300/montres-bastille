@@ -1,243 +1,237 @@
-import Reveal from "../Logic/Reveal";
-import heroImg from "/about_hero.webp"; 
-import atelier1 from "/atelier1.webp"; 
-import atelier2 from "/Gurv.png"; 
-import atelier3 from "/nico.webp"; 
-import eclate from "/eclate.jpg"; 
-import yema from "/YEMA_Manufacture_logo_Webp-01.png"
+import { Helmet } from "react-helmet-async";
 import Nav from "../components/Nav";
-import BtnRedirection from "../components/btnRedirect";
-import { Helmet } from "react-helmet-async"; // Import indispensable
+import { MeshGradient } from "@paper-design/shaders-react";
+
+// Images
+const heroBg = "/fond1.png";
+const cmm10 = "/cmm10.png";
+const heroBook = "/hero_book.png";
+const womanBg = "/fond2.png";
+const eclateImg = "/eclate.jpg";
+const watchDialBg = "/watch_dial.png";
+const sketchImg = "/AlsaceDial1.png";
+const prototypeImg = "/nico.webp";
+const finalWatchImg = "/remiTest.png";
 
 export default function AboutPage() {
   return (
-      <>
-        <Helmet>
-          <title>Notre Histoire | Montre Bastille - L'Art de l'Horlogerie à Bordeaux</title>
-          <meta name="description" content="Découvrez l'origine de Montre Bastille. Deux passionnés créant des montres uniques inspirées du patrimoine français et assemblées avec précision à Bordeaux." />
-          <meta property="og:title" content="L'histoire de Montre Bastille - Savoir-faire et Patrimoine" />
-          <meta property="og:description" content="De l'idée aux premiers prototypes : découvrez les coulisses de notre atelier bordelais." />
-          <meta property="og:image" content="https://montre-bastille.fr/about_hero.png" />
-          <link rel="canonical" href="https://montre-bastille.fr/about" />
-        </Helmet>
+    <>
+      <Helmet>
+        <title>Notre Histoire | Montre Bastille - L'Art de l'Horlogerie à Bordeaux</title>
+        <meta name="description" content="Découvrez l'origine de Montre Bastille. Deux passionnés créant des montres uniques inspirées du patrimoine français et assemblées avec précision à Bordeaux." />
+      </Helmet>
 
-        <Nav bg={false}/>
+      {/* Navigation requires dark background to be visible on the hero section if hero is dark, the original Nav had bg={false} which means transparent. */}
+      <Nav bg={false} />
 
-    <div className="bg-background overflow-hidden text-text-secondary font-sans">
-      {/* HERO */}
-      <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 opacity-[0.08]" />
-        <div className="relative isolate">
-          <div className="absolute inset-0 -z-10">
-            {/* SEO: Ajout d'un Alt descriptif et chargement prioritaire (eager) car c'est le haut de page */}
-            <img 
-                src={heroImg} 
-                alt="Intérieur de l'atelier d'horlogerie Montre Bastille à Bordeaux" 
-                className="h-[60vh] w-full object-cover object-center" 
-                loading="eager"
-            />
-            <div className="absolute inset-0 bg-linear-to-b from-dark/40 via-dark/40 to-dark/65" />
+      <div className="bg-dark text-text-primary overflow-hidden font-sans selection:bg-primary/30">
+        
+        {/* Section 1: Hero */}
+        <section className="relative min-h-screen flex items-center justify-center pt-20">
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0">
+            <img src={heroBg} alt="Hero Background" className="w-full h-full object-cover blur-[2px] opacity-50 mix-blend-screen" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-dark" />
           </div>
-          <div className="mx-auto max-w-6xl px-6 md:px-12 h-[60vh] flex items-end">
-            <Reveal>
-              <div className="pb-14 text-text-primary">
-                <p className="tracking-[.25em] text-xs uppercase text-primary font-sans opacity-90">Bordeaux — Est. 2025</p>
-                <h1 className="mt-4 text-4xl md:text-6xl font-serif leading-tight tracking-tight text-text-primary">L'histoire de <span className="text-primary">Montres‑Bastille</span></h1>
-                <p className="mt-4 max-w-2xl text-text-muted font-sans">Si vous êtes arrivé là, c'est que vous êtes curieux de savoir comment sont fabriquées nos montres et ce que nous faisons. Alors allons-y.</p>
+          
+          <div className="relative z-10 w-full max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center pb-20">
+            {/* Card Left */}
+            <div className="border border-primary/30 bg-[#0A0A0A]/70 backdrop-blur-md p-10 md:p-14 rounded-sm shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
+              <h1 className="font-serif text-4xl md:text-[2.75rem] text-primary mb-6 leading-[1.15]">
+                L'histoire de<br />Montres-Bastille
+              </h1>
+              <div className="w-10 h-[1px] bg-primary/40 mb-8"></div>
+              <p className="text-white/90 text-sm md:text-base mb-6 leading-relaxed font-light">
+                Une marque créée par un passionné de mécanisme, qu'ils soient pour indiquer le temps ou pour faire vibrer par des cylindres. Ces montres sont la continuité de votre parcours passionnant à travers le patrimoine Français.
+              </p>
+              <p className="text-white/60 text-xs md:text-sm mb-10 leading-relaxed font-light">
+                Si vous êtes arrivé là, c'est que vous êtes curieux de savoir comment sont fabriquées ces gardes-temps? Alors allons-y.
+              </p>
+
+            </div>
+            {/* Image Right */}
+            <div className="flex justify-center md:justify-end">
+              <div className="relative p-2 border border-primary/20 bg-[#0A0A0A]/50 shadow-2xl rounded-sm group">
+                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
+                <img src={heroBook} alt="Carnet d'horloger" className="w-full max-w-[400px] object-cover rounded-sm grayscale-[20%] contrast-125" />
               </div>
-            </Reveal>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* BRAND STORY */}
-      <section className="py-16 md:py-24">
-        <div className="mx-auto max-w-6xl px-6 md:px-12">
-          <Reveal>
-            <div className="grid gap-10 md:grid-cols-12 items-start">
-              <div className="md:col-span-7">
-                <h2 className="font-serif text-3xl md:text-4xl tracking-tight text-text-primary">La France dans un raffinement absolu</h2>
-                <p className="mt-4 leading-relaxed text-text-muted font-sans">Une marque créée par deux passionnés de mécanisme et amoureux de leur pays, pour des gens qui désirent un morceau de cette passion à leur poignet.</p>
-                <p className="mt-4 leading-relaxed text-text-muted font-sans">Nous nous déplaçons dans les régions de France pour discuter et comprendre avec les locaux ce qui caractérise le mieux leur région. Les matériaux sont ensuite choisis puis retravaillés par des artisans.</p>
+        {/* Section 2: La France dans un raffinement absolu */}
+        <section className="relative min-h-screen flex items-center justify-center py-24 border-t border-white/5">
+          <div className="absolute inset-0 z-0">
+            <img src={womanBg} alt="Woman Vintage Background" className="w-full h-full object-cover opacity-40 mix-blend-luminosity grayscale" />
+            <div className="absolute inset-0 bg-gradient-to-b from-dark via-[#0A0A0A]/80 to-dark" />
+          </div>
 
-                <h2 className="font-serif text-3xl md:text-4xl tracking-tight mt-8 text-text-primary">Pas seulement une montre</h2>
-                <p className="mt-4 leading-relaxed text-text-muted font-sans">Quand on parle de montre, on parle souvent d'un lieu précis, une manière de faire. Nous vous proposons une montre unique qui se base sur l'essence même de la France.</p>
-                <p className="mt-4 leading-relaxed text-text-muted font-sans">Chaque montre raconte une histoire, et cette histoire c'est vous qui la créez, à partir de son lieu d'origine et des matériaux qui la composent.</p>
+          <div className="relative z-10 w-full max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            {/* Image Left */}
+            <div className="flex justify-center md:justify-start order-2 md:order-1">
+              <div className="relative p-2 border border-primary/20 bg-[#0A0A0A]/50 shadow-2xl rounded-sm">
+                <img src={eclateImg} alt="Pièces de montre" className="w-full max-w-[400px] object-cover rounded-sm grayscale-[30%] contrast-125 hover:grayscale-0 transition-all duration-700" />
               </div>
-              <div className="md:col-span-5">
-                <div className="rounded-2xl border border-primary/40 bg-surface p-2 shadow-lg">
-                  <div className="rounded-xl bg-surface-hover p-6">
-                    {/* SEO: Utilisation de <dl> (Description List) excellente pour la structure sémantique */}
-                    <dl className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <dt className="text-text-subtle font-sans">Assemblage</dt>
-                        <dd className="font-serif text-xl text-text-primary">Bordeaux</dd>
-                      </div>
-                      <div>
-                        <dt className="text-text-subtle font-sans">Tolérance</dt>
-                        <dd className="font-serif text-xl text-text-primary">±5 s/j</dd>
-                      </div>
-                      <div>
-                        <dt className="text-text-subtle font-sans">Étanchéité</dt>
-                        <dd className="font-serif text-xl text-text-primary">100 m</dd>
-                      </div>
-                      <div>
-                        <dt className="text-text-subtle font-sans">Garantie</dt>
-                        <dd className="font-serif text-xl text-text-primary">5 ans</dd>
-                      </div>
-                    </dl>
+            </div>
+            
+            {/* Card Right */}
+            <div className="border border-primary/30 bg-[#0A0A0A]/70 backdrop-blur-md p-10 md:p-14 rounded-sm shadow-2xl order-1 md:order-2 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
+              <h3 className="text-primary/80 text-[10px] tracking-[0.3em] uppercase mb-5 font-semibold">La France dans le détail</h3>
+              <h2 className="font-serif text-4xl md:text-[2.75rem] text-white mb-6 leading-[1.15]">
+                La France dans<br />un raffinement<br />absolu
+              </h2>
+              <div className="w-10 h-[1px] bg-primary/40 mb-8"></div>
+              <p className="text-white/70 text-sm mb-10 leading-relaxed font-light">
+                Nous nous déplaçons à travers les régions de France pour discuter et comprendre avec les locaux ce qui caractérise le mieux leur région. Les matériaux sont ensuite choisis puis retravaillés par des artisans.
+              </p>
+              
+              <div className="grid grid-cols-2 gap-8 pt-4 border-t border-white/10">
+                <div>
+                  <p className="text-white/40 text-[10px] tracking-[0.2em] uppercase mb-2">Assemblage</p>
+                  <p className="text-primary font-serif text-2xl">Bordeaux</p>
+                </div>
+                <div>
+                  <p className="text-white/40 text-[10px] tracking-[0.2em] uppercase mb-2">Tolérance</p>
+                  <p className="text-primary font-serif text-2xl">±4 s/j</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 3: De la qualité */}
+        <section className="relative min-h-screen flex items-center justify-center py-24 border-t border-white/5 overflow-hidden">
+          <div className="absolute inset-0 z-0">
+            <img src={watchDialBg} alt="Close up watch dial" className="w-full h-full object-cover opacity-15 mix-blend-luminosity grayscale-[50%]" />
+            <div className="absolute inset-0 bg-gradient-to-t from-dark via-[#0A0A0A]/90 to-dark" />
+          </div>
+          
+          <div className="absolute inset-0 w-full h-full opacity-90 z-0 pointer-events-none" aria-hidden="true">
+              <MeshGradient
+                width={typeof window !== 'undefined' ? window.innerWidth : 1280}
+                height={typeof window !== 'undefined' ? window.innerHeight : 800}
+                colors={["#0a0a0c", "#262626", "#c5a059", "#1c1a17"]}
+                distortion={0.25}
+                speed={0.35}
+              />
+              {/* J'ai corrigé bg-linear-to-b (non standard dans Tailwind) par bg-gradient-to-b */}
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background"></div>
+          </div>
+
+          <div className="relative z-10 w-full max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            
+            {/* Card Left */}
+            <div className="border border-primary/30 bg-[#0A0A0A]/70 backdrop-blur-md p-10 md:p-16 rounded-sm shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
+              <div className="flex justify-center mb-8">
+                <svg className="w-10 h-10 text-primary/80" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <h2 className="font-serif text-3xl md:text-4xl text-white text-center mb-8">De la qualité</h2>
+              
+              <p className="text-white/70 text-sm text-center mb-6 leading-relaxed font-light">
+                Une de nos valeurs les plus importantes est de proposer des composants fabriqués et assemblés en France. Ces composants pleins de caractères et iconiques sont l'effet d'une révolution. 
+              </p>
+              <p className="text-white/70 text-sm text-center mb-10 leading-relaxed font-light">
+                Les mouvements sont fabriqués par l'entreprise Yema à Morteau. Les bracelets sont conçus et fabriqués par la maison Fevre. Ainsi, Chez Montres-Bastille, nous voulons proposer une montres qui permettent de remettre la France dans la lumière dans l'horlogerie.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-6 text-[11px] text-white/50 tracking-[0.1em] uppercase">
+                <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 bg-primary rounded-full"></span> Mouvement Yema</div>
+                <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 bg-primary rounded-full"></span> Bracelets Maison Fevre</div>
+              </div>
+            </div>
+            
+            {/* Image Left (ou Right selon l'ordre md:order) */}
+            <div className="flex justify-center md:justify-start order-2 md:order-1">
+              <div className="relative p-2 border border-primary/20 bg-[#0A0A0A]/50 shadow-2xl rounded-sm">
+                <img src={cmm10} alt="Pièces de montre" className="w-full max-w-[500px] object-cover rounded-sm grayscale-[30%] contrast-125 hover:grayscale-0 transition-all duration-700" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 4: Repères (Timeline) */}
+        <section className="py-32 bg-[#0A0A0A] border-t border-white/5 relative">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-[#0A0A0A] to-[#0A0A0A] pointer-events-none"></div>
+          
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
+            <h2 className="text-center font-serif text-5xl text-primary mb-32 tracking-wide">Repères</h2>
+            
+            <div className="max-w-4xl mx-auto relative">
+              {/* Central Line */}
+              <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-primary/30 to-transparent -translate-x-1/2 hidden md:block"></div>
+              
+              {/* 2024 */}
+              <div className="flex flex-col md:flex-row items-center justify-between mb-32 w-full group">
+                <div className="w-full md:w-5/12 text-center md:text-right md:pr-14 mb-8 md:mb-0">
+                  <h3 className="font-serif text-4xl text-white mb-2 group-hover:text-primary transition-colors duration-300">2024</h3>
+                  <p className="text-primary text-sm font-medium mb-4 tracking-wider uppercase">L'idée</p>
+                  <p className="text-white/50 text-sm leading-relaxed max-w-xs mx-auto md:ml-auto md:mr-0 font-light">Un cahier rempli de cadrans, de bracelets en matériaux étranges et des boitiers de montres tous apportant de la robustesse. </p>
+                </div>
+                <div className="hidden md:flex w-2/12 justify-center relative">
+                  <div className="w-3 h-3 bg-dark border-2 border-primary/50 rounded-full z-10 transition-all duration-300 group-hover:border-primary group-hover:shadow-[0_0_15px_rgba(201,169,110,0.5)] group-hover:scale-125"></div>
+                </div>
+                <div className="w-full md:w-5/12 md:pl-14">
+                  <div className="relative p-1.5 border border-white/5 bg-white/5 rounded-sm overflow-hidden transition-all duration-500 group-hover:border-primary/30">
+                    <img src={sketchImg} alt="Croquis montre" className="w-full h-48 object-cover opacity-60 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105" />
+                  </div>
+                </div>
+              </div>
+
+              {/* 2025 */}
+              <div className="flex flex-col md:flex-row-reverse items-center justify-between mb-32 w-full group">
+                <div className="w-full md:w-5/12 text-center md:text-left md:pl-14 mb-8 md:mb-0">
+                  <h3 className="font-serif text-4xl text-white mb-2 group-hover:text-primary transition-colors duration-300">2025</h3>
+                  <p className="text-primary text-sm font-medium mb-4 tracking-wider uppercase">Les premiers prototypes</p>
+                  <p className="text-white/50 text-sm leading-relaxed max-w-xs mx-auto md:mr-auto md:ml-0 font-light">Achâts de différentes pièce et premiers contact avec l'entreprise de Yema et Maison-Fevre.</p>
+                </div>
+                <div className="hidden md:flex w-2/12 justify-center relative">
+                  <div className="w-3 h-3 bg-dark border-2 border-primary/50 rounded-full z-10 transition-all duration-300 group-hover:border-primary group-hover:shadow-[0_0_15px_rgba(201,169,110,0.5)] group-hover:scale-125"></div>
+                </div>
+                <div className="w-full md:w-5/12 md:pr-14">
+                  <div className="relative p-1.5 border border-white/5 bg-white/5 rounded-sm overflow-hidden transition-all duration-500 group-hover:border-primary/30">
+                    <img src={prototypeImg} alt="Prototype boîtier" className="w-full h-48 object-cover opacity-60 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105" />
+                  </div>
+                </div>
+              </div>
+
+              {/* 2026 */}
+              <div className="flex flex-col md:flex-row items-center justify-between w-full group">
+                <div className="w-full md:w-5/12 text-center md:text-right md:pr-14 mb-8 md:mb-0">
+                  <h3 className="font-serif text-4xl text-white mb-2 group-hover:text-primary transition-colors duration-300">2026</h3>
+                  <p className="text-primary text-sm font-medium mb-4 tracking-wider uppercase">Finalisation</p>
+                  <p className="text-white/50 text-sm leading-relaxed max-w-xs mx-auto md:ml-auto md:mr-0 font-light">Montres-Bastille commence à voir le jour, rencontre avec les différents artisans qui vont faconner boitier et cadrans de votre Montres-Bastille</p>
+                </div>
+                <div className="hidden md:flex w-2/12 justify-center relative">
+                  <div className="w-3 h-3 bg-primary rounded-full z-10 shadow-[0_0_20px_rgba(201,169,110,0.8)] scale-125"></div>
+                </div>
+                <div className="w-full md:w-5/12 md:pl-14">
+                  <div className="relative p-1.5 border border-primary/20 bg-primary/5 rounded-sm overflow-hidden shadow-[0_0_30px_rgba(201,169,110,0.1)]">
+                    <img src={finalWatchImg} alt="Montre finalisée" className="w-full h-48 object-cover transition-transform duration-700 hover:scale-110" />
                   </div>
                 </div>
               </div>
             </div>
-          </Reveal>
-        </div>
-      </section>
+          </div>
+        </section>
 
-      {/* IMAGE STRIP */}
-      <section className="relative">
-        <div className="mx-auto max-w-6xl px-6 md:px-12">
-          <Reveal>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[
-                { src: atelier1, alt: "Outils de précision d'horloger - Atelier Bastille" },
-                { src: atelier2, alt: "Artisan horloger en plein travail sur un mouvement" },
-                { src: atelier3, alt: "Réglage minutieux d'une montre Bastille" }
-              ].map((img, i) => (
-                <figure key={i} className="group relative overflow-hidden rounded-2xl shadow-lg border border-border/20">
-                  <img 
-                    src={img.src} 
-                    alt={img.alt} 
-                    className="h-64 w-full scale-110 object-cover transition-transform duration-700 group-hover:scale-130" 
-                    loading="lazy" 
-                  />
-                  <figcaption className="pointer-events-none absolute inset-0 bg-linear-to-t from-dark/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                </figure>
-              ))}
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* CRAFT SECTION (dark) */}
-      <section className="mt-24 bg-dark text-text-primary shadow-xl">
-        <div className="mx-auto max-w-6xl px-6 md:px-12 py-16 md:py-24">
-          <Reveal>
-            <div className="grid gap-12 md:grid-cols-2 items-center">
-              <div>
-                <h3 className="font-serif text-3xl md:text-4xl tracking-tight text-text-primary">Pourquoi faire ce projet ?</h3>
-                <p className="mt-4 text-text-muted leading-relaxed font-sans">Tout est parti d'une simple idée d'avoir une montre personnalisée créée par nous. Nous nous sommes rendus compte que pour les modèles haut de gamme nous n'avions pas beaucoup de diversité de pièces ou que la montre ne créait pas vraiment de lien.</p>
-                <p className="mt-4 text-text-muted leading-relaxed font-sans">
-                  Chez Montres-Bastille, nous voulons faire des montres d'exception une aventure unique pleine d'émotions.
-                </p>
-                <div className="mt-8 flex flex-wrap gap-3">
-                  <BtnRedirection text="Nous écrire" redirection="/contact" style="bordered" size={{px:6,py:3}}/>
-                </div>
-              </div>
-              <div className="relative">
-                <div className="absolute -inset-6 -z-10 rounded-3xl bg-linear-to-tr from-primary/10 to-transparent blur-2xl" />
-                <div className="rounded-2xl border border-primary/30 bg-surface p-2 shadow-[0_10px_40px_rgba(0,0,0,0.45)]">
-                  <div className="aspect-4/3 rounded-xl bg-linear-to-b from-surface-hover to-surface-active flex items-center justify-center text-text-muted overflow-hidden">
-                    <img 
-                        src={eclate} 
-                        alt="Vue éclatée du mécanisme d'une montre Bastille" 
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* TIMELINE / MILESTONES */}
-      <section className="py-16 md:py-24">
-        <div className="mx-auto max-w-6xl px-6 md:px-12">
-          <Reveal>
-            <h3 className="font-serif text-3xl md:text-4xl tracking-tight text-text-primary">Repères</h3>
-            <ol className="mt-8 relative border-l border-primary/40 pl-6 space-y-8">
-              <li>
-                <div className="absolute -left-1.5 top-1.5 h-3 w-3 rounded-full bg-primary" />
-                <p className="font-serif text-text-primary text-lg">2024 — L'idée</p>
-                <p className="text-text-muted text-sm font-sans">Un cahier rempli de cadrans, une obsession pour la lisibilité et les proportions.</p>
-              </li>
-              <li>
-                <div className="absolute -left-1.5 top-1.5 h-3 w-3 rounded-full bg-primary" />
-                <p className="font-serif text-text-primary text-lg">2025 — Les premiers prototypes</p>
-                <p className="text-text-muted text-sm font-sans">Boîtiers usinés en petites séries, réglages minutieux, retours des premiers passionnés.</p>
-              </li>
-              <li>
-                <div className="absolute -left-1.5 top-1.5 h-3 w-3 rounded-full bg-primary" />
-                <p className="font-serif text-text-primary text-lg">2026 — Lancement</p>
-                <p className="text-text-muted text-sm font-sans">Montres‑Bastille voit le jour à Bordeaux. Vous configurez, nous assemblons.</p>
-              </li>
-            </ol>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* De la qualité / QUOTE */}
-      <section className="mt-24 bg-dark text-text-primary shadow-xl mb-4">
-        <div className="mx-auto max-w-6xl px-6 md:px-12 py-16 md:py-24">
-          <Reveal>
-            <div className="grid gap-12 md:grid-cols-2 items-center">
-              <div>
-                <h3 className="font-serif text-3xl md:text-4xl tracking-tight text-text-primary">De le qualité</h3>
-                <p className="mt-4 text-text-muted leading-relaxed font-sans">Une de nos valeurs les plus importantes est de proposer des composants fabriqués et assemblé en France. Les mouvements sont fabriqué par l'entreprise Yema et les bracelet sont concus par la maison Fevre. </p>
-                <p className="mt-4 text-text-muted leading-relaxed font-sans">
-                  Chez Montres-Bastille, nous voulons faire des montres d'exception une aventure unique pleine d'émotions.
-                </p>
-              </div>
-              <div className="relative">
-                <div className="absolute -inset-6 -z-10 rounded-3xl bg-linear-to-tr from-primary/10 to-transparent blur-2xl" />
-                <div className="rounded-2xl border border-primary/30 bg-surface p-2 shadow-[0_10px_40px_rgba(0,0,0,0.45)]">
-                  <div className="aspect-4/3 rounded-xl bg-linear-to-b from-surface-hover to-surface-active flex items-center justify-center text-text-muted overflow-hidden">
-                    <img 
-                        src={yema} 
-                        alt="logo de la marque Yema" 
-                        className="object-cover"
-                        loading="lazy"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* TESTIMONIAL / QUOTE */}
-      <section className="pb-20">
-        <div className="mx-auto max-w-5xl px-6 md:px-12">
-          <Reveal>
-            <figure className="rounded-3xl border border-primary/30 bg-surface p-8 md:p-12 shadow-lg">
-                <blockquote className="font-serif text-2xl md:text-3xl leading-relaxed text-text-primary italic">
-                  "Une montre n'indique pas seulement l'heure, elle révèle la personnalité de celui qui la porte."
-                </blockquote>
-                <figcaption className="mt-4 text-sm text-text-subtle font-sans">— Le fondateur</figcaption>
-            </figure>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* CTA BANNER */}
-      <section className="relative overflow-hidden mb-12">
-        <div className="absolute inset-0 -z-10 bg-linear-to-r from-primary/20 to-transparent" />
-        <div className="mx-auto max-w-6xl px-6 md:px-12 py-12 md:py-16">
-          <Reveal>
-            <div className="rounded-2xl border border-primary/40 bg-dark text-text-primary p-8 md:p-12 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
-              <div>
-                <h4 className="font-serif text-2xl md:text-3xl text-text-primary">Prêt(e) à passer au poignet ?</h4>
-                <p className="mt-2 text-text-muted font-sans">Configurez votre Montres‑Bastille en quelques clics. Assemblée à Bordeaux, pour vous.</p>
-              </div>
-              <BtnRedirection text="Commencer" redirection="/region-page" style="bordered" size={{px:6,py:3}}/>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-    </div>
-      </>
+        {/* Section 5: Quote */}
+        <section className="py-32 bg-dark flex flex-col items-center justify-center text-center px-6 border-t border-white/5 relative">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
+          <div className="text-primary font-serif text-8xl mb-2 leading-[0.5] opacity-60 select-none">"</div>
+          <p className="font-serif text-2xl md:text-4xl text-white/90 italic max-w-3xl leading-relaxed md:leading-relaxed mb-10">
+            Une montre n'indique pas seulement l'heure, elle révèle la personnalité et le chemin de celui qui la porte.
+          </p>
+          <div className="w-12 h-[1px] bg-primary/40 mb-8"></div>
+          <p className="text-white/40 text-[10px] tracking-[0.4em] uppercase">— Le Fondateur</p>
+        </section>
+        
+      </div>
+    </>
   );
 }
