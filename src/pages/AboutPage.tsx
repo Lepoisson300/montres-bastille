@@ -3,15 +3,15 @@ import Nav from "../components/Nav";
 import { MeshGradient } from "@paper-design/shaders-react";
 
 // Images
-const heroBg = "/fond1.png";
-const cmm10 = "/cmm10.png";
-const heroBook = "/hero_book.png";
-const womanBg = "/fond2.png";
-const eclateImg = "/eclate.jpg";
-const watchDialBg = "/watch_dial.png";
-const sketchImg = "/AlsaceDial1.png";
+const heroBg = "/fond1.webp";
+const cmm10 = "/cmm10.webp";
+const heroBook = "/hero_book.webp";
+const womanBg = "/fond2.webp";
+const eclateImg = "/eclate.webp";
+const watchDialBg = "/watch_dial.webp";
+const sketchImg = "/AlsaceDial1.webp";
 const prototypeImg = "/nico.webp";
-const finalWatchImg = "/remiTest.png";
+const finalWatchImg = "/remiTest.webp";
 
 export default function AboutPage() {
   return (
