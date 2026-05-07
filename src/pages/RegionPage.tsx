@@ -15,20 +15,17 @@ export default function RegionPage({ components }: RegionPageProps) {
   const [selectedId] = useState<string | null>(null);
   const [svgContent, setSvgContent] = useState<string>("");
   const [isMobile, setIsMobile] = useState(false);
-  
+
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const svgRootRef = useRef<SVGSVGElement | null>(null);
-  
-  // L'esthétique Montres-Bastille
-  const HIGHLIGHT_COLOR = "#bda041";
 
   // --- 1. HOOKS ET LOGIQUE DIRECTEMENT LIÉS AUX PROPS ---
 
   // On utilise directement "components" (la prop) au lieu d'un state "watchComponents"
   const availableRegions = useMemo(() => {
     const regions = new Set<string>();
-    
+
     // Si components n'est pas encore chargé, on renvoie un tableau vide
     if (!components) return [];
 
@@ -41,7 +38,7 @@ export default function RegionPage({ components }: RegionPageProps) {
         });
       }
     });
-    
+
     return Array.from(regions);
   }, [components]); // Dès que la prop "components" change, on recalcule !
 
@@ -63,12 +60,12 @@ export default function RegionPage({ components }: RegionPageProps) {
     const regionComponents = getComponentByRegion(regionId);
     console.log(regionComponents);
     (window as any).isValidNavigation = true;
-    navigate('/configurator', { 
-      state: { 
+    navigate('/configurator', {
+      state: {
         selectedRegion: regionId,
         regionName: REGION_NAMES[regionId] || regionId,
         watchComponents: regionComponents // On passe les composants filtrés
-      } 
+      }
     });
   };
 
@@ -119,38 +116,38 @@ export default function RegionPage({ components }: RegionPageProps) {
     const doc = parser.parseFromString(svgContent, "image/svg+xml");
     const svgElement = doc.querySelector("svg");
     const regionElement = doc.querySelector(`#${CSS.escape(regionCode)}`);
-    
+
     if (!regionElement || !svgElement) return null;
-    
+
     const tempDiv = document.createElement('div');
     tempDiv.style.position = 'absolute';
     tempDiv.style.visibility = 'hidden';
     document.body.appendChild(tempDiv);
-    
+
     const tempSvg = svgElement.cloneNode(true) as SVGSVGElement;
     tempDiv.appendChild(tempSvg);
     const tempPath = tempSvg.querySelector(`#${CSS.escape(regionCode)}`) as SVGGraphicsElement;
-    
+
     if (!tempPath) {
       document.body.removeChild(tempDiv);
       return null;
     }
-    
+
     const bbox = tempPath.getBBox();
     document.body.removeChild(tempDiv);
-    
+
     const newSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     const padding = 10;
     newSvg.setAttribute("viewBox", `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + padding * 2} ${bbox.height + padding * 2}`);
     newSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     newSvg.setAttribute("width", "100%");
     newSvg.setAttribute("height", "100%");
-    
+
     const clone = regionElement.cloneNode(true) as SVGElement;
     clone.setAttribute("fill", "#f5c242");
     clone.setAttribute("stroke", "#1E1E1E");
     clone.setAttribute("stroke-width", "3");
-    
+
     newSvg.appendChild(clone);
     return new XMLSerializer().serializeToString(newSvg);
   };
@@ -158,7 +155,7 @@ export default function RegionPage({ components }: RegionPageProps) {
   // --- 3. CONDITIONS D'AFFICHAGE ---
 
   // Affichage du loader SEULEMENT après avoir initialisé tous les Hooks !
-  if (!components || components.length === 0) {
+  if (!components || components.length === 0 || !svgContent) {
     return (
       <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#050505]">
         <div className="relative flex items-center justify-center w-16 h-16 mb-8">
@@ -203,24 +200,43 @@ export default function RegionPage({ components }: RegionPageProps) {
           "description": "Service de configuration de montres utilisant des matériaux issus des régions françaises."
         })}
       </script>
-      <Nav bg={false}/>
+      <Nav bg={false} />
 
-      <div className="relative flex flex-col items-center justify-center min-h-screen px-8 pt-28 pb-16 bg-neutral-950 text-neutral-200 font-[Poppins] tracking-wide overflow-hidden" ref={containerRef}>
-        <header className="text-center mb-6 sm:mb-10 px-4">
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-semibold text-neutral-100 tracking-widest mb-2">
+      {/* Main Container with Dark Metallic radial background */}
+      <div
+        className="relative flex flex-col items-center justify-center min-h-screen px-4 pt-32 pb-16 overflow-hidden"
+        ref={containerRef}
+        style={{
+          background: 'radial-gradient(circle at 50% 50%, #1a1a1c 0%, #050505 80%)'
+        }}
+      >
+        {/* Subtle texture overlay for brushed metal look */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/brushed-alum.png")' }}></div>
+
+
+
+        <header className="relative z-20 text-center mb-12 sm:mb-16 px-4">
+          <h1
+            className="text-4xl sm:text-5xl md:text-6xl font-serif tracking-widest mb-4"
+            style={{
+              color: '#d4af37',
+              textShadow: '0 2px 10px rgba(212, 175, 55, 0.3)'
+            }}
+          >
             Montres-Bastille
           </h1>
-          <h2 className="text-lg sm:text-sm md:text-base text-primary uppercase tracking-[0.35em] mb-2">
+          <h2 className="text-xs sm:text-sm md:text-base text-[#f5d47a] font-sans uppercase tracking-[0.4em] mb-4 opacity-90">
             Le Patrimoine des Régions de France
           </h2>
-          <p className="text-xl sm:text-sm md:text-base text-neutral-300 max-w-2xl mx-auto">
-            Sélectionnez votre région sur la carte pour concevoir une montre unique à partir de matériaux locaux (bois, pierre, cuir). 
+          <div className="w-16 h-[1px] bg-[#d4af37] mx-auto mb-6 opacity-40"></div>
+          <p className="text-sm sm:text-base text-neutral-400 font-sans max-w-2xl mx-auto tracking-wide leading-relaxed">
+            Sélectionnez votre région sur la carte pour concevoir une montre unique à partir de matériaux locaux.
           </p>
         </header>
-          
-        <main className="w-full" role="main" aria-label="Carte interactive des régions de France">
+
+        <main className="relative z-20 w-full" role="main" aria-label="Carte interactive des régions de France">
           {!isMobile && (
-            <DesktopMap svgContent={svgContent} availableRegions={availableRegions} onSelect={handleConfigureClick}/>
+            <DesktopMap svgContent={svgContent} availableRegions={availableRegions} onSelect={handleConfigureClick} />
           )}
           {isMobile && (
             <MobileCarousel
