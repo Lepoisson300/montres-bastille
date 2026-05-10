@@ -5,7 +5,7 @@ import { MeshGradient } from "@paper-design/shaders-react";
 // Images
 const heroBg = "/fond1.webp";
 const cmm10 = "/cmm10.webp";
-const heroBook = "/hero_book.webp";
+const remi = "/remi.webp";
 const womanBg = "/fond2.webp";
 const eclateImg = "/eclate.webp";
 const watchDialBg = "/watch_dial.webp";
@@ -54,7 +54,7 @@ export default function AboutPage() {
             <div className="flex justify-center md:justify-end">
               <div className="relative p-2 border border-primary/20 bg-[#0A0A0A]/50 shadow-2xl rounded-sm group">
                 <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
-                <img src={heroBook} alt="Carnet d'horloger" className="w-full max-w-[400px] object-cover rounded-sm grayscale-[20%] contrast-125" />
+                <img src={remi} alt="Carnet d'horloger" className="w-full max-w-[400px] object-cover rounded-sm grayscale-[20%] contrast-125" />
               </div>
             </div>
           </div>
