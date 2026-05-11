@@ -105,12 +105,7 @@ export default function ContactPage() {
         {/* Subtle texture overlay for brushed metal look */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/brushed-alum.png")' }}></div>
 
-        {/* Abstract Watch Component Background Decorations */}
-        <div className="absolute top-40 right-20 opacity-[0.05] pointer-events-none rotate-45 animate-pulse">
-           <svg width="400" height="400" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="0.2" strokeLinecap="round" strokeLinejoin="round">
-             <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="M12 2v20"/><path d="M2 12h20"/><path d="m4.93 4.93 14.14 14.14"/><path d="m4.93 19.07 14.14-14.14"/>
-           </svg>
-        </div>
+       
 
         <div className="relative z-20 max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
           

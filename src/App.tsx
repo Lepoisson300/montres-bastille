@@ -111,7 +111,7 @@ function App() {
       <main className="bg-background">
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/about" element={<AboutPage />} />
+          <Route path="/about" element={<AboutPage allcomponents={components}/>} />
           <Route path="/region-page" element={<RegionPage components={components} />} />
           <Route path="/configurator" element={<ConfiguratorPage/>} />
           <Route path="/community" element={<CommunityPage />} />

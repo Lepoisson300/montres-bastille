@@ -1,6 +1,8 @@
 import { Helmet } from "react-helmet-async";
 import Nav from "../components/Nav";
 import { MeshGradient } from "@paper-design/shaders-react";
+import ComponentsCarousel from "../components/ComponentsCarousel";
+import type { PartOption } from "../types/Parts";
 
 // Images
 const heroBg = "/fond1.webp";
@@ -13,7 +15,11 @@ const sketchImg = "/AlsaceDial1.webp";
 const prototypeImg = "/nico.webp";
 const finalWatchImg = "/remiTest.webp";
 
-export default function AboutPage() {
+interface AboutInterface{
+  allcomponents:PartOption[]
+}
+
+export default function AboutPage({allcomponents}:AboutInterface) {
   return (
     <>
       <Helmet>
@@ -148,10 +154,12 @@ export default function AboutPage() {
             
             {/* Image Left (ou Right selon l'ordre md:order) */}
             <div className="flex justify-center md:justify-start order-2 md:order-1">
-              <div className="relative p-2 border border-primary/20 bg-[#0A0A0A]/50 shadow-2xl rounded-sm">
-                <img src={cmm10} alt="Pièces de montre" className="w-full max-w-[500px] object-cover rounded-sm grayscale-[30%] contrast-125 hover:grayscale-0 transition-all duration-700" />
+              <div className="flex justify-center md:justify-start order-2 w-full">
+                <ComponentsCarousel parts={allcomponents} />
               </div>
             </div>
+
+            
           </div>
         </section>
 
