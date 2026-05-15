@@ -87,6 +87,8 @@ export default function AccountPage() {
     votes: []
   };
 
+  console.log(displayUser.montres_perso)
+
   return (
     <>
       <Helmet>
