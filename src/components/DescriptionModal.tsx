@@ -16,7 +16,7 @@ const MobileLuxuryModal = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
+            className="fixed inset-0 z-40"
           />
 
           {/* 2. Le tiroir du bas (Bottom Sheet) */}
