@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import { REGION_NAMES} from "../Logic/watchComponents";
+import { REGION_NAMES } from "../Logic/watchComponents";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion"; // <-- Ajout de l'import
 
 interface MobileCarouselProps {
   availableRegions: string[];
@@ -8,8 +9,6 @@ interface MobileCarouselProps {
   extractRegionSVG: (code: string) => string | null;
   onSelect: (id: string) => void;
 }
-
-
 
 export const MobileCarousel = ({ availableRegions, getComponentCount, extractRegionSVG, onSelect }: MobileCarouselProps) => {
 
@@ -31,24 +30,49 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, extractReg
     setCarouselIndex((prev) => Math.min(availableRegions.length - 1, prev + 1));
   };
 
+  // --- Logique du Swipe ---
+  const handleDragEnd = (event: any, info: any) => {
+    // Si on a swipé vers la gauche avec assez de force ou de distance
+    if (info.offset.x < -50 || info.velocity.x < -500) {
+      goToNext();
+    } 
+    // Si on a swipé vers la droite avec assez de force ou de distance
+    else if (info.offset.x > 50 || info.velocity.x > 500) {
+      goToPrev();
+    }
+  };
+
   if (!availableRegions || availableRegions.length === 0) return null;
 
   return (
     <div className="w-full max-w-md px-4">
-      <div className="relative">
+      <div className="relative mb-6"> {/* Ajout d'une marge basse (mb-6) pour espacer des dots */}
+        
         {/* Carousel container */}
         <div className="overflow-hidden">
-          <div
-            className="flex transition-transform duration-300 ease-out"
-            style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
+          <motion.div
+            className="flex cursor-grab active:cursor-grabbing"
+            // Animation fluide de Framer Motion plutôt que le style en ligne
+            animate={{ x: `-${carouselIndex * 100}%` }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            
+            // --- Configuration du drag horizontal ---
+            drag="x"
+            // Empêche de glisser trop loin si on est au bout du carrousel
+            dragConstraints={{ left: 0, right: 0 }} 
+            dragElastic={0.2} // Petit effet de résistance
+            onDragEnd={handleDragEnd}
           >
             {availableRegions.map((code) => {
               const regionSVG = extractRegionSVG(code);
               const componentCount = getComponentCount(code);
 
               return (
-                <div key={code} className="w-full flex-shrink-0 px-2">
-                  <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl border border-[#D4AF37]/30 p-6 shadow-xl">
+                <div key={code} className="w-full flex-shrink-0 px-2 pointer-events-none">
+                   {/* pointer-events-none permet de ne pas bloquer le drag */}
+                  <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl border border-[#D4AF37]/30 p-6 shadow-xl pointer-events-auto">
+                    {/* pointer-events-auto remet les clics à l'intérieur de la carte */}
+                    
                     {/* Region name */}
                     <h3 className="text-2xl font-serif text-[#D4AF37] text-center mb-4">
                       {REGION_NAMES[code]}
@@ -87,7 +111,7 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, extractReg
                 </div>
               );
             })}
-          </div>
+          </motion.div>
         </div>
 
         {/* Navigation arrows (Only if more than 1 region) */}
@@ -96,7 +120,7 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, extractReg
             <button
               onClick={goToPrev}
               disabled={carouselIndex === 0}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 bg-neutral-900/80 backdrop-blur-sm border border-[#D4AF37]/30 rounded-full p-3 hover:bg-neutral-800 transition-all shadow-lg z-10 disabled:opacity-30"
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 bg-neutral-900/80 backdrop-blur-sm border border-[#D4AF37]/30 rounded-full p-3 hover:bg-neutral-800 transition-all shadow-lg z-10 disabled:opacity-30 pointer-events-auto"
               aria-label="Région précédente"
             >
               <ChevronLeft className="w-6 h-6 text-[#D4AF37]" />
@@ -105,7 +129,7 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, extractReg
             <button
               onClick={goToNext}
               disabled={carouselIndex === availableRegions.length - 1}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 bg-neutral-900/80 backdrop-blur-sm border border-[#D4AF37]/30 rounded-full p-3 hover:bg-neutral-800 transition-all shadow-lg z-10 disabled:opacity-30"
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 bg-neutral-900/80 backdrop-blur-sm border border-[#D4AF37]/30 rounded-full p-3 hover:bg-neutral-800 transition-all shadow-lg z-10 disabled:opacity-30 pointer-events-auto"
               aria-label="Région suivante"
             >
               <ChevronRight className="w-6 h-6 text-[#D4AF37]" />
