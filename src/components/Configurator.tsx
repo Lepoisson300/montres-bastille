@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
-import { motion, AnimatePresence} from "framer-motion";import html2canvas from "html2canvas";
+import { motion, AnimatePresence } from "framer-motion";
+import html2canvas from "html2canvas";
 import type { WatchConfiguratorProps, PartOption } from "../types/Parts";
 import LuxuryDescription from './ComponentsDesc';
 import MobileLuxuryModal from './DescriptionModal';
@@ -20,16 +21,14 @@ const fromQuery = (): Record<string, string> => {
   return Object.fromEntries(new URLSearchParams(window.location.search));
 };
 
-
-
 export default function Configurator({ assets, defaultChoice, selectedRegion, onCheckout }: WatchConfiguratorProps) {
   
   const [isMobile, setIsMobile] = useState(false);
   const filtered = useMemo(() => {
-  console.log("assets : ", assets);
-  const filter = (items: PartOption[]) => items.filter(i => !i.regions || !selectedRegion || Object.values(i.regions).includes(selectedRegion));
+    console.log("assets : ", assets);
+    const filter = (items: PartOption[]) => items.filter(i => !i.regions || !selectedRegion || Object.values(i.regions).includes(selectedRegion));
     return {
-      mouvement:filter(assets.mouvement),
+      mouvement: filter(assets.mouvement),
       cases: filter(assets.cases),
       straps: filter(assets.straps),
       dials: filter(assets.dials),
@@ -39,18 +38,18 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
 
   // 2. Configuration State
   const [config, setConfig] = useState<PartOption[]>(() => {
-  const query = fromQuery();
+    const query = fromQuery();
 
-  const resolvedParts = [
-    assets.mouvement?.find(p => p.id === (query.mouvement || defaultChoice?.mouvement)) ?? assets.mouvement?.[0],
-    assets.cases?.find(p => p.id === (query.cases         || defaultChoice?.cases))     ?? assets.cases?.[0],
-    assets.straps?.find(p => p.id === (query.straps       || defaultChoice?.straps))    ?? assets.straps?.[0],
-    assets.dials?.find(p => p.id === (query.dials         || defaultChoice?.dials))     ?? assets.dials?.[0],
-    assets.hands?.find(p => p.id === (query.hands         || defaultChoice?.hands))     ?? assets.hands?.[0],
-  ];
+    const resolvedParts = [
+      assets.mouvement?.find(p => p.id === (query.mouvement || defaultChoice?.mouvement)) ?? assets.mouvement?.[0],
+      assets.cases?.find(p => p.id === (query.cases         || defaultChoice?.cases))     ?? assets.cases?.[0],
+      assets.straps?.find(p => p.id === (query.straps       || defaultChoice?.straps))    ?? assets.straps?.[0],
+      assets.dials?.find(p => p.id === (query.dials         || defaultChoice?.dials))     ?? assets.dials?.[0],
+      assets.hands?.find(p => p.id === (query.hands         || defaultChoice?.hands))     ?? assets.hands?.[0],
+    ];
 
-  return resolvedParts.filter((p): p is PartOption => p !== undefined);
-});
+    return resolvedParts.filter((p): p is PartOption => p !== undefined);
+  });
 
   const [zoom, setZoom] = useState(3);
   const [showPreview, setShowPreview] = useState(true);
@@ -138,9 +137,9 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
     const selectedPart = options.find(opt => opt.id === id);
     if (selectedPart) {
       setConfig(prevConfig => {
-        const newConfig = [...prevConfig]; // On clone le tableau
-        newConfig[index] = selectedPart;   // On remplace la pièce au bon index
-        return newConfig;                  // On sauvegarde le nouveau tableau
+        const newConfig = [...prevConfig]; 
+        newConfig[index] = selectedPart;   
+        return newConfig;                  
       });
       setFocusedPart(selectedPart);
 
@@ -152,21 +151,20 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
 
   // Helper to render the Viewer content to avoid code duplication
   const renderViewer = () => (
-    <div className="bg-surface/20 rounded-3xl border border-white/10 p-4 shadow-lg backdrop-blur-sm">
+    <div className="bg-surface/20 rounded-2xl md:rounded-3xl border border-white/10 p-2 md:p-4 shadow-lg backdrop-blur-sm">
       
       {/* BOUTON POUR DÉROULER / ENROULER */}
       <button 
         onClick={() => setShowPreview(!showPreview)}
-        className="w-full flex justify-between items-center text-ivory/90 hover:text-primary transition-colors py-2 px-2"
+        className="w-full flex justify-between items-center text-ivory/90 hover:text-primary transition-colors py-1 md:py-2 px-2"
       >
-        <span className="font-serif text-lg">Aperçu en direct</span>
-        {/* Petite icône flèche qui tourne avec framer-motion */}
+        <span className="font-serif text-base md:text-lg">Aperçu en direct</span>
         <motion.div animate={{ rotate: showPreview ? 180 : 0 }}>
           ▼
         </motion.div>
       </button>
 
-      {/* LA ZONE QUI S'ANIME (S'OUVRE ET SE FERME) */}
+      {/* LA ZONE QUI S'ANIME */}
       <AnimatePresence initial={false}>
         {showPreview && (
           <motion.div
@@ -174,11 +172,12 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="overflow-hidden" // Important pour ne pas dépasser pendant l'animation
+            className="overflow-hidden"
           >
-            <div className="pt-4"> {/* Marge interne pour séparer du bouton */}
+            <div className="pt-2 md:pt-4">
               
-              <div className=" bg-background aspect-square rounded-2xl border border-white/5 overflow-hidden">
+              {/* Réduction de la taille sur mobile via w-[65%] et max-w-[250px] */}
+              <div className="bg-background aspect-square w-[65%] max-w-[350px] md:w-full md:max-w-none mx-auto rounded-xl md:rounded-2xl border border-white/5 overflow-hidden">
                 
                 <div className="relative h-full w-full transition-transform duration-300" style={{ transform: `scale(${zoom})` }}>
                   <img 
@@ -201,15 +200,15 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
                 </div>
               </div>
               
-              {/* TES BOUTONS SOUS LA MONTRE (Intacts) */}
-              <div className="flex justify-between items-center mt-4">
-                <div className="flex bg-surface rounded-full mx-2 p-1 flex-row border border-white/10">
+              {/* BOUTONS SOUS LA MONTRE */}
+              <div className="flex justify-between items-center mt-3 md:mt-4">
+                <div className="flex bg-surface rounded-full mx-1 md:mx-2 p-1 flex-row border border-white/10 scale-90 md:scale-100 origin-left">
                   <ZoomBtn label="-" onClick={() => setZoom(Math.max(1, zoom - 0.5))} />
-                  <span className="px-4 py-1 text-center text-xs w-24">Zoom {Math.round(zoom * 100)}%</span>
+                  <span className="px-2 md:px-4 py-1 text-center text-xs w-20 md:w-24">Zoom {Math.round(zoom * 100)}%</span>
                   <ZoomBtn label="+" onClick={() => setZoom(Math.min(5, zoom + 0.5))} />
                 </div>
-                <button onClick={handleDownload} className="text-xs uppercase tracking-widest bg-accent text-white border border-primary/30 px-6 py-2 rounded-full hover:bg-primary/10 transition">
-                  Capture d'écran
+                <button onClick={handleDownload} className="text-[10px] md:text-xs uppercase tracking-widest bg-accent text-white border border-primary/30 px-3 md:px-6 py-2 rounded-full hover:bg-primary/10 transition">
+                  Capture
                 </button>
               </div>
 
@@ -222,18 +221,20 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
 
   return (
     <>
-    <section className="bg-dark text-ivory pt-8 min-h-screen font-sans">
-      <div className="px-6 md:px-12 py-16 max-w-7xl mx-auto">
+    {/* Réduction des marges globales sur mobile (pt-4, py-6, px-4) */}
+    <section className="bg-dark text-ivory pt-4 md:pt-8 min-h-screen font-sans">
+      <div className="px-4 md:px-12 py-6 md:py-16 max-w-7xl mx-auto">
         
-        <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr] items-start">
-          <h3 className="font-serif text-3xl md:text-4xl text-primary mb-2">Configurez votre montre</h3>
-          <p className="text-text-muted text-sm uppercase tracking-widest">Visualisation 3D • Prix Réel</p>
+        <div className="grid gap-6 md:gap-12 lg:grid-cols-[1.2fr_1fr] items-start">
+          
+          <div className="mb-2 md:mb-0">
+            <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-primary mb-1 md:mb-2">Configurez votre montre</h3>
+            <p className="text-text-muted text-[10px] md:text-sm uppercase tracking-widest">Visualisation 3D • Prix Réel</p>
+          </div>
         
-          {/* FIX 2: Render EITHER Mobile OR Desktop viewer, never both */}
           {isMobile ? (
-             <div className="sticky top-8 space-y-6 z-10 bg-dark pb-3 pt-2">
+             <div className="sticky top-4 space-y-4 md:space-y-6 z-10 bg-dark pb-2 pt-1">
                {renderViewer()}
-               
              </div>
           ) : (
             <div className="top-8 space-y-6 z-10 pb-3 pt-2">
@@ -246,10 +247,11 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
           )}
 
           {/* RIGHT: Selection Controls */}
-          <div className="space-y-8">
+          <div className="space-y-4 md:space-y-8">
             <SummaryCard sku={sku} selections={selections} price={totalPrice} onCheckout={() => onCheckout?.({price: totalPrice, config})} />
             
-            <div className="space-y-10 bg-surface/30 p-6 rounded-2xl border border-white/5">
+            {/* Réduction du padding du conteneur des grilles sur mobile */}
+            <div className="space-y-6 md:space-y-10 bg-surface/30 p-4 md:p-6 rounded-2xl border border-white/5">
               <PartGrid title="Mouvement" part="mouvement" options={filtered.mouvement} current={config[0]} 
               onSelect={(id: string) => handleSelectPart(0, id, filtered.mouvement)}/>
               <PartGrid title="Boîtier" part="cases" options={filtered.cases} current={config[1]} 
@@ -266,35 +268,35 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
         </div>
       </div>
     </section>
-          <MobileLuxuryModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        title={focusedPart?.name || "Nom de la pièce"}
-        description={focusedPart?.description || "Sélectionnez une pièce pour voir ses détails."}
-      />
-        </>
-
+    
+    <MobileLuxuryModal 
+      isOpen={isModalOpen} 
+      onClose={() => setIsModalOpen(false)} 
+      title={focusedPart?.name || "Nom de la pièce"}
+      description={focusedPart?.description || "Sélectionnez une pièce pour voir ses détails."}
+    />
+    </>
   );
 }
 
 // ... Keep your Sub-Components (ZoomBtn, SummaryCard, PartGrid) as they were ...
 function ZoomBtn({ label, onClick }: { label: string; onClick: () => void }) {
-  return <button onClick={onClick} className="w-8 h-8 rounded-full hover:bg-white/10 transition flex items-center justify-center">{label}</button>;
+  return <button onClick={onClick} className="w-6 h-6 md:w-8 md:h-8 rounded-full hover:bg-white/10 transition flex items-center justify-center">{label}</button>;
 }
 
 function SummaryCard({ sku, price, onCheckout }: any) {
   return (
-    <div className="bg-surface p-6 rounded-2xl border border-primary/20 shadow-2xl">
-      <div className="flex justify-between items-start mb-6">
+    <div className="bg-surface p-4 md:p-6 rounded-2xl border border-primary/20 shadow-2xl">
+      <div className="flex justify-between items-center mb-4 md:mb-6">
         <div>
-          <h4 className="text-primary font-serif text-xl">Votre Composition</h4>
+          <h4 className="text-primary font-serif text-lg md:text-xl">Votre Composition</h4>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-serif text-primary">{price}€</p>
+          <p className="text-xl md:text-2xl font-serif text-primary">{price}€</p>
         </div>
       </div>
-      <button onClick={onCheckout} className="w-full bg-primary text-dark font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-primary-dark transition shadow-lg shadow-primary/20">
-        <GoArrowUpRight className="text-xl" /> COMMANDER LA MONTRE
+      <button onClick={onCheckout} className="w-full text-sm md:text-base bg-primary text-dark font-bold py-3 md:py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-primary-dark transition shadow-lg shadow-primary/20">
+        <GoArrowUpRight className="text-lg md:text-xl" /> COMMANDER LA MONTRE
       </button>
     </div>
   );
@@ -303,23 +305,22 @@ function SummaryCard({ sku, price, onCheckout }: any) {
 function PartGrid({ title, options, current, onSelect }: any) {
   return (
     <div>
-      <h5 className="font-serif text-lg mb-4 text-ivory/90">{title}</h5>
-      <div className="grid grid-cols-4 gap-3">
+      <h5 className="font-serif text-base md:text-lg mb-3 md:mb-4 text-ivory/90">{title}</h5>
+      <div className="grid grid-cols-4 gap-2 md:gap-3">
         {options.map((opt: PartOption) => (
           <button 
             key={opt.id} 
             onClick={() => onSelect(opt.id)}
-            className={`group relative p-2 rounded-xl border transition-all ${current === opt.id ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-white/10 bg-white/5 hover:border-white/30'}`}
+            className={`group relative p-1.5 md:p-2 rounded-xl border transition-all ${current === opt.id ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-white/10 bg-white/5 hover:border-white/30'}`}
           >
-            <div className="aspect-square mb-2 overflow-hidden rounded-lg">
+            <div className="aspect-square mb-1 md:mb-2 overflow-hidden rounded-lg">
               <img src={opt.thumbnail} alt={opt.name} className="w-full h-full scale-500 object-contain group-hover:scale-600 transition-transform" />
             </div>
-            <p className="text-[10px] text-center uppercase tracking-tighter truncate">{opt.name}</p>
-            {opt.price ? <p className="text-[9px] text-center text-primary mt-1">{opt.price}€</p> : null}
+            <p className="text-[9px] md:text-[10px] text-center uppercase tracking-tighter truncate">{opt.name}</p>
+            {opt.price ? <p className="text-[8px] md:text-[9px] text-center text-primary mt-0.5 md:mt-1">{opt.price}€</p> : null}
           </button>
         ))}
       </div>
     </div>
-    
   );
 }
