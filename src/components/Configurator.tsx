@@ -151,7 +151,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
 
   // Helper to render the Viewer content to avoid code duplication
   const renderViewer = () => (
-    <div className="bg-surface/20 rounded-2xl md:rounded-3xl border border-white/10 p-2 md:p-4 shadow-lg backdrop-blur-sm">
+    <div className="bg-surface/20 rounded-2xl md:rounded-3xl border border-white/10 p-2 md:p-6">
       
       {/* BOUTON POUR DÉROULER / ENROULER */}
       <button 
@@ -223,14 +223,14 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
     <>
     {/* Réduction des marges globales sur mobile (pt-4, py-6, px-4) */}
     <section className="bg-dark text-ivory pt-4 md:pt-8 min-h-screen font-sans">
-      <div className="px-4 md:px-12 py-6 md:py-16 max-w-7xl mx-auto">
-        
-        <div className="grid gap-6 md:gap-12 lg:grid-cols-[1.2fr_1fr] items-start">
-          
-          <div className="mb-2 md:mb-0">
+      <div className="py-6 md:py-16 max-w-7xl mx-auto">
+        <div className="mb-2 md:mb-0">
             <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-primary mb-1 md:mb-2">Configurez votre montre</h3>
             <p className="text-text-muted text-[10px] md:text-sm uppercase tracking-widest">Visualisation 3D • Prix Réel</p>
           </div>
+        <div className="grid gap-2 md:gap-6 lg:grid-cols-[1.2fr_1fr] items-start">
+          
+          
         
           {isMobile ? (
              <div className="sticky top-4 space-y-4 md:space-y-6 z-10 bg-dark pb-2 pt-1">

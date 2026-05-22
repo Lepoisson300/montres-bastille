@@ -68,11 +68,12 @@ export const DesktopMap = ({ svgContent, availableRegions, onSelect }: Props) =>
         htmlEl.addEventListener('mouseenter', handleMouseEnter);
         htmlEl.addEventListener('mouseleave', handleMouseLeave);
       } else {
-        el.setAttribute("fill", "#0a0a0c");
-        el.setAttribute("stroke", "#1a1a1a");
-        el.setAttribute("stroke-width", "0.5");
+        el.setAttribute("fill", "#1c1d21"); // Même couleur de fond que les autres
+        el.setAttribute("stroke", "#4a4a4a"); // Un gris moyen pour délimiter
+        el.setAttribute("stroke-width", "1"); // Un peu plus épais pour qu'on le voie
         htmlEl.style.pointerEvents = "none";
-        htmlEl.style.filter = "drop-shadow(2px 4px 4px rgba(0,0,0,0.9))";
+        htmlEl.style.opacity = "0.4"; // Rend la région semi-transparente (effet désactivé)
+        htmlEl.style.filter = "none"; // Enlève l'ombre pour les aplatir
       }
     });
   }, [responsiveSvgContent, availableRegions]);

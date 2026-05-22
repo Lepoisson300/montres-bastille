@@ -207,8 +207,7 @@ export default function RegionPage({ components }: RegionPageProps) {
         className="relative flex flex-col items-center justify-center min-h-screen px-4 pt-32 pb-16 overflow-hidden"
         ref={containerRef}
         style={{
-          background: 'radial-gradient(circle at 50% 50%, #1a1a1c 0%, #050505 80%)'
-        }}
+          background: 'radial-gradient(circle at 50% 50%, #2e2e32 0%, #121214 80%)'        }}
       >
         {/* Subtle texture overlay for brushed metal look */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/brushed-alum.png")' }}></div>
