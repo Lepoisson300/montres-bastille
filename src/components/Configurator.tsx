@@ -231,7 +231,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
   return (
     <>
     {/* Réduction des marges globales sur mobile (pt-4, py-6, px-4) */}
-    <section className="bg-dark text-ivory pt-4 md:pt-8 min-h-screen font-sans">
+    <section className="bg-dark text-ivory pt-13 md:pt-8 min-h-screen font-sans">
       <div className="py-6 md:py-16 max-w-7xl mx-auto">
         <div className="mb-2 md:mb-0">
             <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-primary mb-1 md:mb-2">Configurez votre montre</h3>
