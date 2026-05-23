@@ -177,7 +177,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
             <div className="pt-2 md:pt-4">
               
               {/* Réduction de la taille sur mobile via w-[65%] et max-w-[250px] */}
-              <div className="bg-background aspect-square w-[65%] max-w-[350px] md:w-full md:max-w-none mx-auto rounded-xl md:rounded-2xl border border-white/5 overflow-hidden">
+              <div className="bg-background aspect-square w-[65%] max-w-87.5 md:w-full md:max-w-none mx-auto rounded-xl md:rounded-2xl border border-white/5 overflow-hidden">
                 
                 <div className="relative h-full w-full transition-transform duration-300" style={{ transform: `scale(${zoom})` }}>
                   <img 
@@ -185,18 +185,27 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
                   alt="Fond du configurateur"
                   className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-90"
                 />
-                  <AnimatePresence mode="popLayout">
-                    {[ selections.dials,selections.cases, selections.straps, selections.hands].map((part, i) => (
+                 <AnimatePresence mode="popLayout">
+                  {(() => {
+                    const isC3 = selections.cases?.id === "c3";
+                    const renderLayers = isC3
+                      ? [selections.dials, selections.straps, selections.cases, selections.hands]
+                      : [selections.dials, selections.cases, selections.straps, selections.hands];
+
+                    return renderLayers.map((part, i) => (
                       part?.thumbnail && (
                         <motion.img 
-                          key={`${part.id}-${i}`}
+                          key={part.id} 
                           src={part.thumbnail} 
-                          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                          className="absolute scale-130 inset-0 w-full h-full object-contain pointer-events-none"
+                          initial={{ opacity: 0 }} 
+                          animate={{ opacity: 1 }} 
+                          exit={{ opacity: 0 }}
+                          className="absolute scale-130 inset-0 top-7 md:top-12 w-full h-full object-contain pointer-events-none"
                         />
                       )
-                    ))}
-                  </AnimatePresence>
+                    ));
+                  })()}
+                </AnimatePresence>
                 </div>
               </div>
               
@@ -204,7 +213,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
               <div className="flex justify-between items-center mt-3 md:mt-4">
                 <div className="flex bg-surface rounded-full mx-1 md:mx-2 p-1 flex-row border border-white/10 scale-90 md:scale-100 origin-left">
                   <ZoomBtn label="-" onClick={() => setZoom(Math.max(1, zoom - 0.5))} />
-                  <span className="px-2 md:px-4 py-1 text-center text-xs w-20 md:w-24">Zoom {Math.round(zoom * 100)}%</span>
+                  <span className="px-2 md:px-4 py-2 text-center text-xs">Zoom {Math.round((zoom/3) * 100)}%</span>
                   <ZoomBtn label="+" onClick={() => setZoom(Math.min(5, zoom + 0.5))} />
                 </div>
                 <button onClick={handleDownload} className="text-[10px] md:text-xs uppercase tracking-widest bg-accent text-white border border-primary/30 px-3 md:px-6 py-2 rounded-full hover:bg-primary/10 transition">
@@ -314,10 +323,15 @@ function PartGrid({ title, options, current, onSelect }: any) {
             className={`group relative p-1.5 md:p-2 rounded-xl border transition-all ${current === opt.id ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-white/10 bg-white/5 hover:border-white/30'}`}
           >
             <div className="aspect-square mb-1 md:mb-2 overflow-hidden rounded-lg">
-              <img src={opt.thumbnail} alt={opt.name} className="w-full h-full scale-500 object-contain group-hover:scale-600 transition-transform" />
+  {opt.type==="strap"?
+              <img src={opt.thumbnail} alt={opt.name} className="w-full h-45 scale-200 object-contain group-hover:scale-250 transition-transform" />
+              : <img src={opt.thumbnail} alt={opt.name} className="w-full h-45 scale-400 object-contain group-hover:scale-500 transition-transform" />}
+              
+
+              
             </div>
             <p className="text-[9px] md:text-[10px] text-center uppercase tracking-tighter truncate">{opt.name}</p>
-            {opt.price ? <p className="text-[8px] md:text-[9px] text-center text-primary mt-0.5 md:mt-1">{opt.price}€</p> : null}
+            {opt.price ? <p className="text-[10px] md:text-[12px] text-center text-primary mt-0.5 md:mt-1">{opt.price}€</p> : null}
           </button>
         ))}
       </div>
