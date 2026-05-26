@@ -20,7 +20,7 @@ import { AlertProvider } from "./Logic/AlertContext";
 import OrderTrackingPage from "./pages/orderPage";
 import CgvPage from "./pages/CGVPage";
 import MentionsLegalesPage from "./pages/MentionsLegalesPage";
-import ConfidentialitePage from "./components/ConfidentialitePage";
+import ConfidentialitePage from "./pages/ConfidentialitePage";
 
 // --- Main App Component ---
 
