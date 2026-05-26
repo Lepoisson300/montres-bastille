@@ -12,13 +12,15 @@ import RegionPage from "./pages/RegionPage"
 import { useAuth0 } from "@auth0/auth0-react";
 import OnboardingModal from "./components/OnboardingModal";
 import Footer from "./components/Footer";
-import LegalPage from "./pages/mentionLegalePage";
 import CartPage from "./pages/CartPage";
 import type { PartOption } from "./types/Parts";
 import SuccessPage from "./pages/SuccessPaiementPage";
 import { HelmetProvider } from 'react-helmet-async';
 import { AlertProvider } from "./Logic/AlertContext";
 import OrderTrackingPage from "./pages/orderPage";
+import CgvPage from "./pages/CGVPage";
+import MentionsLegalesPage from "./pages/MentionsLegalesPage";
+import ConfidentialitePage from "./components/ConfidentialitePage";
 
 // --- Main App Component ---
 
@@ -117,7 +119,9 @@ function App() {
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/account" element={<AccountPage />} />
-          <Route path="/mention" element={<LegalPage/>}/>
+          <Route path="/cgv" element={<CgvPage/>}/>
+          <Route path="/mention" element={<MentionsLegalesPage/>}/>
+          <Route path="/privacy" element={<ConfidentialitePage/>}/>
           <Route path="/panier" element={<CartPage />}/>
           <Route path="/success" element={<SuccessPage/>}/>
           <Route path="/order" element={<OrderTrackingPage/>}/>

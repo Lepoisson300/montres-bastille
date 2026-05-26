@@ -100,7 +100,7 @@ export default function ComponentsCarousel({ parts }: FrenchPartsCarouselProps) 
                         <img 
                             src={comp.thumbnail} 
                             alt={comp.name} 
-                            className={`w-full h-full object-cover grayscale-[20%] contrast-125 scale-200 transition-transform duration-700 ${
+                            className={`w-full h-120 object-cover grayscale-[20%] contrast-125 scale-200 transition-transform duration-700 ${
                             shouldZoomOnHover ? " hover:grayscale-0" : ""
                             }`}
                         />
@@ -108,7 +108,7 @@ export default function ComponentsCarousel({ parts }: FrenchPartsCarouselProps) 
                     <img 
                             src={comp.thumbnail} 
                             alt={comp.name} 
-                            className={`w-full h-full object-cover scale-115 grayscale-[20%] contrast-125 transition-transform duration-700 ${
+                            className={`w-full object-cover scale-115 grayscale-[20%] contrast-125 transition-transform duration-700 ${
                             shouldZoomOnHover ? "hover:scale-120 hover:grayscale-0" : ""
                             }`}
                         />
