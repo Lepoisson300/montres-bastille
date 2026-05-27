@@ -21,6 +21,7 @@ import OrderTrackingPage from "./pages/orderPage";
 import CgvPage from "./pages/CGVPage";
 import MentionsLegalesPage from "./pages/MentionsLegalesPage";
 import ConfidentialitePage from "./pages/ConfidentialitePage";
+import FramePage from "./pages/FramePage";
 
 // --- Main App Component ---
 
@@ -125,6 +126,8 @@ function App() {
           <Route path="/panier" element={<CartPage />}/>
           <Route path="/success" element={<SuccessPage/>}/>
           <Route path="/order" element={<OrderTrackingPage/>}/>
+          <Route path="/framer" element={<FramePage/>}/>
+
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
