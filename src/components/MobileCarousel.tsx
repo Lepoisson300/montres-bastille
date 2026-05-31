@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { REGION_NAMES } from "../Logic/watchComponents";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { motion } from "framer-motion"; // <-- Ajout de l'import
+import { motion } from "framer-motion"; 
 
 interface MobileCarouselProps {
   availableRegions: string[];
@@ -30,15 +30,24 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, extractReg
     setCarouselIndex((prev) => Math.min(availableRegions.length - 1, prev + 1));
   };
 
-  // --- Logique du Swipe ---
+  // --- Logique du Swipe CORRIGÉE ---
   const handleDragEnd = (event: any, info: any) => {
-    // Si on a swipé vers la gauche avec assez de force ou de distance
-    if (info.offset.x < -50 || info.velocity.x < -500) {
-      goToNext();
+    const swipeThreshold = 50;
+    const velocityThreshold = 500;
+
+    // Si on a swipé vers la gauche avec assez de force/distance (Aller au Suivant)
+    if (info.offset.x < -swipeThreshold || info.velocity.x < -velocityThreshold) {
+      // On s'assure qu'on n'est pas déjà au dernier slide avant d'appeler goToNext
+      if (carouselIndex < availableRegions.length - 1) {
+        goToNext();
+      }
     } 
-    // Si on a swipé vers la droite avec assez de force ou de distance
-    else if (info.offset.x > 50 || info.velocity.x > 500) {
-      goToPrev();
+    // Si on a swipé vers la droite avec assez de force/distance (Aller au Précédent)
+    else if (info.offset.x > swipeThreshold || info.velocity.x > velocityThreshold) {
+      // On s'assure qu'on n'est pas déjà au premier slide avant d'appeler goToPrev
+      if (carouselIndex > 0) {
+        goToPrev();
+      }
     }
   };
 
@@ -46,21 +55,17 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, extractReg
 
   return (
     <div className="w-full max-w-md px-4">
-      <div className="relative mb-6"> {/* Ajout d'une marge basse (mb-6) pour espacer des dots */}
+      <div className="relative mb-6">
         
         {/* Carousel container */}
         <div className="overflow-hidden">
           <motion.div
             className="flex cursor-grab active:cursor-grabbing"
-            // Animation fluide de Framer Motion plutôt que le style en ligne
             animate={{ x: `-${carouselIndex * 100}%` }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            
-            // --- Configuration du drag horizontal ---
             drag="x"
-            // Empêche de glisser trop loin si on est au bout du carrousel
             dragConstraints={{ left: 0, right: 0 }} 
-            dragElastic={0.2} // Petit effet de résistance
+            dragElastic={0.2} 
             onDragEnd={handleDragEnd}
           >
             {availableRegions.map((code) => {
@@ -69,9 +74,7 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, extractReg
 
               return (
                 <div key={code} className="w-full flex-shrink-0 px-2 pointer-events-none">
-                   {/* pointer-events-none permet de ne pas bloquer le drag */}
                   <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl border border-[#D4AF37]/30 p-6 shadow-xl pointer-events-auto">
-                    {/* pointer-events-auto remet les clics à l'intérieur de la carte */}
                     
                     {/* Region name */}
                     <h3 className="text-2xl font-serif text-[#D4AF37] text-center mb-4">
@@ -102,7 +105,7 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, extractReg
 
                     {/* Action Button */}
                     <button
-                      onClick={() => onSelect(availableRegions[carouselIndex])}
+                      onClick={() => onSelect(code)} // <-- CORRECTION: utilisation de code directement au lieu de availableRegions[carouselIndex]
                       className="w-full py-4 bg-[#D4AF37] text-black font-bold rounded-xl active:scale-95 transition-transform shadow-lg"
                     >
                       Configurer
@@ -114,7 +117,7 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, extractReg
           </motion.div>
         </div>
 
-        {/* Navigation arrows (Only if more than 1 region) */}
+        {/* Navigation arrows */}
         {availableRegions.length > 1 && (
           <>
             <button

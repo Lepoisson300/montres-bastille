@@ -107,20 +107,14 @@ export default function FramePage() {
       <div className="sticky top-0 h-screen w-full z-0 overflow-hidden bg-black flex justify-center items-center">
         
         {/* Conteneur qui prend tout l'écran avec une limite de largeur pour les très grands écrans */}
-        <div className="relative w-full h-full max-w-[1920px]">
-          
+        <div className="relative w-full h-full max-w-480">
           <canvas 
             ref={canvasRef} 
-
             className="w-full h-full object-cover object-center"
           />
-          
-          {/* Calque de fondu sombre (Vignette) 
-            Astuce : J'ai rendu l'ombre responsive. Elle est plus légère sur téléphone 
-            pour ne pas masquer la montre, et plus forte sur ordinateur (md:).
-          */}
           <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_80px_40px_#000] md:shadow-[inset_0_0_150px_80px_#000]" />
-
+          <div className="absolute inset-y-0 left-0 w-16 md:w-32 2xl:w-64 bg-gradient-to-r from-black to-transparent pointer-events-none z-10" />
+          <div className="absolute inset-y-0 right-0 w-16 md:w-32 2xl:w-64 bg-gradient-to-l from-black to-transparent pointer-events-none z-10" />
         </div>
       </div>
 
@@ -145,24 +139,19 @@ export default function FramePage() {
         </div>
 
         {/* Étape 2 */}
-        <div className="h-screen flex items-center justify-end">
-          <div className="relative z-10 py-20 pointer-events-auto w-full max-w-7xl">
-            <Reveal>
-              <div className="flex flex-col md:flex-row items-center justify-between gap-12 md:gap-20 mx-6 md:mx-12"> 
-                
-                {/* BLOC TEXTE (À gauche sur PC, en haut sur mobile) */}
-                <div className="flex-1 mt-auto mb-auto w-full md:max-w-2xl">
-                  <div className="h-px w-24 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mb-8" />
-                  
-                  <h2 className="font-serif text-4xl md:text-5xl tracking-tight mb-6 text-text-primary">
-                    Découvrez la Collection
-                  </h2>
-                  
-                  <p className="text-[12px] md:text-lg text-text-muted leading-relaxed mb-10 font-sans">
-                    Découvrez les pièces de notre collection, choisies pour représenter au mieux les régions françaises et leur patrimoine.
-                    Créez votre morceau d'histoire unique.
-                  </p>
-                  
+        <div className="h-screen flex items-center">
+            <div className="relative z-10 py-20 pointer-events-auto w-full min-[1921px]:mx-80">
+              <Reveal>
+              <div className="flex flex-col md:flex-row mx-6 md:mx-12"> 
+                <div className="mt-auto mb-auto md:max-w-2xl">
+                    <div className="h-px w-24 bg-linear-to-r from-transparent via-[#D4AF37] to-transparent mb-8" />
+                    <h2 className="font-serif text-4xl md:text-5xl tracking-tight mb-6 text-text-primary">
+                      Découvrez la Collection
+                    </h2>
+                    <p className="text-[12px] md:text-lg text-text-muted leading-relaxed mb-10 font-sans">
+                      Découvrez les pièces de notre collection, choisies pour représenter au mieux les régions françaises et leur patrimoine.
+                      Créez votre morceau d'histoire unique.
+                    </p>
                   {/* Le bouton reste centré sur mobile et s'aligne à gauche sur PC */}
                   <div className="flex justify-center md:justify-start">
                     <BtnRedirection text={"Explorer"} style={"bordered"} redirection="/community" size={{px:5,py:3}}/>
@@ -175,13 +164,13 @@ export default function FramePage() {
                     src={watch2}
                     alt="Collection"
                     // Ajout de classes pour sublimer l'image dans l'esprit Dark Gold
-                    className="mask-image-blur max-w-[250px] md:max-w-sm drop-shadow-diffuse rounded-4xl border border-white/5 md:border-none shadow-2xl md:shadow-none"
+                    className="mask-image-blur max-w-62.5 md:max-w-sm drop-shadow-diffuse rounded-4xl border border-white/5 md:border-none shadow-2xl md:shadow-none"
                   />
                 </div>
                 
               </div>
             </Reveal>
-  </div>
+          </div>
         </div>
 
         {/* Étape 3 */}
