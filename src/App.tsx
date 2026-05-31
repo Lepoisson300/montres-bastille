@@ -113,7 +113,7 @@ function App() {
       {/* Main Content */}
       <main className="bg-background">
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<FramePage />} />
           <Route path="/about" element={<AboutPage allcomponents={components}/>} />
           <Route path="/region-page" element={<RegionPage components={components} />} />
           <Route path="/configurator" element={<ConfiguratorPage/>} />
@@ -126,7 +126,7 @@ function App() {
           <Route path="/panier" element={<CartPage />}/>
           <Route path="/success" element={<SuccessPage/>}/>
           <Route path="/order" element={<OrderTrackingPage/>}/>
-          <Route path="/framer" element={<FramePage/>}/>
+          <Route path="/framer" element={<HomePage/>}/>
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

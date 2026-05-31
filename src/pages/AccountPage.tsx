@@ -58,15 +58,74 @@ export default function AccountPage() {
           if (foundUser) {
             setDbUser(foundUser);
           }
+
+          
+
         } catch (error) {
           console.error("Error fetching user data:", error);
         } finally {
+
+          
           setLoadingData(false);
+
+
         }
       }
     }
     getUserData();
+
+
+    
   }, [isAuthenticated, authUser]);
+
+
+  const displayUser = dbUser || {
+            nom: authUser?.family_name || "Nom Inconnu",
+            prenom: authUser?.given_name || "Utilisateur",
+            email: authUser?.email,
+            numero: "Non renseigné",
+            montres_perso: [],  
+            votes: []
+          };
+  
+  if (displayUser.montres_perso) {
+    console.log("Montres perso:", displayUser.montres_perso);
+
+    // Wrap the async logic in a function
+    const fetchCommandes = async () => {
+      try {
+        // Create an array of Promises
+        const montresPromises = displayUser.montres_perso.map(async (commande) => {
+          
+          // From your console screenshot, the array has a mix of objects and strings.
+          // We need to make sure we are passing the string order number.
+          const orderId = typeof commande === 'string' ? commande : commande.numero_commande; 
+          
+          // FIX: Pass the dynamic orderId directly into the URL path
+          const response = await fetch(`https://montre-bastille-api.onrender.com/api/commandes/${orderId}`);
+          
+          if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status}`);
+          }
+          
+          // Await the JSON parsing
+          return await response.json(); 
+        });
+
+        // Wait for ALL fetch requests to complete
+        const montres = await Promise.all(montresPromises);
+        
+        console.log("Resolved Data:", montres);
+        
+        // -> You can now use setMontres(montres) here if you are using React state!
+
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    };
+
+    fetchCommandes();
+  }
 
   if (isLoading || loadingData) {
     return (
@@ -77,17 +136,6 @@ export default function AccountPage() {
     );
   }
 
-  // Fallback data
-  const displayUser = dbUser || {
-    nom: authUser?.family_name || "Nom Inconnu",
-    prenom: authUser?.given_name || "Utilisateur",
-    email: authUser?.email,
-    numero: "Non renseigné",
-    montres_perso: [],  
-    votes: []
-  };
-
-  console.log(displayUser.montres_perso)
 
   return (
     <>
