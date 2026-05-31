@@ -16,7 +16,7 @@ export default function FramePage() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [images, setImages] = useState<HTMLImageElement[]>([]);
   
-  const frameStateRef = useRef({ frame: 0 }); 
+  const frameStateRef = useRef({ frame: 1 }); 
 
   // 1. Chargement des images
   useEffect(() => {
@@ -45,14 +45,22 @@ export default function FramePage() {
     canvas.height = 1080;
 
     // IMPORTANT : On remet la frame à 0 au cas où l'utilisateur revient sur la page
-    frameStateRef.current.frame = 0;
+    frameStateRef.current.frame = 1;
 
-    const render = () => {
-      const frameIndex = Math.round(frameStateRef.current.frame);
+   const render = () => {
+      // Petite astuce de sécurité pour éviter de sortir de l'array
+      let frameIndex = Math.round(frameStateRef.current.frame);
+      if (frameIndex >= images.length) frameIndex = images.length - 1;
       const image = images[frameIndex];
-      
-      if (!image || !image.complete) return;
+      if (!image) return;
+      // Si l'image n'est pas encore chargée (complete === false)
+      if (!image.complete) {
+        // On lui attache un événement : quand elle a fini de charger, elle relance "render"
+        image.onload = render;
+        return; 
+      }
 
+      // Une fois l'image chargée, on la dessine
       context.clearRect(0, 0, canvas.width, canvas.height);
       context.drawImage(image, 0, 0, 1920, 1080);
     };
