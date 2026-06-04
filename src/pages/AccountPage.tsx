@@ -78,8 +78,8 @@ export default function AccountPage() {
   // On récupère toutes les commandes, et on extrait toutes les montres de chaque commande
   // On peut filtrer pour ne prendre que les commandes payées (etape_actuelle >= 1) si on le souhaite
   const commandesValidees = displayUser.commandes?.filter(c => c.etape_actuelle >= 1) || [];
-  const toutesLesMontres = commandesValidees.flatMap(commande => commande.montres) || [];
-
+  const toutesLesMontres = commandesValidees.flatMap(commande => commande.montre) || [];
+  console.log(commandesValidees)
   if (isLoading || loadingData) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center text-primary font-serif">
@@ -161,12 +161,20 @@ export default function AccountPage() {
             
             {toutesLesMontres.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {toutesLesMontres.map((montre, index) => (
-                  <Reveal key={montre.id || index} delay={index + 3}>
-                    <WatchCard montre={montre} index={index}/>
-                  </Reveal>
-                ))}
-              </div>
+                {commandesValidees.map((commande:Order) => 
+                  commande.montres.map((uneMontre, index) => (
+                    <Reveal key={`${commande.numero_commande}-${index}`} delay={index + 3}>
+                      <WatchCard 
+                        montre={uneMontre}
+                        index={index} 
+                        numero_commande={commande.numero_commande} 
+                        etape_actuelle={commande.etape_actuelle} 
+                      />
+                    </Reveal>
+                  ))
+                  
+                )}
+                </div>
             ) : (
               <Reveal delay={3}>
                 <div className="text-center py-20 bg-surface/20 rounded-2xl border border-white/5">
@@ -175,7 +183,9 @@ export default function AccountPage() {
                 </div>
               </Reveal>
             )}
+            
           </div>
+          
         </div>
       </div>
     </>

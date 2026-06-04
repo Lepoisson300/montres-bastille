@@ -22,5 +22,5 @@ export type Order = {
   date_commande: string; // Peut aussi être de type 'Date' si vous parsez la chaîne ISO dans votre code
   etape_actuelle: number;
   stripe_session_id: string;
-  montre: Watch;
+  montres: Watch[];
 };

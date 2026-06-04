@@ -1,12 +1,14 @@
+import { Link } from "react-router-dom";
 import type { Watch } from "../types/Parts";
 
 interface WatchCardProps {
   montre: Watch;
   index: number;
   etape_actuelle?: number; // Permet de passer le statut depuis la commande parente
+  numero_commande : string
 }
 
-export default function WatchCard({ montre, index, etape_actuelle = 1 }: WatchCardProps) {
+export default function WatchCard({ montre, index, etape_actuelle = 1, numero_commande }: WatchCardProps) {
   
   // Fonction utilitaire pour gérer l'affichage du statut en fonction de l'étape
   const getStatusDisplay = (etape: number) => {
@@ -23,7 +25,6 @@ export default function WatchCard({ montre, index, etape_actuelle = 1 }: WatchCa
         return { text: 'En préparation', style: 'text-gray-400 border-gray-400/20 bg-gray-400/5' };
     }
   };
-
   const currentStatus = getStatusDisplay(etape_actuelle);
 
   // Fonction pour trouver le nom d'un composant spécifique
@@ -31,6 +32,7 @@ export default function WatchCard({ montre, index, etape_actuelle = 1 }: WatchCa
     const part = montre.components?.find(c => c.type === type);
     return part ? part.name : "Standard";
   };
+  console.log('montres'+montre)
 
   // Liste des détails dynamiques
   const watchDetails = [
@@ -87,7 +89,12 @@ export default function WatchCard({ montre, index, etape_actuelle = 1 }: WatchCa
         ))}
       </div>
 
-      
+      <Link 
+        to={`/order?commande=${numero_commande}`}
+        className="w-full mt-auto block text-center bg-transparent border border-white/10 text-text-primary hover:bg-primary hover:text-dark hover:border-primary text-sm tracking-widest uppercase py-3 rounded transition-all duration-300"
+      >
+        Voir ma commande
+      </Link>
     </div>
   );
 }

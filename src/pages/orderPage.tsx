@@ -3,6 +3,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Nav from "../components/Nav";
 import { Helmet } from "react-helmet-async";
 import { useParams, useSearchParams } from "react-router-dom";
+import type { Order } from "../types/User";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -13,24 +14,6 @@ interface OrderStep {
   icon: React.ReactNode;
 }
 
-interface Order {
-  id: string;
-  numero_commande: string;
-  nom_montre: string;
-  date_commande: string;
-  etape_actuelle: number; // 0-indexed
-  numero_suivi?: string;
-  transporteur?: string;
-  lien_suivi?: string;
-  configuration?: {
-    cadran_id?: string;
-    boitier_id?: string;
-    bracelet_id?: string;
-    mouvement_id?: string;
-  };
-}
-
-// ─── Animation Reveal ────────────────────────────────────────────────────────
 
 const Reveal = ({
   children,
@@ -157,7 +140,7 @@ export default function OrderTrackingPage() {
   const [searchParams] = useSearchParams();
 
   const [inputValue, setInputValue] = useState("");
-  const [order, setOrder] = useState<Order | null>(null);
+  const [order, setOrder] = useState<Order>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
@@ -182,7 +165,6 @@ export default function OrderTrackingPage() {
       if (result) {
         setOrder(result);
       } else {
-        setOrder(null);
         setError("Aucune commande trouvée avec ce numéro. Vérifiez le numéro présent dans votre email de confirmation.");
       }
     } catch {
@@ -193,7 +175,6 @@ export default function OrderTrackingPage() {
   }
 
   function handleReset() {
-    setOrder(null);
     setError(null);
     setSearched(false);
     setInputValue("");
@@ -293,103 +274,106 @@ export default function OrderTrackingPage() {
           )}
 
           {/* ── Résultat ── */}
-          {order && (
-            <div>
-              {/* Header commande */}
-              <Reveal delay={1}>
-                <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
-                  <div>
-                    <p className="text-xs uppercase tracking-widest text-primary mb-1">Commande confirmée</p>
-                    <h2 className="font-serif text-4xl text-text-primary mb-1">{order.nom_montre}</h2>
-                    <p className="text-text-muted text-sm">
-                      Réf. <span className="text-text-secondary font-mono">{order.numero_commande}</span>
-                      {" · "}
-                      Commandée le {new Date(order.date_commande).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
-                    </p>
-                  </div>
-                  <button
-                    onClick={handleReset}
-                    className="text-xs uppercase tracking-widest text-text-muted border border-white/10 rounded-full px-5 py-2.5 hover:border-primary/40 hover:text-primary transition-all shrink-0"
-                  >
-                    ← Autre commande
-                  </button>
+          {order && (() => {
+            // 🛡️ SÉCURITÉ : On récupère la première montre du tableau, peu importe si c'est l'ancienne ou la nouvelle BDD
+            const montreAffichee = order.configuration || (order as any).montre;
+            console.log(order)
+            // Si aucune montre n'est trouvée dans la commande, on affiche un message d'erreur propre
+            if (!montreAffichee) {
+              return (
+                <div className="text-center p-8 bg-red-950/20 rounded-xl border border-red-500/20 mt-8">
+                  <p className="text-red-400">Les détails de cette commande sont indisponibles.</p>
                 </div>
-              </Reveal>
+              );
+            }
 
-              {/* Timeline */}
-              <Reveal delay={2}>
-                <div className="relative mb-16">
-                  <OrderTimeline steps={STEPS} currentStep={order.etape_actuelle} />
-                </div>
-              </Reveal>
-
-              {/* Bouton suivi livraison si envoi */}
-              {order.etape_actuelle >= 5 && order.numero_suivi && (
-                <Reveal delay={3}>
-                  <div className="mb-16 p-8 rounded-2xl bg-primary/8 border border-primary/25 backdrop-blur-sm">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                      <div>
-                        <p className="text-xs uppercase tracking-widest text-primary mb-2">Votre colis est en route</p>
-                        <h3 className="font-serif text-2xl text-text-primary mb-1">Suivi de livraison</h3>
-                        <p className="text-text-muted text-sm">
-                          Transporteur : <span className="text-text-secondary">{order.transporteur}</span>
-                          {" · "}
-                          N° de suivi : <span className="text-text-secondary font-mono">{order.numero_suivi}</span>
-                        </p>
-                      </div>
-                      <a
-                        href={order.lien_suivi}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="shrink-0 inline-flex items-center gap-3 bg-primary text-dark px-8 py-4 rounded-xl text-sm uppercase tracking-widest font-sans hover:bg-primary-dark transition-colors"
-                      >
-                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-                        </svg>
-                        Suivre la livraison
-                      </a>
+            return (
+              <div>
+                {/* Header commande */}
+                <Reveal delay={1}>
+                  <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+                    <div>
+                      <p className="text-xs uppercase tracking-widest text-primary mb-1">Commande confirmée</p>
+                      {/* ✅ CORRECTION : On utilise montreAffichee.name */}
+                      <h2 className="font-serif text-4xl text-text-primary mb-1">{montreAffichee.name || "Création Sur-Mesure"}</h2>
+                      <p className="text-text-muted text-sm">
+                        Réf. <span className="text-text-secondary font-mono">{order.numero_commande}</span>
+                        {" · "}
+                        Commandée le {new Date(order.date_commande).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                      </p>
                     </div>
+                    <button
+                      onClick={handleReset}
+                      className="text-xs uppercase tracking-widest text-text-muted border border-white/10 rounded-full px-5 py-2.5 hover:border-primary/40 hover:text-primary transition-all shrink-0"
+                    >
+                      ← Autre commande
+                    </button>
                   </div>
                 </Reveal>
-              )}
 
-              {/* Récapitulatif configuration corrigé */}
-              {order.configuration && (
-                <Reveal delay={4}>
-                  <div>
-                    <h3 className="font-serif text-2xl text-text-primary border-l-2 border-primary pl-4 mb-6">
-                      Votre Configuration
-                    </h3>
-                    
-                    {/* Si le backend renvoie un résumé texte (votre système actuel) */}
-                    {(order.configuration as any).resume ? (
-                      <div className="p-5 rounded-xl bg-surface/40 border border-white/5">
-                        <p className="text-xs uppercase tracking-widest text-text-muted mb-2">Composants choisis</p>
-                        <p className="font-serif text-text-primary leading-relaxed">
-                          {(order.configuration as any).resume.split(' + ').join(' • ')}
-                        </p>
-                      </div>
-                    ) : (
-                      /* L'ancien système avec les colonnes (si vous l'utilisez un jour) */
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {[
-                          { label: "Cadran", value: order.configuration.cadran_id },
-                          { label: "Boîtier", value: order.configuration.boitier_id },
-                          { label: "Bracelet", value: order.configuration.bracelet_id },
-                          { label: "Mouvement", value: order.configuration.mouvement_id },
-                        ].map((item) => item.value && (
-                          <div key={item.label} className="p-5 rounded-xl bg-surface/40 border border-white/5 hover:border-primary/20 transition-colors">
-                            <p className="text-xs uppercase tracking-widest text-text-muted mb-2">{item.label}</p>
-                            <p className="font-serif text-text-primary">{item.value}</p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                {/* Timeline */}
+                <Reveal delay={2}>
+                  <div className="relative mb-16">
+                    <OrderTimeline steps={STEPS} currentStep={order.etape_actuelle} />
                   </div>
                 </Reveal>
-              )}
-            </div>
-          )}
+
+                {/* Bouton suivi livraison si envoi */}
+                {order.etape_actuelle >= 5 && order.numero_commande && (
+                  <Reveal delay={3}>
+                    {/* ... (Ton bloc de livraison reste inchangé) ... */}
+                    <div className="mb-16 p-8 rounded-2xl bg-primary/8 border border-primary/25 backdrop-blur-sm">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div>
+                          <p className="text-xs uppercase tracking-widest text-primary mb-2">Votre colis est en route</p>
+                          <h3 className="font-serif text-2xl text-text-primary mb-1">Suivi de livraison</h3>
+                          <p className="text-text-muted text-sm">
+                            Transporteur : <span className="text-text-secondary">{"En attente"}</span>
+                            {" · "}
+                            N° de suivi : <span className="text-text-secondary font-mono">{"En attente"}</span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </Reveal>
+                )}
+
+                {/* Récapitulatif configuration corrigé */}
+                {/* ✅ CORRECTION : On utilise montreAffichee.components */}
+                {montreAffichee.components && (
+                  <Reveal delay={4}>
+                    <div>
+                      <h3 className="font-serif text-2xl text-text-primary border-l-2 border-primary pl-4 mb-6">
+                        Votre Configuration
+                      </h3>
+                      
+                      {/* Affichage générique pour le nouveau système (Tableau de composants) */}
+                      {Array.isArray(montreAffichee.components) ? (
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          {montreAffichee.components.map((part: any, i: number) => (
+                            <div key={i} className="p-5 rounded-xl bg-surface/40 border border-white/5 hover:border-primary/20 transition-colors">
+                              <p className="text-xs uppercase tracking-widest text-text-muted mb-2">{part.type}</p>
+                              <p className="font-serif text-text-primary truncate" title={part.name}>{part.name}</p>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        /* L'ancien système avec le champ resume (au cas où il resterait des vieilles commandes) */
+                        (montreAffichee.components as any).resume ? (
+                          <div className="p-5 rounded-xl bg-surface/40 border border-white/5">
+                            <p className="text-xs uppercase tracking-widest text-text-muted mb-2">Composants choisis</p>
+                            <p className="font-serif text-text-primary leading-relaxed">
+                              {(montreAffichee.components as any).resume.split(' + ').join(' • ')}
+                            </p>
+                          </div>
+                        ) : null
+                      )}
+                    </div>
+                  </Reveal>
+                )}
+              </div>
+            );
+          })()}
         </div>
       </div>
     </>
