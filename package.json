@@ -2,7 +2,7 @@
   "name": "montres-bastillewebsite",
   "private": true,
   "version": "0.0.0",
-  "homepage": "http://montres-bastille.fr",
+  "homepage": "https://montres-bastille.fr",
   "type": "module",
   "scripts": {
     "dev": "vite",
