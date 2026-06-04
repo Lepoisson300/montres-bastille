@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 import { motion, AnimatePresence } from "framer-motion";
 import html2canvas from "html2canvas";
-import type { WatchConfiguratorProps, PartOption } from "../types/Parts";
+import type { PartOption } from "../types/Parts";
+import type { WatchConfiguratorProps } from "../types/Configurator";
 import LuxuryDescription from './ComponentsDesc';
 import MobileLuxuryModal from './DescriptionModal';
 

@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import type { PartOption, CartItem } from "../types/Parts";
+import type { PartOption, Watch } from "../types/Parts";
 import Nav from "../components/Nav";
 import { Helmet } from "react-helmet-async";
 import { useAlert } from "../Logic/AlertContext";
 import { useAuth0 } from "@auth0/auth0-react";
+import type { CartItem } from "../types/Configurator";
 
 interface CartPageProps {
   updateCartCount?: (count: number) => void;
@@ -12,12 +13,17 @@ interface CartPageProps {
 
 export default function CartPage({ updateCartCount }: CartPageProps) {
 
-  // 1. STATE
+  // 1. STATE (Avec sécurité Objet vs Tableau)
   const [cartWatches, setCartWatches] = useState<CartItem[]>(() => {
     try {
       const saved = localStorage.getItem('cart');
-      console.log(saved)
-      return saved ? JSON.parse(saved) : [];
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // SÉCURITÉ : Si le configurateur a enregistré un objet au lieu d'un tableau,
+        // on l'enveloppe dans un tableau pour éviter le crash du .map()
+        return Array.isArray(parsed) ? parsed : [parsed];
+      }
+      return [];
     } catch (e) {
       console.error("Erreur lecture localStorage:", e);
       return [];
@@ -26,28 +32,15 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
 
   const { user, isAuthenticated } = useAuth0();
 
+  // ... (Tes variables Livraison et BoiteRangement restent inchangées)
   const Livraison: PartOption = {
-    price: 30,
-    id: "liv1",
-    material: "",
-    name: "",
-    regions: ["FR-E", "FR-U", "FR-A"],
-    size: "",
-    stock: 1,
-    thumbnail: "",
-    type: ""
+    price: 30, id: "liv1", material: "", name: "", regions: ["FR-E", "FR-U", "FR-A"],
+    size: "", stock: 1, thumbnail: "", type: "", description: ""
   };
 
   const BoiteRangement: PartOption = {
-    id: "boit1",
-    material: "",
-    name: "",
-    price: 0,
-    regions: ["FR-E", "FR-U", "FR-A"],
-    size: "",
-    stock: 1,
-    thumbnail: "",
-    type: ""
+    id: "boit1", material: "", name: "", price: 0, regions: ["FR-E", "FR-U", "FR-A"],
+    size: "", stock: 1, thumbnail: "", type: "", description: ""
   };
 
   const [selectedWatchIndex, setSelectedWatchIndex] = useState<number>(0);
@@ -55,12 +48,14 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  // SÉCURITÉ BOUCLE INFINIE : On retire updateCartCount des dépendances
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cartWatches));
     if (updateCartCount && typeof updateCartCount === 'function') {
       updateCartCount(cartWatches.length);
     }
-  }, [cartWatches, updateCartCount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cartWatches]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -71,9 +66,10 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
   }, []);
 
   // --- LOGIQUE ---
-
-  const selectedWatch = cartWatches[selectedWatchIndex];
-  const grandTotal = cartWatches.reduce((acc, watch) => acc + watch.price, 0);
+  
+  // Sécurité pour éviter le crash si l'index est hors limites
+  const selectedWatch = cartWatches[selectedWatchIndex] || cartWatches[0];
+  const grandTotal = cartWatches.reduce((acc, watch) => acc + (watch.price || 0), 0);
 
   const removeWatch = (indexToRemove: number) => {
     const updatedCart = cartWatches.filter((_, index) => index !== indexToRemove);
@@ -95,27 +91,33 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
 
   const handleCheckout = async () => {
     if (cartWatches.length === 0) return;
+    
+    const watchesToOrder: Watch[] = cartWatches.map((item, index) => ({
+      id: Date.now() + index, 
+      creator: isAuthenticated && user?.name ? user.name : "Anonyme",
+      name: `Création Sur-Mesure #${index + 1}`,
+      votes: 0,
+      image: "", 
+      components: item.composants 
+    }));
+
+    console.log("Envoi de la commande, montres : ", watchesToOrder);
     setIsRedirecting(true);
 
-    const watchConfig = [
-      ...cartWatches[selectedWatchIndex].composants,
-      Livraison,
-      BoiteRangement,
-    ];
-    console.log("envoie de la commande : ",watchConfig)
     try {
       const res = await fetch("https://montre-bastille-api.onrender.com/api/stripeOrder", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          configs: watchConfig,
-          userEmail: isAuthenticated ? user?.email : undefined 
+          watches: watchesToOrder, 
+          extras: [Livraison, BoiteRangement], 
+          userEmail: user?.email 
         }),      
       });
+      
       const data = await res.json();
 
       if (data.url) {
-        // FIX: Return immediately after redirect — don't run code below
         window.location.href = data.url;
         return;
       } else {

@@ -1,19 +1,15 @@
 import { useEffect, useState, useRef } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import type { User } from "../types/Parts";
+import type { Order, User } from "../types/User";
 import Nav from "../components/Nav";
 import { MeshGradient } from '@paper-design/shaders-react';
 import BtnRedirection from "../components/btnRedirect";
 import { Helmet } from "react-helmet-async";
+import WatchCard from "../components/WatchCard";
+import InfoCard from "../components/InfoCards";
 
-// Animation de Reveal
-const Reveal = ({
-  children,
-  delay = 0,
-}: {
-  children: React.ReactNode;
-  delay?: number;
-}) => {
+// Animation de Reveal (inchangée)
+const Reveal = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -47,85 +43,42 @@ export default function AccountPage() {
   const [dbUser, setDbUser] = useState<User | null>(null);
   const [loadingData, setLoadingData] = useState(true);
 
+  // 1. Un seul appel API pour récupérer l'utilisateur ET ses commandes embarquées
   useEffect(() => {
     async function getUserData() {
       if (isAuthenticated && authUser?.email) {
         try {
           const response = await fetch('https://montre-bastille-api.onrender.com/api/users');
           const users = await response.json();
-          const foundUser = users.find((u: User) => u.email === authUser.email);
-          
+          const foundUser = users.find((u: User) => u.email === authUser.email);       
           if (foundUser) {
             setDbUser(foundUser);
           }
-
-          
-
         } catch (error) {
           console.error("Error fetching user data:", error);
-        } finally {
-
-          
+        } finally {  
           setLoadingData(false);
-
-
         }
+      } else if (!isLoading) {
+        setLoadingData(false);
       }
     }
     getUserData();
-
-
-    
-  }, [isAuthenticated, authUser]);
-
+  }, [isAuthenticated, authUser, isLoading]);
 
   const displayUser = dbUser || {
-            nom: authUser?.family_name || "Nom Inconnu",
-            prenom: authUser?.given_name || "Utilisateur",
-            email: authUser?.email,
-            numero: "Non renseigné",
-            montres_perso: [],  
-            votes: []
-          };
+    nom: authUser?.family_name || "Nom Inconnu",
+    prenom: authUser?.given_name || "Utilisateur",
+    email: authUser?.email,
+    numero: "Non renseigné",
+    commandes: [],  
+  };
   
-  if (displayUser.montres_perso) {
-    console.log("Montres perso:", displayUser.montres_perso);
-
-    // Wrap the async logic in a function
-    const fetchCommandes = async () => {
-      try {
-        // Create an array of Promises
-        const montresPromises = displayUser.montres_perso.map(async (commande) => {
-          
-          // From your console screenshot, the array has a mix of objects and strings.
-          // We need to make sure we are passing the string order number.
-          const orderId = typeof commande === 'string' ? commande : commande.numero_commande; 
-          
-          // FIX: Pass the dynamic orderId directly into the URL path
-          const response = await fetch(`https://montre-bastille-api.onrender.com/api/commandes/${orderId}`);
-          
-          if (!response.ok) {
-            throw new Error(`HTTP Error: ${response.status}`);
-          }
-          
-          // Await the JSON parsing
-          return await response.json(); 
-        });
-
-        // Wait for ALL fetch requests to complete
-        const montres = await Promise.all(montresPromises);
-        
-        console.log("Resolved Data:", montres);
-        
-        // -> You can now use setMontres(montres) here if you are using React state!
-
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      }
-    };
-
-    fetchCommandes();
-  }
+  // 2. EXTRACTION DES MONTRES
+  // On récupère toutes les commandes, et on extrait toutes les montres de chaque commande
+  // On peut filtrer pour ne prendre que les commandes payées (etape_actuelle >= 1) si on le souhaite
+  const commandesValidees = displayUser.commandes?.filter(c => c.etape_actuelle >= 1) || [];
+  const toutesLesMontres = commandesValidees.flatMap(commande => commande.montres) || [];
 
   if (isLoading || loadingData) {
     return (
@@ -135,7 +88,6 @@ export default function AccountPage() {
       </div>
     );
   }
-
 
   return (
     <>
@@ -147,7 +99,7 @@ export default function AccountPage() {
       
       <div className="relative min-h-screen bg-background font-sans overflow-hidden pt-24 pb-20">
         
-        {/* Le Gradient Horloger - Optimisation : on s'assure qu'il ne bloque pas le focus */}
+        {/* Le Gradient Horloger */}
         <div className="absolute top-0 left-0 w-full h-150 opacity-90 z-0 pointer-events-none" aria-hidden="true">
           <MeshGradient
             width={typeof window !== 'undefined' ? window.innerWidth : 1280}
@@ -191,7 +143,7 @@ export default function AccountPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Reveal delay={2}><InfoCard title="Identité" value={`${displayUser.prenom} ${displayUser.nom}`} /></Reveal>
-              <Reveal delay={3}><InfoCard title="Email" value={displayUser.email} /></Reveal>
+              <Reveal delay={3}><InfoCard title="Email" value={displayUser.email || "Non renseigné"} /></Reveal>
               <Reveal delay={4}><InfoCard title="Téléphone" value={displayUser.numero || "Non renseigné"} /></Reveal>
             </div>
           </div>
@@ -207,11 +159,11 @@ export default function AccountPage() {
               </div>
             </Reveal>
             
-            {displayUser.montres_perso && displayUser.montres_perso.length > 0 ? (
+            {toutesLesMontres.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {displayUser.montres_perso.map((montre, index) => (
-                  <Reveal key={index} delay={index + 3}>
-                    <WatchCard montre={montre} index={index} />
+                {toutesLesMontres.map((montre, index) => (
+                  <Reveal key={montre.id || index} delay={index + 3}>
+                    <WatchCard montre={montre} index={index}/>
                   </Reveal>
                 ))}
               </div>
@@ -227,52 +179,5 @@ export default function AccountPage() {
         </div>
       </div>
     </>
-  );
-}
-
-// Composant InfoCard épuré et premium
-function InfoCard({ title, value }: { title: string, value: string | undefined }) {
-  return (
-    <div className="p-8 rounded-xl bg-surface/40 border border-white/5 transition-colors duration-300 hover:border-primary/30 group">
-      <h3 className="text-xs uppercase tracking-widest text-text-muted mb-2 group-hover:text-primary transition-colors">{title}</h3>
-      <p className="font-serif text-xl text-text-primary">{value}</p>
-    </div>
-  );
-}
-
-// Composant WatchCard luxe
-function WatchCard({ montre, index }: { montre: any, index: number }) {
-  return (
-    <div className="p-8 rounded-xl relative transition-all duration-500 bg-surface/40 border border-white/5 hover:border-primary/40 hover:-translate-y-1 group">
-      
-      <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
-        <h3 className="font-serif text-xl text-primary">
-          {montre.nom_montre || `Création N°${index + 1}`}
-        </h3>
-        <span className="text-xs text-text-muted tracking-widest">ÉDITION UNIQUE</span>
-      </div>
-      
-      <div className="space-y-4 mb-10">
-        <DetailRow label="Cadran" value={montre.configuration?.cadran_id || "Standard"} />
-        <DetailRow label="Boîtier" value={montre.configuration?.boitier_id || "Acier"} />
-        <DetailRow label="Bracelet" value={montre.configuration?.bracelet_id || "Cuir"} />
-        <DetailRow label="Mouvement" value={montre.configuration?.mouvement_id || "Automatique"} />
-      </div>
-
-      <button className="w-full bg-transparent border border-white/10 text-text-primary hover:bg-primary hover:text-dark hover:border-primary text-sm tracking-widest uppercase py-3 rounded transition-all duration-300">
-        Voir les détails
-      </button>
-    </div>
-  );
-}
-
-// Sous-composant pour les lignes de détails de la montre
-function DetailRow({ label, value }: { label: string, value: string }) {
-  return (
-    <div className="flex justify-between items-end">
-      <span className="text-sm text-text-muted">{label}</span>
-      <div className="flex-grow border-b border-dotted border-white/10 mx-4 mb-1"></div>
-      <span className="font-serif text-text-primary">{value}</span>
-    </div>
   );
 }
