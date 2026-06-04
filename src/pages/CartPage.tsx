@@ -207,7 +207,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50" />
 
                     <div className="relative z-10 flex items-center justify-center h-full w-full">
-                      {["case", "dial", "strap", "hands"].map((category) => {
+                      {["dial","case", "strap", "hand"].map((category) => {
                         const part = selectedWatch.composants?.find((c) => c.type === category);
                         if (!part || !part.thumbnail) return null;
                         console.log("parts : ",part)
@@ -254,14 +254,18 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
                           className="flex items-center gap-3 bg-background/50 p-2 rounded-lg border border-transparent hover:border-primary/20 transition-colors group"
                         >
                           <div className="h-16 w-16 rounded bg-surface-hover flex-shrink-0 overflow-hidden flex items-center justify-center border border-border/10">
-                            {part.thumbnail ? (
+                            {part.thumbnail && part.type === 'strap' ? (
                               <img
                                 src={part.thumbnail}
                                 alt={part.name}
-                                className="h-full scale-[4] w-full object-cover "
+                                className="h-12 scale-[4] w-full object-cover mb-12"
                               />
                             ) : (
-                              <div className="w-2 h-2 rounded-full bg-primary/20" />
+                              <img
+                                src={part.thumbnail}
+                                alt={part.name}
+                                className="h-12 scale-[4] w-full object-cover mt-12"
+                              />
                             )}
                           </div>
 
