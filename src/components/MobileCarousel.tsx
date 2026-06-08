@@ -1,26 +1,26 @@
 import { useMemo, useState } from "react";
-import { REGION_NAMES } from "../Logic/watchComponents";
+// Make sure this points to your new regionData file
+import { REGION_DATA } from "../Logic/watchComponents"; 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion"; 
 
 interface MobileCarouselProps {
   availableRegions: string[];
   getComponentCount: (code: string) => number;
-  extractRegionSVG: (code: string) => string | null;
+  // NOTE: You can remove extractRegionSVG from your parent component completely!
   onSelect: (id: string) => void;
 }
 
-export const MobileCarousel = ({ availableRegions, getComponentCount, extractRegionSVG, onSelect }: MobileCarouselProps) => {
+export const MobileCarousel = ({ availableRegions, getComponentCount, onSelect }: MobileCarouselProps) => {
 
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [selectedId] = useState<string | null>(null);
 
+  // 1. FIXED: Lookup using .find() instead of bracket notation
   const selectedName = useMemo(() => {
     if (!selectedId) return null;
-    return REGION_NAMES[selectedId] || selectedId;
+    return REGION_DATA.find((r) => r.id === selectedId)?.name || selectedId;
   }, [selectedId]);
-
-  console.log("Available Regions in Carousel:", availableRegions[0]);
 
   const goToPrev = () => {
     setCarouselIndex((prev) => Math.max(0, prev - 1));
@@ -30,21 +30,16 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, extractReg
     setCarouselIndex((prev) => Math.min(availableRegions.length - 1, prev + 1));
   };
 
-  // --- Logique du Swipe CORRIGÉE ---
   const handleDragEnd = (event: any, info: any) => {
     const swipeThreshold = 50;
     const velocityThreshold = 500;
 
-    // Si on a swipé vers la gauche avec assez de force/distance (Aller au Suivant)
     if (info.offset.x < -swipeThreshold || info.velocity.x < -velocityThreshold) {
-      // On s'assure qu'on n'est pas déjà au dernier slide avant d'appeler goToNext
       if (carouselIndex < availableRegions.length - 1) {
         goToNext();
       }
     } 
-    // Si on a swipé vers la droite avec assez de force/distance (Aller au Précédent)
     else if (info.offset.x > swipeThreshold || info.velocity.x > velocityThreshold) {
-      // On s'assure qu'on n'est pas déjà au premier slide avant d'appeler goToPrev
       if (carouselIndex > 0) {
         goToPrev();
       }
@@ -69,25 +64,33 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, extractReg
             onDragEnd={handleDragEnd}
           >
             {availableRegions.map((code) => {
-              const regionSVG = extractRegionSVG(code);
+              // 2. Locate the region data object for this specific code
+              const region = REGION_DATA.find((r) => r.id === code);
               const componentCount = getComponentCount(code);
 
               return (
                 <div key={code} className="w-full flex-shrink-0 px-2 pointer-events-none">
                   <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl border border-[#D4AF37]/30 p-6 shadow-xl pointer-events-auto">
                     
-                    {/* Region name */}
+                    {/* 3. FIXED: Display the region name correctly */}
                     <h3 className="text-2xl font-serif text-[#D4AF37] text-center mb-4">
-                      {REGION_NAMES[code]}
+                      {region?.name || code}
                     </h3>
 
-                    {/* SVG Preview */}
-                    {regionSVG && (
+                    {/* 4. UPGRADED: Native React SVG instead of dangerouslySetInnerHTML */}
+                    {region?.path && (
                       <div className="rounded-xl p-4 mb-4 flex items-center justify-center min-h-[200px] bg-neutral-800/30">
-                        <div
-                          dangerouslySetInnerHTML={{ __html: regionSVG }}
-                          className="w-full max-w-[180px] [&>svg]:w-full [&>svg]:h-auto"
-                        />
+                        <svg 
+                          viewBox="0 0 596.4 584.5" 
+                          className="w-full max-w-[180px] drop-shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+                        >
+                          <path 
+                            d={region.path} 
+                            fill="#2c2a25" 
+                            stroke="#f5d47a" 
+                            strokeWidth="3" 
+                          />
+                        </svg>
                       </div>
                     )}
 
@@ -105,7 +108,7 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, extractReg
 
                     {/* Action Button */}
                     <button
-                      onClick={() => onSelect(code)} // <-- CORRECTION: utilisation de code directement au lieu de availableRegions[carouselIndex]
+                      onClick={() => onSelect(code)}
                       className="w-full py-4 bg-[#D4AF37] text-black font-bold rounded-xl active:scale-95 transition-transform shadow-lg"
                     >
                       Configurer

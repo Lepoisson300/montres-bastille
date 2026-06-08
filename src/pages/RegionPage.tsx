@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MobileCarousel } from "../components/MobileCarousel";
 import { useNavigate } from "react-router-dom";
-import { REGION_NAMES } from "../Logic/watchComponents";
+import { REGION_DATA } from "../Logic/watchComponents";
 import { DesktopMap } from "../components/DesktopMap";
 import Nav from "../components/Nav";
 import type { PartOption } from "../types/Parts";
@@ -63,7 +63,7 @@ export default function RegionPage({ components }: RegionPageProps) {
     navigate('/configurator', {
       state: {
         selectedRegion: regionId,
-        regionName: REGION_NAMES[regionId] || regionId,
+        regionName: REGION_DATA.find((r) => r.id === selectedId)?.id || regionId,
         watchComponents: regionComponents // On passe les composants filtrés
       }
     });

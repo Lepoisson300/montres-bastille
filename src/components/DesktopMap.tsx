@@ -1,91 +1,26 @@
-import { useEffect, useRef, useMemo, useState } from "react";
-import { REGION_NAMES } from "../Logic/watchComponents";
+import { useState } from "react";
+// Make sure this path points to wherever you saved the big array!
+import { REGION_DATA } from "../Logic/watchComponents"; 
 
 interface Props {
-  svgContent: string;
   availableRegions: string[];
   onSelect: (id: string) => void;
 }
 
-export const DesktopMap = ({ svgContent, availableRegions, onSelect }: Props) => {
-  const mapRef = useRef<HTMLDivElement>(null);
+export const DesktopMap = ({ availableRegions, onSelect }: Props) => {
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
 
-  // 1. Clean the SVG string: Remove hardcoded width/height so CSS can take over
-  const responsiveSvgContent = useMemo(() => {
-    if (!svgContent) return "";
-
-    return svgContent
-      .replace(/width="[^"]+"/g, '')
-      .replace(/height="[^"]+"/g, '')
-      .replace('<svg', '<svg viewBox="0 0 596.41547 584.5448" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style="overflow: visible;"');
-  }, [svgContent]);
-
-  useEffect(() => {
-    if (!mapRef.current || !responsiveSvgContent) return;
-
-    const paths = mapRef.current.querySelectorAll("path, g[id^='FR-']");
-
-    paths.forEach((el) => {
-      const regionId = el.id;
-      const isAvailable = availableRegions.includes(regionId);
-      const htmlEl = el as HTMLElement;
-
-      htmlEl.style.transition = "all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-      htmlEl.style.transformOrigin = "center";
-
-      if (isAvailable) {
-        el.setAttribute("fill", "#1c1d21");
-        el.setAttribute("stroke", "#bda041");
-        el.setAttribute("stroke-width", "1.2");
-        htmlEl.style.filter = "drop-shadow(4px 8px 6px rgba(0,0,0,0.8))";
-        htmlEl.style.cursor = "pointer";
-
-        const handleMouseEnter = () => {
-          // Bring the hovered region to the front of the SVG to prevent overlap and flickering
-          if (htmlEl.parentNode) {
-            htmlEl.parentNode.appendChild(htmlEl);
-          }
-
-          el.setAttribute("fill", "#2c2a25");
-          el.setAttribute("stroke", "#f5d47a");
-          el.setAttribute("stroke-width", "2");
-          // Translate to pop 'up' visually (adjusting for the -30deg Z rotation)
-          htmlEl.style.transform = "translate(15px, -25px)";
-          htmlEl.style.filter = "drop-shadow(15px 25px 15px rgba(189, 160, 65, 0.35)) drop-shadow(0px 0px 10px rgba(189, 160, 65, 0.5))";
-          setHoveredRegion(regionId);
-        };
-
-        const handleMouseLeave = () => {
-          el.setAttribute("fill", "#1c1d21");
-          el.setAttribute("stroke", "#bda041");
-          el.setAttribute("stroke-width", "1.2");
-          htmlEl.style.transform = "translate(0px, 0px)";
-          htmlEl.style.filter = "drop-shadow(4px 8px 6px rgba(0,0,0,0.8))";
-          setHoveredRegion(null);
-        };
-
-        htmlEl.addEventListener('mouseenter', handleMouseEnter);
-        htmlEl.addEventListener('mouseleave', handleMouseLeave);
-      } else {
-        el.setAttribute("fill", "#1c1d21"); // Même couleur de fond que les autres
-        el.setAttribute("stroke", "#4a4a4a"); // Un gris moyen pour délimiter
-        el.setAttribute("stroke-width", "1"); // Un peu plus épais pour qu'on le voie
-        htmlEl.style.pointerEvents = "none";
-        htmlEl.style.opacity = "0.4"; // Rend la région semi-transparente (effet désactivé)
-        htmlEl.style.filter = "none"; // Enlève l'ombre pour les aplatir
-      }
-    });
-  }, [responsiveSvgContent, availableRegions]);
+  // Sort the array so the hovered region is ALWAYS rendered last.
+  // This physically places it on top of the other paths, preventing overlap bugs.
+  const sortedRegions = [...REGION_DATA].sort((a, b) => {
+    if (a.id === hoveredRegion) return 1;
+    if (b.id === hoveredRegion) return -1;
+    return 0;
+  });
 
   return (
-    <div
-      className="relative w-full min-h-[70vh] flex items-center justify-center perspective-[2000px] bg-transparent"
-      onClick={(e) => {
-        const target = (e.target as HTMLElement).closest("[id^='FR-']");
-        if (target && availableRegions.includes(target.id)) onSelect(target.id);
-      }}
-    >
+    <div className="relative w-full min-h-[70vh] flex items-center justify-center perspective-[2000px] bg-transparent">
+      
       {/* Holographic Tooltip */}
       {hoveredRegion && (
         <div
@@ -93,9 +28,12 @@ export const DesktopMap = ({ svgContent, availableRegions, onSelect }: Props) =>
           style={{ animation: 'fade-in-up 0.5s ease-out forwards' }}
         >
           <div className="absolute inset-0 bg-gradient-to-tr from-[#d4af37]/10 to-transparent rounded-xl"></div>
+          
+          {/* CORRECTED: Using .find() to get the name from the array */}
           <h3 className="relative z-10 text-xl font-serif text-[#f5d47a] mb-2 tracking-wide drop-shadow-md">
-            {REGION_NAMES[hoveredRegion] || hoveredRegion}
+            {REGION_DATA.find((r) => r.id === hoveredRegion)?.name || hoveredRegion}
           </h3>
+          
           <p className="relative z-10 text-xs font-sans text-neutral-400 uppercase tracking-widest mb-4">
             Composants Locaux
           </p>
@@ -115,29 +53,37 @@ export const DesktopMap = ({ svgContent, availableRegions, onSelect }: Props) =>
         </div>
       )}
 
-      {/* Container for the 3D map */}
-      <div
-        ref={mapRef}
+      {/* 3D Map Container */}
+      <div 
         className="relative z-10 w-full max-w-4xl h-full flex items-center justify-center transform-style-3d"
-        style={{
-          // The 2.5D Isometric Transform
-          transform: 'rotateX(55deg) rotateZ(-30deg) scale(1.2)',
-          transition: 'transform 1.5s ease-out'
-        }}
+        style={{ transform: 'rotateX(55deg) rotateZ(-30deg) scale(1.2)' }}
       >
-        <div
-          className="w-full h-full drop-shadow-[0_40px_50px_rgba(0,0,0,0.9)]"
-          dangerouslySetInnerHTML={{ __html: responsiveSvgContent }}
-        />
-      </div>
+        <svg 
+          viewBox="0 0 596.4 584.5" 
+          className="w-full h-full drop-shadow-[0_40px_50px_rgba(0,0,0,0.9)] overflow-visible"
+        >
+          {sortedRegions.map((region) => {
+            const isAvailable = availableRegions.includes(region.id);
+            const isHovered = hoveredRegion === region.id;
 
-      {/* Stylized base/shadow directly beneath the map for depth */}
-      <div
-        className="absolute top-1/2 left-1/2 w-[80%] max-w-3xl h-[60%] bg-black/60 blur-[60px] rounded-[100%] pointer-events-none"
-        style={{
-          transform: 'translate(-50%, -30%) rotateX(55deg) rotateZ(-30deg)'
-        }}
-      />
+            return (
+              <RegionPath
+                key={region.id}
+                id={region.id}
+                pathData={region.path}
+                isAvailable={isAvailable}
+                isHovered={isHovered}
+                onMouseEnter={() => isAvailable && setHoveredRegion(region.id)}
+                onMouseLeave={() => isAvailable && setHoveredRegion(null)}
+                onClick={() => isAvailable && onSelect(region.id)}
+              />
+            );
+          })}
+        </svg>
+      </div>
+      
+      {/* Shadow Layer */}
+      <div className="absolute top-1/2 left-1/2 w-[80%] max-w-3xl h-[60%] bg-black/60 blur-[60px] rounded-[100%] pointer-events-none" style={{ transform: 'translate(-50%, -30%) rotateX(55deg) rotateZ(-30deg)' }} />
 
       <style>{`
         @keyframes fade-in-up {
@@ -149,5 +95,59 @@ export const DesktopMap = ({ svgContent, availableRegions, onSelect }: Props) =>
         }
       `}</style>
     </div>
+  );
+};
+
+// --- THE CHILD COMPONENT ---
+interface RegionProps {
+  id: string;
+  pathData: string;
+  isAvailable: boolean;
+  isHovered: boolean;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  onClick: () => void;
+}
+
+const RegionPath = ({ id, pathData, isAvailable, isHovered, onMouseEnter, onMouseLeave, onClick }: RegionProps) => {
+  if (!isAvailable) {
+    // Unavailable State (Semi-transparent, no interaction)
+    return (
+      <path
+        id={id}
+        d={pathData}
+        fill="#1c1d21"
+        stroke="#4a4a4a"
+        strokeWidth="1"
+        className="opacity-40 pointer-events-none"
+      />
+    );
+  }
+
+  // Tailwind handles the animation, colors, and transforms natively now
+  return (
+    <path
+      id={id}
+      d={pathData}
+      // Base styles for available regions
+      fill={isHovered ? "#2c2a25" : "#1c1d21"}
+      stroke={isHovered ? "#f5d47a" : "#bda041"}
+      strokeWidth={isHovered ? "2" : "1.2"}
+      
+      // Tailwind classes handle the smooth pop-up
+      className={`
+        cursor-pointer 
+        transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] origin-center
+        ${isHovered 
+          ? "translate-x-[15px] -translate-y-[25px] drop-shadow-[15px_25px_15px_rgba(189,160,65,0.35)]" 
+          : "translate-x-0 translate-y-0 drop-shadow-[4px_8px_6px_rgba(0,0,0,0.8)]"
+        }
+      `}
+      
+      // React synthetic events 
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onClick={onClick}
+    />
   );
 };

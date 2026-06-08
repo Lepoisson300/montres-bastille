@@ -42,10 +42,12 @@ export default function ComponentsCarousel({ parts }: FrenchPartsCarouselProps) 
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const nextSlide = () => {
+    clearInterval(0);
     setCurrentSlide((prev) => (prev === frenchComponents.length - 1 ? 0 : prev + 1));
   };
 
   const prevSlide = () => {
+    clearInterval(0);
     setCurrentSlide((prev) => (prev === 0 ? frenchComponents.length - 1 : prev - 1));
   };
 
@@ -54,7 +56,7 @@ export default function ComponentsCarousel({ parts }: FrenchPartsCarouselProps) 
     if (frenchComponents.length === 0) return;
     const timer = setInterval(() => {
       nextSlide();
-    }, 5000); // Défilement toutes les 5 secondes
+    }, 8000); // Défilement toutes les 5 secondes
     return () => clearInterval(timer);
   }, [frenchComponents.length]);
 
