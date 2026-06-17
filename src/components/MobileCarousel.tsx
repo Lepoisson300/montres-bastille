@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 // Make sure this points to your new regionData file
-import { REGION_DATA } from "../Logic/watchComponents"; 
+import { REGION_DATA } from "../Logic/watchComponents";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { motion } from "framer-motion"; 
+import { motion } from "framer-motion";
 
 interface MobileCarouselProps {
   availableRegions: string[];
@@ -16,11 +16,21 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, onSelect }
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [selectedId] = useState<string | null>(null);
 
-  // 1. FIXED: Lookup using .find() instead of bracket notation
-  const selectedName = useMemo(() => {
-    if (!selectedId) return null;
-    return REGION_DATA.find((r) => r.id === selectedId)?.name || selectedId;
-  }, [selectedId]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      setWidth(containerRef.current.offsetWidth);
+    }
+    const handleResize = () => {
+      if (containerRef.current) {
+        setWidth(containerRef.current.offsetWidth);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const goToPrev = () => {
     setCarouselIndex((prev) => Math.max(0, prev - 1));
@@ -31,14 +41,14 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, onSelect }
   };
 
   const handleDragEnd = (event: any, info: any) => {
-    const swipeThreshold = 50;
-    const velocityThreshold = 500;
+    const swipeThreshold = 40;
+    const velocityThreshold = 400;
 
     if (info.offset.x < -swipeThreshold || info.velocity.x < -velocityThreshold) {
       if (carouselIndex < availableRegions.length - 1) {
         goToNext();
       }
-    } 
+    }
     else if (info.offset.x > swipeThreshold || info.velocity.x > velocityThreshold) {
       if (carouselIndex > 0) {
         goToPrev();
@@ -49,70 +59,74 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, onSelect }
   if (!availableRegions || availableRegions.length === 0) return null;
 
   return (
-    <div className="w-full max-w-md px-4">
+    <div className="w-full px-4">
       <div className="relative mb-6">
-        
+
         {/* Carousel container */}
-        <div className="overflow-hidden">
+        <div ref={containerRef} className="overflow-hidden">
           <motion.div
             className="flex cursor-grab active:cursor-grabbing"
-            animate={{ x: `-${carouselIndex * 100}%` }}
+            animate={{ x: -carouselIndex * width }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             drag="x"
-            dragConstraints={{ left: 0, right: 0 }} 
-            dragElastic={0.2} 
+            dragConstraints={{ 
+              left: -((availableRegions.length - 1) * width), 
+              right: 0 
+            }}
+            dragElastic={0.2}
             onDragEnd={handleDragEnd}
           >
             {availableRegions.map((code) => {
               // 2. Locate the region data object for this specific code
               const region = REGION_DATA.find((r) => r.id === code);
               const componentCount = getComponentCount(code);
-
+              if(code==='FR-E'){
+                console.log(carouselIndex)
+              }
               return (
                 <div key={code} className="w-full flex-shrink-0 px-2 pointer-events-none">
                   <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl border border-[#D4AF37]/30 p-6 shadow-xl pointer-events-auto">
-                    
-                    {/* 3. FIXED: Display the region name correctly */}
+
                     <h3 className="text-2xl font-serif text-[#D4AF37] text-center mb-4">
                       {region?.name || code}
                     </h3>
 
-                    {/* 4. UPGRADED: Native React SVG instead of dangerouslySetInnerHTML */}
                     {region?.path && (
-                      <div className="rounded-xl p-4 mb-4 flex items-center justify-center min-h-[200px] bg-neutral-800/30">
-                        <svg 
-                          viewBox="0 0 596.4 584.5" 
-                          className="w-full max-w-[180px] drop-shadow-[0_0_15px_rgba(212,175,55,0.2)]"
-                        >
-                          <path 
-                            d={region.path} 
-                            fill="#2c2a25" 
-                            stroke="#f5d47a" 
-                            strokeWidth="3" 
+                      <div className="flex flex-col items-center justify-center p-4 mb-4 rounded-xl bg-neutral-800/30"> 
+                        
+                        {/* Image & Stats Wrapper */}
+                        <div className="relative mb-6">
+                          <img 
+                            src={`${region.name}.png`} 
+                            alt={region.name}
+                            className="min-h-50 rounded-2xl drop-shadow-[0_0_15px_rgba(212,175,55,0.2)]" 
                           />
-                        </svg>
+                          
+                          {/* Stats Overlay */}
+                          <div className="absolute top-35 inset-0 flex items-center justify-center">
+                            <div className="p-4 text-center rounded-lg bg-neutral-900/60 backdrop-blur-sm">
+                              <div className="text-3xl font-bold text-[#D4AF37] mb-1">
+                                {componentCount}
+                              </div>
+                              <div className="text-sm text-neutral-400">
+                                composants disponibles
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Action Button */}
+                        <button
+                          onClick={() => onSelect(code)}
+                          className="w-full py-4 font-bold text-black transition-transform shadow-lg bg-[#D4AF37] rounded-xl active:scale-95"
+                        >
+                          Configurer
+                        </button>
                       </div>
                     )}
 
                     {/* Component info */}
-                    <div className="bg-neutral-800/50 rounded-lg p-4 mb-6">
-                      <div className="text-center">
-                        <div className="text-3xl font-bold text-[#D4AF37] mb-1">
-                          {componentCount}
-                        </div>
-                        <div className="text-sm text-neutral-400">
-                          composants disponibles
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Action Button */}
-                    <button
-                      onClick={() => onSelect(code)}
-                      className="w-full py-4 bg-[#D4AF37] text-black font-bold rounded-xl active:scale-95 transition-transform shadow-lg"
-                    >
-                      Configurer
-                    </button>
+                    
                   </div>
                 </div>
               );
@@ -151,9 +165,8 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, onSelect }
             <button
               key={i}
               onClick={() => setCarouselIndex(i)}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                i === carouselIndex ? "bg-[#D4AF37] w-8" : "bg-neutral-600 w-2"
-              }`}
+              className={`h-2 rounded-full transition-all duration-300 ${i === carouselIndex ? "bg-[#D4AF37] w-8" : "bg-neutral-600 w-2"
+                }`}
               aria-label={`Aller à la région ${i + 1}`}
             />
           ))}

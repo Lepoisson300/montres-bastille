@@ -32,7 +32,7 @@ export default function RegionPage({ components }: RegionPageProps) {
     components.forEach((component: PartOption) => {
       if (component.regions && typeof component.regions === 'object') {
         Object.values(component.regions).forEach((val: any) => {
-          if (typeof val === 'string') {
+          if (typeof val === 'string' && val.trim() !== "" && REGION_DATA.some(r => r.id === val)) {
             regions.add(val);
           }
         });
@@ -52,8 +52,8 @@ export default function RegionPage({ components }: RegionPageProps) {
     });
   };
 
-  const getComponentCount = (): number => {
-    return components?.length ?? 0;
+  const getComponentCount = (regionCode: string): number => {
+    return getComponentByRegion(regionCode).length;
   };
 
   const handleConfigureClick = (regionId: string) => {
