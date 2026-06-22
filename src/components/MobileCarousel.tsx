@@ -36,21 +36,21 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, onSelect }
     setCarouselIndex((prev) => Math.min(availableRegions.length - 1, prev + 1));
   };
 
-  const handleDragEnd = (info: any) => {
-    const swipeThreshold = 40;
-    const velocityThreshold = 400;
+  const handleDragEnd = (_: any, info: any) => {
+      const swipeThreshold = 40;
+      const velocityThreshold = 400;
 
-    if (info.offset.x < -swipeThreshold || info.velocity.x < -velocityThreshold) {
-      if (carouselIndex < availableRegions.length - 1) {
-        goToNext();
+      if (info.offset.x < -swipeThreshold || info.velocity.x < -velocityThreshold) {
+        if (carouselIndex < availableRegions.length - 1) {
+          goToNext();
+        }
       }
-    }
-    else if (info.offset.x > swipeThreshold || info.velocity.x > velocityThreshold) {
-      if (carouselIndex > 0) {
-        goToPrev();
+      else if (info.offset.x > swipeThreshold || info.velocity.x > velocityThreshold) {
+        if (carouselIndex > 0) {
+          goToPrev();
+        }
       }
-    }
-  };
+    };
 
   if (!availableRegions || availableRegions.length === 0) return null;
 
