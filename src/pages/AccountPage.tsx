@@ -48,7 +48,7 @@ export default function AccountPage() {
     async function getUserData() {
       if (isAuthenticated && authUser?.email) {
         try {
-          const response = await fetch('https://montre-bastille-api.onrender.com/api/users');
+          const response = await fetch('https://api.montres-bastille.fr/api/users');
           const users = await response.json();
           const foundUser = users.find((u: User) => u.email === authUser.email);       
           if (foundUser) {

@@ -25,6 +25,8 @@ import FramePage from "./pages/FramePage";
 
 // --- Main App Component ---
 
+const apiAddress = "https://api.montres-bastille.fr"
+
 function App() {
 
   const { user, isAuthenticated, isLoading } = useAuth0();
@@ -36,7 +38,7 @@ function App() {
     async function fetchUserData() {
       if (isAuthenticated && user?.email) {
         try {
-          const res = await fetch("https://montre-bastille-api.onrender.com/api/users");
+          const res = await fetch(`${apiAddress}/api/users`);
           const users = await res.json();
           const found = users.find((u: any) => u.email === user.email);
 
@@ -61,7 +63,7 @@ function App() {
   useEffect(() => {
     async function startServer() {
       try {
-        const start = await fetch("https://montre-bastille-api.onrender.com/api/site");
+        const start = await fetch(`${apiAddress}/api/site`);
         console.log("Server start OK :", start.ok);
       } catch (error) {
         console.error("Failed to ping server", error);
@@ -81,7 +83,7 @@ function App() {
     // Récupération depuis l'API
   async function getComponents() {
     try {
-      const response = await fetch("https://montre-bastille-api.onrender.com/api/components");
+      const response = await fetch(`${apiAddress}/api/components`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

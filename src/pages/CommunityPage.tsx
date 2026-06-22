@@ -18,7 +18,7 @@ export default function CommunityPage() {
   const [regionsVotes, setRegionsVotes] = React.useState<Region[]>([]);
 
   useEffect(() => {
-    fetch('https://montre-bastille-api.onrender.com/api/votes')
+    fetch('https://api.montres-bastille.fr/api/votes')
       .then(response => response.json())
       .then(data => {
         setRegionsVotes(data.regions);
@@ -36,7 +36,7 @@ export default function CommunityPage() {
     region.votes +=1 ;
     const voteData = { email: user?.email, region: region.name };
 
-    fetch('https://montre-bastille-api.onrender.com/api/users/vote', {
+    fetch('https://api.montres-bastille.fr/api/users/vote', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(voteData)

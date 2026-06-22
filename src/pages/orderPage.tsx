@@ -122,7 +122,7 @@ const STEPS: OrderStep[] = [
 async function fetchOrder(orderNumber: string): Promise<Order | null> {
   try {
     const response = await fetch(
-      `https://montre-bastille-api.onrender.com/api/commandes/${orderNumber}`
+      `https://api.montres-bastille.fr/commandes/${orderNumber}`
     );
     if (!response.ok) return null;
     return await response.json();

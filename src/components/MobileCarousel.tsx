@@ -1,5 +1,4 @@
-import { useMemo, useState, useRef, useEffect } from "react";
-// Make sure this points to your new regionData file
+import { useState, useRef, useEffect } from "react";
 import { REGION_DATA } from "../Logic/watchComponents";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
@@ -7,15 +6,12 @@ import { motion } from "framer-motion";
 interface MobileCarouselProps {
   availableRegions: string[];
   getComponentCount: (code: string) => number;
-  // NOTE: You can remove extractRegionSVG from your parent component completely!
   onSelect: (id: string) => void;
 }
 
 export const MobileCarousel = ({ availableRegions, getComponentCount, onSelect }: MobileCarouselProps) => {
 
   const [carouselIndex, setCarouselIndex] = useState(0);
-  const [selectedId] = useState<string | null>(null);
-
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
 
@@ -40,7 +36,7 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, onSelect }
     setCarouselIndex((prev) => Math.min(availableRegions.length - 1, prev + 1));
   };
 
-  const handleDragEnd = (event: any, info: any) => {
+  const handleDragEnd = (info: any) => {
     const swipeThreshold = 40;
     const velocityThreshold = 400;
 
@@ -84,8 +80,8 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, onSelect }
                 console.log(carouselIndex)
               }
               return (
-                <div key={code} className="w-full flex-shrink-0 px-2 pointer-events-none">
-                  <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl border border-[#D4AF37]/30 p-6 shadow-xl pointer-events-auto">
+                <div key={code} className="w-full shrink-0 px-2 pointer-events-none">
+                  <div className="bg-linear-to-br from-neutral-900 to-neutral-800 rounded-2xl border border-[#D4AF37]/30 p-6 shadow-xl pointer-events-auto">
 
                     <h3 className="text-2xl font-serif text-[#D4AF37] text-center mb-4">
                       {region?.name || code}

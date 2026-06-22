@@ -105,7 +105,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
     setIsRedirecting(true);
 
     try {
-      const res = await fetch("https://montre-bastille-api.onrender.com/api/stripeOrder", {
+      const res = await fetch("https://api.montres-bastille.fr/api/stripeOrder", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

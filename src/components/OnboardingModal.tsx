@@ -31,7 +31,7 @@ export default function OnboardingModal({ dbUser, onUpdateSuccess }: OnboardingM
         ...formData
       };
       // 2. Call your API (Ensure you have an endpoint for this, usually PUT or POST)
-      const response = await fetch("https://montre-bastille-api.onrender.com/api/users/update   ", {
+      const response = await fetch("https://api.montres-bastille.fr/api/users/update   ", {
         method: "PUT", // or POST depending on your backend
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
