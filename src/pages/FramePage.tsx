@@ -25,7 +25,7 @@ export default function FramePage() {
     for (let i = 1; i <= TOTAL_FRAMES; i++) {
       const img = new Image();
       const frameNumber = String(i).padStart(3, "0");
-      img.src = `/frames/ezgif-frame-${frameNumber}.png`;
+      img.src = `/frames/ezgif-frame-${frameNumber}.webp`;
       loadedImages.push(img);
     }
 
