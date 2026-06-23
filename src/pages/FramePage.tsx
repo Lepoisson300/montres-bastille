@@ -3,7 +3,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import BtnRedirection from "../components/btnRedirect";
 import Reveal from "../Logic/Reveal";
-import watch2 from "/gurv.png";
+import watch2 from "/gurv.webp";
 import { Helmet } from "react-helmet-async";
 import Nav from "../components/Nav";
 

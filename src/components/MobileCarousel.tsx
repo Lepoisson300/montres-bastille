@@ -93,7 +93,7 @@ export const MobileCarousel = ({ availableRegions, getComponentCount, onSelect }
                         {/* Image & Stats Wrapper */}
                         <div className="relative mb-6">
                           <img 
-                            src={`${region.name}.png`} 
+                            src={`${region.name}.webp`} 
                             alt={region.name}
                             className="min-h-50 rounded-2xl drop-shadow-[0_0_15px_rgba(212,175,55,0.2)]" 
                           />

@@ -71,7 +71,7 @@ export default function CommunityPage() {
         <div className="fixed inset-0 z-0 pointer-events-none bg-background">
         {/* Image de fond fixe */}
         <img 
-          src="/communityBG.png" 
+          src="/communityBG.webp" 
           alt="Fond spatial MedGlass" 
           className="absolute object-cover w-full h-full"
         />

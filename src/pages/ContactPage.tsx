@@ -103,7 +103,7 @@ export default function ContactPage() {
       <div className="fixed inset-0 z-0 pointer-events-none bg-background">
         {/* Image de fond fixe */}
         <img 
-          src="/contactBG.png" 
+          src="/contactBG.webp" 
           alt="Fond spatial MedGlass" 
           className="absolute  object-cover w-full h-full"
         />
