@@ -73,24 +73,20 @@ const Nav: React.FC<NavProps> = ({ bg = false }) => {
 
   return (
 <header className={[
-  "fixed top-0 left-0 right-0 z-50 w-full", // J'ai retiré mx-4 ici (voir explication ci-dessous)
-  bg ? "bg-neutral-950" : "bg-transparent", // Mieux vaut utiliser un ternaire pour éviter d'écrire "false" dans le HTML
-  "py-2 transition-all duration-200 shadow-md"
+  "fixed top-0 left-0 right-0 z-50 w-full",
+  "py-2 transition-all duration-200"
 ].filter(Boolean).join(" ")}> 
     <nav
       className={[
-        // Correction ici : left-4 right-4 remplace w-full + start-0 + mx-4 pour éviter l'overflow
-        "fixed z-50 top-0 left-4 right-4 border-b mt-2 rounded-xl",
-        "bg-midnight/95 backdrop-blur-sm",
+        "fixed max-w-350 mx-auto z-50 top-0 left-4 right-4 border-b mt-6 rounded-xl",
+        "bg-midnight/70",
+        "backdrop-blur-xs",
         "border-champagne/20",
-        "shadow-[0_2px_25px_rgba(0,0,0,0.35)]",
-        scrolled ? "py-1" : "py-3",
+        scrolled ? "py-3" : "py-5",
         "transition-all duration-200"
       ].join(" ")}
       aria-label="Primary"
     >
-      {/* Hairline top border effect */}
-      <span className="pointer-events-none absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-champagne/60 to-transparent rounded-t-2xl" />
 
       <div className="flex items-center justify-between px-4 md:px-6">
         

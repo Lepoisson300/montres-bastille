@@ -68,6 +68,14 @@ export default function CommunityPage() {
 
       {/* HERO SECTION */}
       <section className="bg-dark text-text-primary pt-24 pb-20">
+        <div className="fixed inset-0 z-0 pointer-events-none bg-background">
+        {/* Image de fond fixe */}
+        <img 
+          src="/communityBG.png" 
+          alt="Fond spatial MedGlass" 
+          className="absolute object-cover w-full h-full"
+        />
+      </div>
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
           <Reveal>
             <div className="text-center max-w-4xl mx-auto">
@@ -97,10 +105,10 @@ export default function CommunityPage() {
             </div>
           </Reveal>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">
             {regionsVotes.map((region, index) => (
-              <Reveal key={region.name} delay={index + 1}>
-                <div className="bg-surface border border-primary/40 rounded-xl p-6 transition-all duration-300 hover:bg-surface-hover hover:-translate-y-1">
+              <Reveal key={region.name} delay={index - 1}>
+                <div className="bg-surface/70 border border-primary/40 backdrop-blur-xs rounded-3xl p-10 transition-all duration-300 hover:bg-surface-hover hover:-translate-y-1">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="font-serif text-xl text-text-primary">{region.name}</h3>
                     <div className="text-primary font-sans text-sm font-bold">
@@ -134,9 +142,9 @@ export default function CommunityPage() {
             ))}
           </div>
 
-          <Reveal delay={4}>
+          <Reveal delay={2}>
             <div className="text-center mt-16">
-              <p className="text-text-subtle font-sans text-sm mb-6 italic">
+              <p className="text-accent-light font-sans text-xl mb-6 italic">
                 Fin de la session de vote : 21 Juin 2026
               </p>
               <Link

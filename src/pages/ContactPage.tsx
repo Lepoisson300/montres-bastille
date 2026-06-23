@@ -98,31 +98,33 @@ export default function ContactPage() {
       {/* Main Container with Dark Metallic radial background */}
       <div 
         className="relative min-h-screen pt-28 pb-16 overflow-hidden" 
-        style={{
-          background: 'radial-gradient(circle at 70% 30%, #1a1a1c 0%, #050505 80%)'
-        }}
+    
       >
+      <div className="fixed inset-0 z-0 pointer-events-none bg-background">
+        {/* Image de fond fixe */}
+        <img 
+          src="/contactBG.png" 
+          alt="Fond spatial MedGlass" 
+          className="absolute  object-cover w-full h-full"
+        />
+      </div>
         {/* Subtle texture overlay for brushed metal look */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/brushed-alum.png")' }}></div>
 
        
 
-        <div className="relative z-20 max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
+        <div className="relative flex flex-row z-20 max-w-400 mx-auto  items-start mt-15 lg:mt-[10%]">
           
           {/* LEFT COLUMN: Info */}
-          <div className="lg:sticky lg:top-40 pt-10">
+          <div className="lg:sticky lg:top-40 pt-10 mx-10">
             <Reveal delay={0}>
-              <div className="h-[1px] w-16 bg-[#d4af37] mb-8 opacity-60" />
+              <div className="h-[2px] w-16 bg-accent-light mb-8 opacity-60" />
               <h1 
-                className="font-serif text-5xl md:text-7xl tracking-tight mb-8"
-                style={{ 
-                  color: '#d4af37',
-                  textShadow: '0 2px 15px rgba(212, 175, 55, 0.2)'
-                }}
+                className="font-serif text-accent-light text-6xl md:text-8xl tracking-tight mb-8"
               >
                 Contactez l'Atelier
               </h1>
-              <p className="text-lg md:text-xl text-neutral-400 leading-relaxed mb-16 font-sans max-w-md font-light">
+              <p className="text-lg md:text-xl text-ink leading-relaxed mb-16 font-sans max-w-md font-light">
                 Notre équipe d'artisans horlogers est à votre disposition pour vous accompagner dans votre quête de la montre parfaite.
               </p>
 
@@ -132,7 +134,7 @@ export default function ContactPage() {
                     <GoDeviceMobile className="w-5 h-5 text-[#d4af37]" />
                   </div>
                   <div>
-                    <h3 className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-2">Téléphone</h3>
+                    <h3 className="text-xl uppercase tracking-[0.2em] text-ink mb-2">Téléphone</h3>
                     <p className="text-xl font-serif text-neutral-200 group-hover:text-[#d4af37] transition-colors">+33 6 23 25 65 46</p>
                   </div>
                 </div>
@@ -142,7 +144,7 @@ export default function ContactPage() {
                     <GoMail className="w-5 h-5 text-[#d4af37]" />
                   </div>
                   <div>
-                    <h3 className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-2">Email</h3>
+                    <h3 className="text-xl uppercase tracking-[0.2em] text-ink mb-2">Email</h3>
                     <p className="text-xl font-serif text-neutral-200 group-hover:text-[#d4af37] transition-colors">contact@montres-bastille.fr</p>
                     <p className="text-sm text-neutral-500 mt-1">Réponse sous 24h</p>
                   </div>
@@ -152,18 +154,17 @@ export default function ContactPage() {
           </div>
 
           {/* RIGHT COLUMN: Form */}
-          <div className="lg:pt-20 pb-20">
+          <div className="lg:mt-15">
             <Reveal delay={2}>
-              <div className="bg-[#0a0a0c]/80 backdrop-blur-xl border border-white/5 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
+              <div className="bg-[#0a0a0c]/80 backdrop-blur-xs border border-white/5 rounded-3xl p-16 md:p-30 shadow-2xl relative overflow-hidden ">
                 {/* Form decorative accent */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#d4af37]/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3"></div>
 
                 <h2 className="font-serif text-3xl tracking-wide mb-10 text-neutral-100">
                   Envoyez-nous un message
                 </h2>
 
                 {isSubmitted ? (
-                  <div className="animate-fade-in flex flex-col items-center justify-center py-20 text-center">
+                  <div className="animate-fade-in flex flex-col items-center justify-center py-20 text-center ">
                     <div className="w-20 h-20 rounded-full border border-[#d4af37]/50 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(212,175,55,0.2)]">
                       <GoMail className="w-8 h-8 text-[#d4af37]" />
                     </div>
@@ -173,7 +174,7 @@ export default function ContactPage() {
                     </p>
                   </div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-10 relative z-10">
+                  <form onSubmit={handleSubmit} className="space-y-10 relative z-10 w-full h-full">
                     <div className="grid gap-10 md:grid-cols-2">
                       <div className="relative">
                         <input
