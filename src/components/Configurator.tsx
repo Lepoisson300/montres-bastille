@@ -182,7 +182,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
                 
                 <div className="relative h-full w-full transition-transform duration-300" style={{ transform: `scale(${zoom})` }}>
                   <img 
-                  src="/fondConfigurateur.png" 
+                  src="/fondConfigurateur.webp" 
                   alt="Fond du configurateur"
                   className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-90"
                 />
