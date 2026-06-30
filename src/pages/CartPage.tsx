@@ -11,6 +11,9 @@ interface CartPageProps {
   updateCartCount?: (count: number) => void;
 }
 
+const apiAddress = import.meta.env.VITE_API_URL;
+
+
 export default function CartPage({ updateCartCount }: CartPageProps) {
 
   // 1. STATE (Avec sécurité Objet vs Tableau)
@@ -105,7 +108,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
     setIsRedirecting(true);
 
     try {
-      const res = await fetch("https://api.montres-bastille.fr/api/stripeOrder", {
+      const res = await fetch(`${apiAddress}/api/stripeOrder`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

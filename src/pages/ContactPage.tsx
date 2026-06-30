@@ -45,34 +45,51 @@ export default function ContactPage() {
     lastName: '',
     email: '',
     phone: '',
-    subject: 'general',
+    subject: '',
     message: ''
   });
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
-    // Reset form after showing success message
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        subject: 'general',
-        message: ''
+    setIsSuccess(false);
+
+    // Bundle the name into the message since the backend expects visitorEmail, subject, and message
+    const combinedMessage = `
+Name: ${formData.firstName + " " + formData.lastName}
+
+Message:
+${formData.message}
+    `.trim();
+
+    try {
+      const response = await fetch("https://medglass-backend.onrender.com/sendEmail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          visitorEmail: formData.email,
+          subject: `New Contact Request from ${formData.firstName + " " + formData.lastName}`,
+          message: combinedMessage,
+        }),
       });
-    }, 4000);
+
+      if (!response.ok) {
+        throw new Error("Network error");
+      }
+
+      setIsSuccess(true);
+      setFormData({ firstName: '', email: '', message: '', lastName:'', subject:'', phone:'' });
+
+      setTimeout(() => setIsSuccess(false), 5000);
+    } catch (error) {
+      console.error("Submission error:", error);
+    }
   };
 
   const subjects = [
@@ -110,21 +127,18 @@ export default function ContactPage() {
       </div>
         {/* Subtle texture overlay for brushed metal look */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/brushed-alum.png")' }}></div>
-
-       
-
-        <div className="relative flex flex-row z-20 max-w-400 mx-auto  items-start mt-15 lg:mt-[10%]">
+        <div className="relative flex md:flex-row flex-col z-20 max-w-400 mx-auto  items-start mt-15 lg:mt-[10%]">
           
           {/* LEFT COLUMN: Info */}
           <div className="lg:sticky lg:top-40 pt-10 mx-10">
             <Reveal delay={0}>
-              <div className="h-[2px] w-16 bg-accent-light mb-8 opacity-60" />
+              <div className="h-[2px] w-16 md:bg-accent-light bg-parchment mb-8 opacity-60" />
               <h1 
-                className="font-serif text-accent-light text-6xl md:text-8xl tracking-tight mb-8"
+                className="font-serif text-parchment md:text-accent-light text-6xl md:text-8xl tracking-tight mb-8"
               >
                 Contactez l'Atelier
               </h1>
-              <p className="text-lg md:text-xl text-ink leading-relaxed mb-16 font-sans max-w-md font-light">
+              <p className="text-lg md:text-xl text-parchment md:text-accent-light leading-relaxed mb-16 font-sans max-w-md font-light">
                 Notre équipe d'artisans horlogers est à votre disposition pour vous accompagner dans votre quête de la montre parfaite.
               </p>
 
@@ -154,7 +168,7 @@ export default function ContactPage() {
           </div>
 
           {/* RIGHT COLUMN: Form */}
-          <div className="lg:mt-15">
+          <div className="lg:mt-15 mx-auto mt-10">
             <Reveal delay={2}>
               <div className="bg-[#0a0a0c]/80 backdrop-blur-xs border border-white/5 rounded-3xl p-16 md:p-30 shadow-2xl relative overflow-hidden ">
                 {/* Form decorative accent */}
@@ -163,7 +177,7 @@ export default function ContactPage() {
                   Envoyez-nous un message
                 </h2>
 
-                {isSubmitted ? (
+                {isSuccess ? (
                   <div className="animate-fade-in flex flex-col items-center justify-center py-20 text-center ">
                     <div className="w-20 h-20 rounded-full border border-[#d4af37]/50 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(212,175,55,0.2)]">
                       <GoMail className="w-8 h-8 text-[#d4af37]" />
@@ -182,7 +196,7 @@ export default function ContactPage() {
                           name="firstName"
                           id="firstName"
                           value={formData.firstName}
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                           required
                           className="peer w-full bg-transparent border-b border-white/10 py-3 text-neutral-200 font-sans focus:outline-none focus:border-[#d4af37] transition-colors placeholder-transparent"
                           placeholder="Prénom"
@@ -197,7 +211,7 @@ export default function ContactPage() {
                           name="lastName"
                           id="lastName"
                           value={formData.lastName}
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                           required
                           className="peer w-full bg-transparent border-b border-white/10 py-3 text-neutral-200 font-sans focus:outline-none focus:border-[#d4af37] transition-colors placeholder-transparent"
                           placeholder="Nom"
@@ -215,7 +229,7 @@ export default function ContactPage() {
                           name="email"
                           id="email"
                           value={formData.email}
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                           required
                           className="peer w-full bg-transparent border-b border-white/10 py-3 text-neutral-200 font-sans focus:outline-none focus:border-[#d4af37] transition-colors placeholder-transparent"
                           placeholder="Email"
@@ -230,7 +244,7 @@ export default function ContactPage() {
                           name="phone"
                           id="phone"
                           value={formData.phone}
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                           className="peer w-full bg-transparent border-b border-white/10 py-3 text-neutral-200 font-sans focus:outline-none focus:border-[#d4af37] transition-colors placeholder-transparent"
                           placeholder="Téléphone"
                         />
@@ -245,7 +259,7 @@ export default function ContactPage() {
                         name="subject"
                         id="subject"
                         value={formData.subject}
-                        onChange={handleInputChange}
+                        onChange={handleChange}
                         className="w-full bg-transparent border-b border-white/10 py-3 text-neutral-200 font-sans focus:outline-none focus:border-[#d4af37] transition-colors appearance-none cursor-pointer"
                       >
                         {subjects.map(subject => (
@@ -268,7 +282,7 @@ export default function ContactPage() {
                         name="message"
                         id="message"
                         value={formData.message}
-                        onChange={handleInputChange}
+                        onChange={handleChange}
                         required
                         rows={4}
                         className="peer w-full bg-transparent border-b border-white/10 py-3 text-neutral-200 font-sans focus:outline-none focus:border-[#d4af37] transition-colors resize-none placeholder-transparent"

@@ -38,6 +38,8 @@ const Reveal = ({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
   );
 };
 
+const apiAddress = import.meta.env.VITE_API_URL;
+
 export default function AccountPage() {
   const { user: authUser, isAuthenticated, isLoading, logout } = useAuth0();
   const [dbUser, setDbUser] = useState<User | null>(null);
@@ -48,7 +50,7 @@ export default function AccountPage() {
     async function getUserData() {
       if (isAuthenticated && authUser?.email) {
         try {
-          const response = await fetch('https://api.montres-bastille.fr/api/users');
+          const response = await fetch(`${apiAddress}/api/users`);
           const users = await response.json();
           const foundUser = users.find((u: User) => u.email === authUser.email);       
           if (foundUser) {
@@ -97,7 +99,7 @@ export default function AccountPage() {
       </Helmet>
       <Nav bg={false}/>
       
-      <div className="relative min-h-screen bg-background font-sans overflow-hidden pt-24 pb-20">
+      <div className="relative min-h-screen bg-background font-sans overflow-hidden pt-28 pb-20 ">
         
         {/* Le Gradient Horloger */}
         <div className="absolute top-0 left-0 w-full h-150 opacity-90 z-0 pointer-events-none" aria-hidden="true">

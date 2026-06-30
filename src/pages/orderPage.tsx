@@ -5,6 +5,8 @@ import { Helmet } from "react-helmet-async";
 import { useParams, useSearchParams } from "react-router-dom";
 import type { Order } from "../types/User";
 
+const apiAddress = import.meta.env.VITE_API_URL;
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface OrderStep {
@@ -122,7 +124,7 @@ const STEPS: OrderStep[] = [
 async function fetchOrder(orderNumber: string): Promise<Order | null> {
   try {
     const response = await fetch(
-      `https://api.montres-bastille.fr/commandes/${orderNumber}`
+      `${apiAddress}/api/commandes/${orderNumber}`
     );
     if (!response.ok) return null;
     return await response.json();

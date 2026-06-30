@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import arcClean from "/arc_clean.webp";
 import patrimoine from "/patrimoine.webp";
 import france from "/franceMap.webp";
-import watch2 from "/gurv.png";
+import watch2 from "/gurv.webp";
 import HeroCarousel from "../components/Carousel";
 import Nav from "../components/Nav";
 import BtnRedirection from "../components/btnRedirect";

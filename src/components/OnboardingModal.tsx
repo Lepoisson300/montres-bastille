@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 
+const apiAddress = import.meta.env.VITE_API_URL;
+
+
 interface OnboardingModalProps {
   dbUser: any;
   onUpdateSuccess: (updatedUser: any) => void;
@@ -31,7 +34,7 @@ export default function OnboardingModal({ dbUser, onUpdateSuccess }: OnboardingM
         ...formData
       };
       // 2. Call your API (Ensure you have an endpoint for this, usually PUT or POST)
-      const response = await fetch("https://api.montres-bastille.fr/api/users/update   ", {
+      const response = await fetch(`${apiAddress}/api/users/update`, {
         method: "PUT", // or POST depending on your backend
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

@@ -23,9 +23,10 @@ import MentionsLegalesPage from "./pages/MentionsLegalesPage";
 import ConfidentialitePage from "./pages/ConfidentialitePage";
 import FramePage from "./pages/FramePage";
 
+
 // --- Main App Component ---
 
-const apiAddress = "https://api.montres-bastille.fr"
+const apiAddress = import.meta.env.VITE_API_URL;
 
 function App() {
 
