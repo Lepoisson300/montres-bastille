@@ -22,7 +22,7 @@ type NavProps = {
   bg: boolean;
 };
 
-const Nav: React.FC<NavProps> = ({ bg = false }) => {
+const Nav: React.FC<NavProps> = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { pathname } = useLocation();
@@ -72,7 +72,7 @@ const Nav: React.FC<NavProps> = ({ bg = false }) => {
   ].join(" ");
 
   return (
-<header className={[
+<header className={[  
   "fixed top-0 left-0 right-0 z-50 w-full",
   "py-2 transition-all duration-200"
 ].filter(Boolean).join(" ")}> 
@@ -178,7 +178,11 @@ const Nav: React.FC<NavProps> = ({ bg = false }) => {
           
           {/* Desktop Account Icon (Hidden on mobile) */}
           <button
-            onClick={() => !isAuthenticated ? loginWithRedirect() : null}
+            onClick={() => !isAuthenticated ? loginWithRedirect({
+                                              appState: {
+                                                returnTo: '/account'
+                                              }
+                                            }) : null}
             className="hidden md:inline-flex p-2 rounded-full text-ivory/70 transition-all duration-300 hover:text-ivory hover:bg-white/5 hover:-translate-y-[2px]"
             aria-label={isAuthenticated ? "Mon compte" : "Se connecter"}
           >
@@ -244,7 +248,11 @@ const Nav: React.FC<NavProps> = ({ bg = false }) => {
                 <button
                   onClick={() => {
                     setOpen(false);
-                    loginWithRedirect();
+                    loginWithRedirect({
+                    appState: {
+                      returnTo: '/account'
+                    }
+                  });
                   }}
                   className={`${mobileLinkClasses(false)} w-full text-left flex items-center gap-2`}
                 >
