@@ -168,7 +168,7 @@ ${formData.message}
           </div>
 
           {/* RIGHT COLUMN: Form */}
-          <div className="lg:mt-15 mx-auto mt-10">
+          <div className="lg:mt-15 lg:mx-auto mx-6 mt-10">
             <Reveal delay={2}>
               <div className="bg-[#0a0a0c]/80 backdrop-blur-xs border border-white/5 rounded-3xl p-16 md:p-30 shadow-2xl relative overflow-hidden ">
                 {/* Form decorative accent */}

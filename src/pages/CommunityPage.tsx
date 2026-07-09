@@ -7,6 +7,7 @@ import Nav from "../components/Nav";
 import { Helmet } from "react-helmet-async";
 import Reveal from "../Logic/Reveal";
 import { useAlert } from "../Logic/AlertContext";
+import CarouselShare from "../components/CarouselShare";
 
 // ... (Gardez vos composants Grain et Reveal tels quels)
 const apiAddress = import.meta.env.VITE_API_URL;
@@ -156,53 +157,9 @@ export default function CommunityPage() {
             </div>
           </Reveal>
         </div>
-        
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto z-10 relative mt-16">
-            {sharedwatch && sharedwatch.length > 0 ? (
-              sharedwatch.map((item, index) => (
-                <Reveal key={item._id || index} delay={index % 3}>
-                  <div className="bg-surface/70 border border-primary/40 backdrop-blur-xs rounded-3xl p-8 transition-all duration-300 hover:bg-surface-hover hover:-translate-y-1 flex flex-col h-full mx-5">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-serif text-xl text-text-primary truncate" title={item.watch?.name}>
-                        {item.watch?.name || "Création Anonyme"}
-                      </h3>
-                      <div className="text-primary font-sans text-sm font-bold whitespace-nowrap ml-2 bg-primary/10 px-3 py-1 rounded-full">
-                        {item.voteCount || (item.votes ? item.votes.length : 0)} ❤️
-                      </div>
-                    </div>
+        <CarouselShare sharedWatch={sharedwatch}/>
 
-                    <div className="w-full h-[200px] overflow-hidden rounded-lg bg-dark/50 mb-6 flex items-center justify-center border border-white/5">
-                      <span className="text-text-muted/50 font-sans text-sm italic">
-                        [Aperçu du Modèle]
-                      </span>
-                    </div>
-                    
-                    <div className="mt-auto">
-                      <p className="text-sm font-sans text-text-muted mb-4">
-                        Imaginée par <span className="text-text-primary font-medium">{item.pseudo || "Un membre"}</span>
-                      </p>
-                      
-                      <button
-                        onClick={() => voteLike('w', undefined, item.watch.name)}
-                        disabled={likedWatches.has(item.watch.name)}
-                        className={`w-full py-3 rounded-full text-sm font-sans uppercase tracking-wider transition-all duration-300 ${
-                          likedWatches.has(item.watch.name)
-                            ? 'bg-primary/20 text-primary/50 cursor-not-allowed border border-transparent'
-                            : 'border border-primary text-primary hover:bg-primary hover:text-dark'
-                        }`}
-                      >
-                        {likedWatches.has(item.watch.name) ? 'Déjà soutenu' : 'Soutenir cette création'}
-                      </button>
-                    </div>
-                  </div>
-                </Reveal>
-              ))
-            ) : (
-              <div className="col-span-full text-center text-text-muted font-sans py-10 border border-dashed border-white/10 rounded-2xl mx-5">
-                Aucune montre n'a encore été partagée par la communauté. Soyez le premier !
-              </div>
-            )}
-          </div>
+        
       </section>
 
       {/* VOTING SECTION */}

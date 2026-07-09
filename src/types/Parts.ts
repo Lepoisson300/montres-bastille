@@ -1,3 +1,5 @@
+import type { User } from "./User";
+
 export type PartOption = {
   id: string;
   material: string;
@@ -33,4 +35,10 @@ export type Region = {
     id: number,
     name: string,
     votes: number,
+}
+
+export type SharedWatch = {
+  id: number,
+  votes:User,
+  watch:Watch
 }

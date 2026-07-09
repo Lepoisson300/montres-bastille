@@ -14,7 +14,7 @@ interface WatchCardProps {
   index: number;
   etape_actuelle?: number;
   numero_commande: string;
-  user?: User | null; // <-- AJOUT : On passe l'user connecté au composant
+  user?: User | null; 
 }
 
 const apiAddress = import.meta.env.VITE_API_URL;
@@ -31,7 +31,7 @@ export default function WatchCard({
   // États pour l'UX du bouton Partager
   const [isSharing, setIsSharing] = useState(false);
   const [shareFeedback, setShareFeedback] = useState<{ type: 'success' | 'error', msg: string } | null>(null);
-  const { user: authUser, isAuthenticated} = useAuth0();
+  const {user: authUser, isAuthenticated} = useAuth0();
 
   const getStatusDisplay = (etape: number) => {
     switch (etape) {
@@ -62,9 +62,7 @@ export default function WatchCard({
         setShareFeedback({ type: 'error', msg: "Connectez-vous pour partager" });
         return;
       }
-      
-      console.log("est authentifié");
-      
+            
       // 1. On active le chargement tout de suite
       setIsSharing(true);
       setShareFeedback(null);
@@ -93,7 +91,9 @@ export default function WatchCard({
       const payload = {
         watch: {
           name: montre.name || `Création N°${index + 1}`,
-          components: montre.components
+          components: montre.components,
+          votes: 0,
+          creator: "test"
         },
         user: {
           email: foundUser.email,

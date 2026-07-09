@@ -136,7 +136,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background text-text-primary font-sans pt-24 pb-12">
+    <div className="min-h-screen  bg-background text-text-primary font-sans pt-34 pb-12">
       <Nav bg={false} />
       <Helmet>
         <title>Votre Panier | Montre Bastille - Paiement Sécurisé</title>

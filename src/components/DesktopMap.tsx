@@ -29,7 +29,6 @@ export const DesktopMap = ({ availableRegions, onSelect }: Props) => {
         >
           <div className="absolute inset-0 bg-gradient-to-tr from-[#d4af37]/10 to-transparent rounded-xl"></div>
           
-          {/* CORRECTED: Using .find() to get the name from the array */}
           <h3 className="relative z-10 text-xl font-serif text-[#f5d47a] mb-2 tracking-wide drop-shadow-md">
             {REGION_DATA.find((r) => r.id === hoveredRegion)?.name || hoveredRegion}
           </h3>
@@ -37,18 +36,8 @@ export const DesktopMap = ({ availableRegions, onSelect }: Props) => {
           <p className="relative z-10 text-xs font-sans text-neutral-400 uppercase tracking-widest mb-4">
             Composants Locaux
           </p>
-          <div className="relative z-10 w-24 h-24 mx-auto flex items-center justify-center">
-            {/* Holographic Abstract Watch Part Projection */}
-            <svg className="animate-spin-slow opacity-80" width="100%" height="100%" viewBox="0 0 100 100" fill="none" stroke="#d4af37" strokeWidth="1">
-              <circle cx="50" cy="50" r="40" strokeDasharray="4 4" />
-              <circle cx="50" cy="50" r="30" strokeOpacity="0.5" />
-              <circle cx="50" cy="50" r="10" fill="#d4af37" fillOpacity="0.2" />
-              <path d="M50 10 L50 30" strokeWidth="2" />
-              <path d="M50 70 L50 90" strokeWidth="2" />
-              <path d="M10 50 L30 50" strokeWidth="2" />
-              <path d="M70 50 L90 50" strokeWidth="2" />
-            </svg>
-            <div className="absolute inset-0 bg-[#d4af37]/5 mix-blend-screen rounded-full animate-pulse blur-sm"></div>
+          <div className="relative z-10 w-65 h-55 mx-auto flex items-center justify-center rounded-2xl">
+            <img src={"/"+REGION_DATA.find((r) => r.id === hoveredRegion)?.name+".webp"} alt="" className="rounded-tl-2xl rounded-br-2xl" />
           </div>
         </div>
       )}
