@@ -67,26 +67,6 @@ export default function WatchCard({
       setIsSharing(true);
       setShareFeedback(null);
 
-      let foundUser; // On déclare la variable ICI, pour qu'elle soit accessible partout dans la fonction
-
-      // --- ÉTAPE 1 : Récupérer l'utilisateur ---
-      try {
-        const response = await fetch(`${apiAddress}/api/users`);
-        const users = await response.json();
-        foundUser = users.find((u: User) => u.email === authUser?.email);       
-        
-        // Si l'utilisateur n'est pas dans la liste, on jette une erreur
-        if (!foundUser) {
-          throw new Error("Utilisateur introuvable en base de données.");
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        const errorMessage = error instanceof Error ? error.message : "Erreur de récupération utilisateur.";
-        setShareFeedback({ type: 'error', msg: errorMessage });
-        setIsSharing(false); 
-        return; 
-      }
-
       // --- ÉTAPE 2 : Préparer et envoyer la montre ---
       const payload = {
         watch: {
@@ -96,8 +76,7 @@ export default function WatchCard({
           creator: "test"
         },
         user: {
-          email: foundUser.email,
-          token: foundUser.token
+          email: authUser?.email,
         }
       };
 
