@@ -98,7 +98,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
     const watchesToOrder: Watch[] = cartWatches.map((item, index) => ({
       id: Date.now() + index, 
       creator: isAuthenticated && user?.name ? user.name : "Anonyme",
-      name: `Création Sur-Mesure #${index + 1}`,
+      name: item.name,
       votes: 0,
       image: "", 
       components: item.composants 
@@ -194,7 +194,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
                             ×
                           </div>
                         </div>
-                        <p className="font-serif truncate text-lg">Montre #{index + 1}</p>
+                        <p className="font-serif truncate text-lg">Montre {watch.name}</p>
                         <p className="text-sm text-text-muted">{watch.price} €</p>
                       </button>
                     );
@@ -227,7 +227,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
 
                     <div className="absolute bottom-6 left-6 z-20 pointer-events-none">
                       <p className="text-text-muted text-sm uppercase tracking-widest font-sans">Sélection actuelle</p>
-                      <p className="text-primary font-serif text-xl">Montre #{selectedWatchIndex + 1}</p>
+                      <p className="text-primary font-serif text-xl">Montre {selectedWatch.name}</p>
                     </div>
                   </div>
                 </div>

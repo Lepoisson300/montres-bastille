@@ -4,6 +4,8 @@ import type { CartItem, PartOption, PartsCatalog } from "../types/Parts";
 import { useState } from "react";
 import Nav from "../components/Nav";
 import { useAlert } from "../Logic/AlertContext";
+import ModalWatchName from "../Modals/ModalWatchName";
+
 
 interface LocationState {
   selectedRegion?: string;
@@ -15,6 +17,8 @@ export default function ConfiguratorPage() {
   const location = useLocation();
   const state = location.state as LocationState;
   const { showAlert } = useAlert();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [order, setOrder] = useState()
 
   // 2. On redirige si l'état est manquant OU si c'est un rechargement
   if (!state?.watchComponents || !(window as any).isValidNavigation) {
@@ -42,27 +46,45 @@ export default function ConfiguratorPage() {
     currency: "EUR"
   };
 
-  const handleCheckout = (order: { sku: string; price: number; config: PartOption[] }) => {
+  const handleCheckout = (order: { sku: string; price: number; config: PartOption[]; name:string }) => {
     // Build a CartItem with the resolved PartOption array
-    const cartItem: CartItem = {
-      id: order.sku,
-      price: order.price,
-      composants: order.config,
-    };
-    const updatedCart = [...cartList, cartItem];
-    setCartList(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
-    console.log("Panier sauvegardé :", updatedCart);
-    window.dispatchEvent(new Event('cartUpdated'));
-    showAlert( "success", "Montre ajoutée au panier" );
+    setOrder(order)
+    setIsModalOpen(true); 
+
   };
+
+  const checkout = (finalOrder: { sku: string; price: number; config: PartOption[]; name: string }) => {
+      
+      const cartItem: CartItem = {
+        id: finalOrder.sku,
+        name: finalOrder.name,
+        price: finalOrder.price,
+        composants: finalOrder.config,
+      };
+
+      setIsModalOpen(false); 
+      setOrder(undefined);
+
+      const updatedCart = [...cartList, cartItem];
+      setCartList(updatedCart);
+      localStorage.setItem('cart', JSON.stringify(updatedCart));
+      
+      console.log("Panier sauvegardé :", updatedCart);
+      window.dispatchEvent(new Event('cartUpdated'));
+      showAlert("success", `La montre "${finalOrder.name}" a été ajoutée au panier`); // Petit bonus pour le message !
+    };
 
 
   return (
     <>
     <Nav bg={true}/>
       <div className="min-h-screen bg-neutral-950">
-        
+        <ModalWatchName 
+            isOpen={isModalOpen} 
+            onClose={() => setIsModalOpen(false)}
+            order = {order}
+            onSubmit={checkout} 
+        />
       <Configurator
         assets={assets}
         pricing={pricing}

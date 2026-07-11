@@ -70,7 +70,7 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
 
     };
 
-    // Fonction pour calculer les classes Tailwind en fonction de la position relative
+// Fonction pour calculer les classes Tailwind en fonction de la position relative
     const getStyles = (index) => {
         // Calcul de la distance par rapport à l'image active
         let offset = index - activeIndex;
@@ -81,24 +81,24 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
         if (offset > Math.floor(numItems / 2)) offset -= numItems;
 
         // Styles par défaut (images cachées ou très éloignées)
-        let classes = "absolute transition-all duration-500 ease-in-out opacity-60 z-0 scale-50";
+        let classes = "absolute transition-all duration-500 ease-in-out opacity-0 z-0 scale-50 pointer-events-none";
 
         // Application des styles selon le décalage (offset)
         if (offset === 0) {
-            // Image Centrale
-            classes = "absolute transition-all duration-500 ease-in-out z-10 scale-100 translate-x-0 opacity-100 shadow-2xl rounded-2xl";
+            // 🎯 IMAGE CENTRALE : Z-index le plus fort (50) pour être tout devant
+            classes = "absolute transition-all duration-500 ease-in-out z-50 scale-100 translate-x-0 opacity-100 shadow-2xl rounded-2xl pointer-events-auto";
         } else if (offset === -1) {
-            // Image à gauche directe
-            classes = "absolute transition-all duration-500 ease-in-out z-40 scale-[0.80] -translate-x-[80%] opacity-100 shadow-xl rounded-2xl";
+            // 👈 IMAGE À GAUCHE : Z-index plus faible (40), reculée à -110%
+            classes = "absolute transition-all duration-500 ease-in-out z-40 scale-[0.80] -translate-x-[110%] opacity-80 shadow-xl rounded-2xl pointer-events-none";
         } else if (offset === 1) {
-            // Image à droite directe
-            classes = "absolute transition-all duration-500 ease-in-out z-40 scale-[0.80] translate-x-[80%] opacity-100 shadow-xl rounded-2xl";
+            // 👉 IMAGE À DROITE : Z-index plus faible (40), reculée à 110%
+            classes = "absolute transition-all duration-500 ease-in-out z-40 scale-[0.80] translate-x-[110%] opacity-80 shadow-xl rounded-2xl pointer-events-none";
         } else if (offset === -2) {
-            // Image extrême gauche
-            classes = "absolute transition-all duration-500 ease-in-out z-30 scale-[0.65] -translate-x-[110%] opacity-70 rounded-2xl";
+            // ⏪ IMAGE EXTRÊME GAUCHE : Z-index encore plus faible (30), reculée à -160%
+            classes = "absolute transition-all duration-500 ease-in-out z-30 scale-[0.65] -translate-x-[160%] opacity-50 rounded-2xl pointer-events-none";
         } else if (offset === 2) {
-            // Image extrême droite
-            classes = "absolute transition-all duration-500 ease-in-out z-30 scale-[0.65] translate-x-[110%] opacity-70 rounded-2xl";
+            // ⏩ IMAGE EXTRÊME DROITE : Z-index encore plus faible (30), reculée à 160%
+            classes = "absolute transition-all duration-500 ease-in-out z-30 scale-[0.65] translate-x-[160%] opacity-50 rounded-2xl pointer-events-none";
         }
 
         return classes;
