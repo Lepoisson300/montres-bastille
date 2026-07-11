@@ -136,7 +136,7 @@ export default function CommunityPage() {
       <Nav bg={false}/>
 
       {/* HERO SECTION */}
-      <section className="bg-dark text-text-primary pt-24 pb-20">
+      <section className="bg-dark text-text-primary pt-24">
         <div className="fixed inset-0 z-0 pointer-events-none bg-background">
           <img 
             src="/communityBG.webp" 
@@ -163,7 +163,8 @@ export default function CommunityPage() {
       </section>
 
       {/* VOTING SECTION */}
-      <section className="py-20 bg-dark text-text-primary border-t border-white/5 relative z-10">
+      <section className="py-20 bg-dark/80 backdrop-blur-xs text-text-primary border-t border-white/5 relative z-10">
+        <div className="relative bottom-22 bg-primary-darker h-2 w-full"></div>
         <div className="px-6 md:px-12 max-w-7xl mx-auto">
           <Reveal>
             <div className="text-center mb-16">

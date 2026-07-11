@@ -50,3 +50,20 @@
   --font-serif: 'Playfair Display', serif;
   --font-sans: 'Inter', sans-serif;
 }
+
+.card-fade-blur {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(22, 12, 38, 0.95) 0%,
+    rgba(22, 12, 38, 0.75) 25%,
+    rgba(22, 12, 38, 0.25) 55%,
+    transparent 100%
+  );
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  mask-image: linear-gradient(to top, black 0%, rgba(0, 0, 0, 0.9) 25%, rgba(0, 0, 0, 0.3) 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, black 0%, rgba(0, 0, 0, 0.9) 25%, rgba(0, 0, 0, 0.3) 60%, transparent 100%);
+}
