@@ -12,6 +12,7 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
     const [activeIndex, setActiveIndex] = useState(0);
     const [likedWatches, setLikedWatches] = useState<Set<string>>(new Set()); // Ajout du state manquant
     const { user, isAuthenticated } = useAuth0();
+    const colors = ['#B85D38','#D1B994','#2F3E46','#391A4B','#6D8075']
     const { showAlert } = useAlert();
     console.log(sharedWatch)
     // Fonctions de navigation
@@ -85,19 +86,19 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
 
         // Application des styles selon le décalage (offset)
         if (offset === 0) {
-            // 🎯 IMAGE CENTRALE : Z-index le plus fort (50) pour être tout devant
+            // IMAGE CENTRALE : Z-index le plus fort (50) pour être tout devant
             classes = "absolute transition-all duration-500 ease-in-out z-50 scale-100 translate-x-0 opacity-100 shadow-2xl rounded-2xl pointer-events-auto";
         } else if (offset === -1) {
-            // 👈 IMAGE À GAUCHE : Z-index plus faible (40), reculée à -110%
+            // IMAGE À GAUCHE : Z-index plus faible (40), reculée à -110%
             classes = "absolute transition-all duration-500 ease-in-out z-40 scale-[0.80] -translate-x-[110%] opacity-80 shadow-xl rounded-2xl pointer-events-none";
         } else if (offset === 1) {
-            // 👉 IMAGE À DROITE : Z-index plus faible (40), reculée à 110%
+            // IMAGE À DROITE : Z-index plus faible (40), reculée à 110%
             classes = "absolute transition-all duration-500 ease-in-out z-40 scale-[0.80] translate-x-[110%] opacity-80 shadow-xl rounded-2xl pointer-events-none";
         } else if (offset === -2) {
-            // ⏪ IMAGE EXTRÊME GAUCHE : Z-index encore plus faible (30), reculée à -160%
+            // IMAGE EXTRÊME GAUCHE : Z-index encore plus faible (30), reculée à -160%
             classes = "absolute transition-all duration-500 ease-in-out z-30 scale-[0.65] -translate-x-[160%] opacity-50 rounded-2xl pointer-events-none";
         } else if (offset === 2) {
-            // ⏩ IMAGE EXTRÊME DROITE : Z-index encore plus faible (30), reculée à 160%
+            // IMAGE EXTRÊME DROITE : Z-index encore plus faible (30), reculée à 160%
             classes = "absolute transition-all duration-500 ease-in-out z-30 scale-[0.65] translate-x-[160%] opacity-50 rounded-2xl pointer-events-none";
         }
 
@@ -120,8 +121,10 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
                         onClick={() => setActiveIndex(index)}
                     >
                         {/* 1. L'EFFET DE FLOU (OUTER GLOW) */}
-                        <div className="absolute inset-0 bg-purple-600/60 rounded-2xl blur-xl transform group-hover:scale-105 transition-all duration-500 z-0"></div>
-
+                        <div 
+                        className="absolute inset-0 rounded-2xl blur-xl transform group-hover:scale-105 transition-all duration-500 z-0"
+                        style={{ backgroundColor: colors[index] }}
+                        ></div>
                         {/* 2. LA CARTE PRINCIPALE */}
                         <div
                             className={`${getStyles(index)} relative bg-slate-900 w-full h-full cursor-pointer flex flex-col justify-between overflow-hidden rounded-2xl z-10 border border-white/10`}
@@ -154,9 +157,12 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
                                 })}
                             </div>
 
-                            {/* OVERLAY DÉGRADÉ INTÉRIEUR (Comme sur l'image : sombre en bas, transparent en haut) */}
-                            {/* Remplace la couleur from-[#3A225E] par celle qui correspond à ton design */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#3A225E] via-[#3A225E]/70 to-transparent z-15 mt-auto h-1/4 pointer-events-none"></div>
+                            <div 
+                                className="absolute inset-0 z-15 mt-auto h-1/4 pointer-events-none"
+                                style={{ 
+                                    background: `linear-gradient(to top, ${colors[index]}, ${colors[index]}B3, transparent)` 
+                                }}
+                            ></div>
 
                             {/* PIED DE CARTE : Le texte et le faux bouton (Basé sur l'image) */}
                             <div className="relative flex flex-col justify-end p-6 w-full z-20 mt-auto h-full">
@@ -174,7 +180,8 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
                                     voteLike(shared.watch.name);
                                 }}
                                 disabled={likedWatches.has(shared.watch.name)}
-                                className="flex items-center justify-between bg-[#2a1744]/80 backdrop-blur-sm hover:bg-[#3d2263] transition-colors p-4 rounded-xl border border-white/5">
+                                className="flex items-center justify-between backdrop-blur-sm hover:bg-[#3d2263] transition-colors p-4 rounded-xl border border-white/5"
+                                style={{ backgroundColor: colors[index] }}>
                                     <span className="text-white/90 text-sm font-medium">Soutenir cette création</span>
                                     <svg className="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
