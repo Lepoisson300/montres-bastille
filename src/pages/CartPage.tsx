@@ -95,16 +95,8 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
   const handleCheckout = async () => {
     if (cartWatches.length === 0) return;
     
-    const watchesToOrder: Watch[] = cartWatches.map((item, index) => ({
-      id: Date.now() + index, 
-      creator: isAuthenticated && user?.name ? user.name : "Anonyme",
-      name: item.name,
-      votes: 0,
-      image: "", 
-      components: item.composants 
-    }));
 
-    console.log("Envoi de la commande, montres : ", watchesToOrder);
+    console.log("Envoi de la commande, montres : ", selectedWatch);
     setIsRedirecting(true);
 
     try {
@@ -112,7 +104,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          watches: watchesToOrder, 
+          watches: selectedWatch, 
           extras: [Livraison, BoiteRangement], 
           userEmail: user?.email 
         }),      
@@ -308,7 +300,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
                 {/* Total à payer */}
                 <div className="flex justify-between items-end mb-8">
                   <span className="text-text-muted font-sans text-sm pb-1">Total à payer</span>
-                  <span className="font-serif text-3xl md:text-4xl text-primary leading-none">{grandTotal + 30} €</span>
+                  <span className="font-serif text-3xl md:text-4xl text-primary leading-none">{selectedWatch.price + 30} €</span>
                 </div>
 
                 {/* Bouton de paiement */}

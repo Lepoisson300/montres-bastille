@@ -102,13 +102,13 @@ export default function AccountPage() {
       <div className="relative min-h-screen bg-background font-sans overflow-hidden pt-28 pb-20 ">
         
         {/* Le Gradient Horloger */}
-        <div className="absolute top-0 left-0 w-full h-150 opacity-90 z-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute top-0 left-0 w-full h-full mx-auto opacity-90 z-0 pointer-events-none" aria-hidden="true">
           <MeshGradient
-            width={typeof window !== 'undefined' ? window.innerWidth : 1280}
-            height={600}
+            width={typeof window !== 'undefined' ? window.innerWidth : 1920}
+            height={1080}
             colors={["#0a0a0c", "#262626", "#c5a059", "#1c1a17"]}
             distortion={0.25}
-            speed={0.35}
+            speed={0.45}
           />
           <div className="absolute inset-0 bg-linear-to-b from-transparent to-background"></div>
         </div>
