@@ -96,15 +96,16 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
     if (cartWatches.length === 0) return;
     
 
-    console.log("Envoi de la commande, montres : ", selectedWatch);
+    //console.log("Envoi de la commande, montres : ", selectedWatch);
     setIsRedirecting(true);
 
     try {
+      console.log("selected watch ",selectedWatch)
       const res = await fetch(`${apiAddress}/api/stripeOrder`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          watches: selectedWatch, 
+          watch: selectedWatch, 
           extras: [Livraison, BoiteRangement], 
           userEmail: user?.email 
         }),      
@@ -205,7 +206,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
                       {["dial","case", "strap", "hand"].map((category) => {
                         const part = selectedWatch.composants?.find((c) => c.type === category);
                         if (!part || !part.thumbnail) return null;
-                        console.log("parts : ",part)
+                        //console.log("parts : ",part)
                         return (
                           <img
                             key={part.id || category}
