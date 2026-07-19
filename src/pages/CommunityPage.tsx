@@ -77,49 +77,6 @@ export default function CommunityPage() {
       .catch((error) => console.error('Error updating vote:', error));
     } 
     
-    // ==========================================
-    // CAS 2 : LIKE POUR UNE MONTRE PARTAGÉE
-    // ==========================================
-    else {
-      if (watchShareName && likedWatches.has(watchShareName)) {
-        showAlert('info', 'Vous avez déjà soutenu cette création.');
-        return;
-      }
-
-      const watch = sharedwatch.find(w => w.watch.name === watchShareName);
-      if (!watch) return;
-
-      // Nouveau format attendu par ton backend unifié
-      const likeData = { email: user?.email, elem: watch.watch.name, type: 'w' };
-
-      // On tape désormais sur la même route !
-      fetch(`${apiAddress}/api/users/vote`, { 
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(likeData)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.error) {
-          showAlert('info', data.error);
-          return;
-        }
-
-        setSharedWatch(prevWatches => 
-          prevWatches.map(w => {
-            if (w.watch.name === watch.watch.name) {
-              const currentVotes = w.voteCount || (w.votes ? w.votes.length : 0);
-              return { ...w, voteCount: currentVotes + 1 };
-            }
-            return w;
-          })
-        );
-
-        setLikedWatches(prev => new Set(prev).add(watch.watch.name));
-        showAlert('success', 'Votre vote pour cette création a été enregistré !');
-      })
-      .catch((error) => console.error('Error updating like:', error));
-    }
   };
 
   return (
