@@ -100,7 +100,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
     setIsRedirecting(true);
 
     try {
-      console.log("selected watch ",selectedWatch)
+      console.log("selected watch to send ",selectedWatch)
       const res = await fetch(`${apiAddress}/api/stripeOrder`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

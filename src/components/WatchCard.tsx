@@ -45,7 +45,7 @@ export default function WatchCard({
   const currentStatus = getStatusDisplay(etape_actuelle);
 
   const getPartName = (type: string) => {
-    const part = montre.components?.find(c => c.type === type);
+    const part = montre.composants?.find(c => c.type === type);
     return part ? part.name : "Standard";
   };
 
@@ -71,7 +71,7 @@ export default function WatchCard({
       const payload = {
         watch: {
           name: montre.name || `Création N°${index + 1}`,
-          components: montre.components,
+          components: montre.composants,
           votes: 0,
           creator: "test"
         },
@@ -124,7 +124,7 @@ export default function WatchCard({
       {/* Visuel */}
       <div className="relative w-full aspect-square mb-8 bg-dark/20 rounded-lg overflow-hidden flex items-center justify-center">
         {["case", "dial", "hands", "strap"].map((category) => {
-          const part = montre.components?.find((c) => c.type === category);
+          const part = montre.composants?.find((c) => c.type === category);
           if (!part || !part.thumbnail) return null;
           
           return (
