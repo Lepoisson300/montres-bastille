@@ -9,7 +9,7 @@ interface carouselInterface {
 const apiAddress = import.meta.env.VITE_API_URL;
 
 export default function CarouselShare({ sharedWatch }: carouselInterface) {
-    const [watches, setWatches] = useState<SharedWatch[]>(sharedWatch);
+    const [watches, setWatches] = useState<SharedWatch[]>((sharedWatch || []));
     
     const [activeIndex, setActiveIndex] = useState(0);
     const [likedWatches, setLikedWatches] = useState<Set<string>>(new Set());
@@ -21,7 +21,7 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
 
     // Permet de synchroniser l'état local si le composant parent met à jour les props
     useEffect(() => {
-        setWatches(sharedWatch);
+        setWatches(sharedWatch || []);
     }, [sharedWatch]);
 
     const nextSlide = () => {
@@ -61,15 +61,18 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
                     return;
                 }
 
-                setWatches(prevWatches =>
-                    prevWatches.map(w => {
+                setWatches(prevWatches => {
+                    // on retourne un tableau vide pour empêcher le crash du .map()
+                    if (!Array.isArray(prevWatches)) return [];
+
+                    return prevWatches.map(w => {
                         if (w.watch.name === watch.watch.name) {
                             const currentVotes = w.voteCount || (w.votes ? w.votes.length : 0);
                             return { ...w, voteCount: currentVotes + 1 };
                         }
                         return w;
-                    })
-                );
+                    });
+                });
 
                 setLikedWatches(prev => new Set(prev).add(watch.watch.name));
                 showAlert('success', 'Votre vote pour cette création a été enregistré !');
