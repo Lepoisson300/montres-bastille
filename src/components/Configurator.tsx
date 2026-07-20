@@ -23,10 +23,9 @@ const fromQuery = (): Record<string, string> => {
 };
 
 export default function Configurator({ assets, defaultChoice, selectedRegion, onCheckout }: WatchConfiguratorProps) {
-  
+
   const [isMobile, setIsMobile] = useState(false);
   const filtered = useMemo(() => {
-    console.log("assets : ", assets);
     const filter = (items: PartOption[]) => items.filter(i => !i.regions || !selectedRegion || Object.values(i.regions).includes(selectedRegion));
     return {
       mouvement: filter(assets.mouvement),
@@ -53,7 +52,6 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
   });
 
   const [zoom, setZoom] = useState(3);
-  const [showPreview, setShowPreview] = useState(true);
   const [focusedPart, setFocusedPart] = useState<PartOption | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -66,11 +64,15 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
     hands: filtered.hands.find(o => o.id === config[4].id),
   }), [config, filtered]);
 
-  const totalPrice = useMemo(() => 
+  const totalPrice = useMemo(() =>
     Object.values(selections).reduce((acc, curr) => acc + (curr?.price || 0), 0)
   , [selections]);
 
   const sku = Object.values(config).filter(Boolean).join("-");
+
+  // Piece currently highlighted on the right-hand description panel:
+  // whatever was last clicked, falling back to the case so the panel is never empty.
+  const activePart = focusedPart ?? selections.cases ?? selections.mouvement ?? null;
 
   // 4. Side Effects
   useEffect(() => {
@@ -80,12 +82,9 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
   }, [config]);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    
-    // Check initially
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+
     checkMobile();
-    
-    // Add resize listener to update state dynamically
     window.addEventListener("resize", checkMobile);
 
     const handleKeys = (e: KeyboardEvent) => {
@@ -93,7 +92,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
       if (e.key === "-") setZoom(z => Math.max(0.8, z - 0.5));
     };
     window.addEventListener("keydown", handleKeys);
-    
+
     return () => {
       window.removeEventListener("keydown", handleKeys);
       window.removeEventListener("resize", checkMobile);
@@ -104,10 +103,10 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
     const el = document.querySelector("#watch-viewer") as HTMLElement;
     if (!el) return;
 
-    const canvas = await html2canvas(el, { 
-      backgroundColor: null, 
+    const canvas = await html2canvas(el, {
+      backgroundColor: null,
       scale: 2,
-      useCORS: true, 
+      useCORS: true,
       onclone: (clonedDocument) => {
         const allElements = clonedDocument.querySelectorAll('*');
         allElements.forEach((node) => {
@@ -115,7 +114,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
           const style = window.getComputedStyle(htmlNode);
           const colorProps = ['backgroundColor', 'color', 'borderColor', 'outlineColor'];
           colorProps.forEach(prop => {
-            // @ts-ignore 
+            // @ts-ignore
             if (style[prop] && style[prop].includes('oklab')) {
               if (prop === 'color') htmlNode.style.color = '#000000';
               else htmlNode.style[prop as any] = 'transparent';
@@ -138,203 +137,211 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
     const selectedPart = options.find(opt => opt.id === id);
     if (selectedPart) {
       setConfig(prevConfig => {
-        const newConfig = [...prevConfig]; 
-        newConfig[index] = selectedPart;   
-        return newConfig;                  
+        const newConfig = [...prevConfig];
+        newConfig[index] = selectedPart;
+        return newConfig;
       });
       setFocusedPart(selectedPart);
 
-      if(isMobile){
-        setIsModalOpen(true)
+      if (isMobile) {
+        setIsModalOpen(true);
       }
     }
   };
 
-  // Helper to render the Viewer content to avoid code duplication
+  // Watch stage — the big centered visual, with layered part images and
+  // a slim control bar (zoom + capture) docked to its bottom edge.
   const renderViewer = () => (
-    <div className="bg-surface/20 rounded-2xl md:rounded-3xl border border-white/10 p-2 md:p-6">
-      
-      {/* BOUTON POUR DÉROULER / ENROULER */}
-      <button 
-        onClick={() => setShowPreview(!showPreview)}
-        className="w-full flex justify-between items-center text-ivory/90 hover:text-primary transition-colors py-1 md:py-2 px-2"
-      >
-        <span className="font-serif text-base md:text-lg">Aperçu en direct</span>
-        <motion.div animate={{ rotate: showPreview ? 180 : 0 }}>
-          ▼
-        </motion.div>
-      </button>
+    <div
+      id="watch-viewer"
+      className="relative mx-auto aspect-square w-full max-w-70 sm:max-w-105 md:max-w-155 rounded-[2rem] md:rounded-[3rem] border border-white/10 bg-surface/15 overflow-hidden shadow-2xl shadow-black/50"
+    >
+      <div className="relative h-full w-full transition-transform duration-300" style={{ transform: `scale(${zoom})` }}>
+        <img
+          src="/fondConfigurateur.webp"
+          alt="Fond du configurateur"
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-90"
+        />
+        <AnimatePresence mode="popLayout">
+          {(() => {
+            const isC3 = selections.cases?.id === "c3";
+            const renderLayers = isC3
+              ? [selections.dials, selections.straps, selections.cases, selections.hands]
+              : [selections.dials, selections.cases, selections.straps, selections.hands];
 
-      {/* LA ZONE QUI S'ANIME */}
-      <AnimatePresence initial={false}>
-        {showPreview && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="overflow-hidden"
-          >
-            <div className="pt-2 md:pt-4">
-              
-              {/* Réduction de la taille sur mobile via w-[65%] et max-w-[250px] */}
-              <div className="bg-background aspect-square w-[65%] max-w-87.5 md:w-full md:max-w-none mx-auto rounded-xl md:rounded-2xl border border-white/5 overflow-hidden">
-                
-                <div className="relative h-full w-full transition-transform duration-300" style={{ transform: `scale(${zoom})` }}>
-                  <img 
-                  src="/fondConfigurateur.webp" 
-                  alt="Fond du configurateur"
-                  className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-90"
+            return renderLayers.map((part) => (
+              part?.thumbnail && (
+                <motion.img
+                  key={part.id}
+                  src={part.thumbnail}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute scale-130 inset-0 top-7 md:top-12 w-full h-full object-contain pointer-events-none"
                 />
-                 <AnimatePresence mode="popLayout">
-                  {(() => {
-                    const isC3 = selections.cases?.id === "c3";
-                    const renderLayers = isC3
-                      ? [selections.dials, selections.straps, selections.cases, selections.hands]
-                      : [selections.dials, selections.cases, selections.straps, selections.hands];
+              )
+            ));
+          })()}
+        </AnimatePresence>
+      </div>
 
-                    return renderLayers.map((part, i) => (
-                      part?.thumbnail && (
-                        <motion.img 
-                          key={part.id} 
-                          src={part.thumbnail} 
-                          initial={{ opacity: 0 }} 
-                          animate={{ opacity: 1 }} 
-                          exit={{ opacity: 0 }}
-                          className="absolute scale-130 inset-0 top-7 md:top-12 w-full h-full object-contain pointer-events-none"
-                        />
-                      )
-                    ));
-                  })()}
-                </AnimatePresence>
-                </div>
-              </div>
-              
-              {/* BOUTONS SOUS LA MONTRE */}
-              <div className="flex justify-between items-center mt-3 md:mt-4">
-                <div className="flex bg-surface rounded-full mx-1 md:mx-2 p-1 flex-row border border-white/10 scale-90 md:scale-100 origin-left">
-                  <ZoomBtn label="-" onClick={() => setZoom(Math.max(1, zoom - 0.5))} />
-                  <span className="px-2 md:px-4 py-2 text-center text-xs">Zoom {Math.round((zoom/3) * 100)}%</span>
-                  <ZoomBtn label="+" onClick={() => setZoom(Math.min(5, zoom + 0.5))} />
-                </div>
-                <button onClick={handleDownload} className="text-[10px] md:text-xs uppercase tracking-widest bg-accent text-white border border-primary/30 px-3 md:px-6 py-2 rounded-full hover:bg-primary/10 transition">
-                  Capture
-                </button>
-              </div>
-
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Barre de contrôle discrète, ancrée en bas du cadre */}
+      <div className="absolute bottom-0 inset-x-0 flex items-center justify-between px-3 md:px-6 py-2.5 md:py-4 bg-gradient-to-t from-dark/90 to-transparent">
+        <div className="flex items-center bg-surface/70 backdrop-blur-sm rounded-full border border-white/10 p-1">
+          <ZoomBtn label="−" onClick={() => setZoom(z => Math.max(0.8, z - 0.5))} />
+          <span className="px-2 md:px-3 text-[9px] md:text-[10px] uppercase tracking-widest text-ivory/80">
+            Zoom {Math.round((zoom / 3) * 100)}%
+          </span>
+          <ZoomBtn label="+" onClick={() => setZoom(z => Math.min(5, z + 0.5))} />
+        </div>
+        <button
+          onClick={handleDownload}
+          className="text-[9px] md:text-[10px] uppercase tracking-widest bg-accent/90 text-white border border-primary/30 px-3 md:px-5 py-1.5 md:py-2.5 rounded-full hover:bg-primary/10 transition backdrop-blur-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
+          Capture
+        </button>
+      </div>
     </div>
   );
 
   return (
     <>
-    {/* Réduction des marges globales sur mobile (pt-4, py-6, px-4) */}
-    <section className="bg-dark text-ivory pt-13 md:pt-8 min-h-screen font-sans">
-      <div className="py-6 md:py-16 max-w-7xl mx-auto">
-        <div className="mb-2 md:mb-0">
-            <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-primary mb-1 md:mb-2">Configurez votre montre</h3>
-            <p className="text-text-muted text-[10px] md:text-sm uppercase tracking-widest">Visualisation 3D • Prix Réel</p>
-          </div>
-        <div className="grid gap-2 md:gap-6 lg:grid-cols-[1.2fr_1fr] items-start">
-          
-          
-        
-          {isMobile ? (
-             <div className="sticky top-4 space-y-4 md:space-y-6 z-10 bg-dark pb-2 pt-1">
-               {renderViewer()}
-             </div>
-          ) : (
-            <div className="top-8 space-y-6 z-10 pb-3 pt-2">
-               {renderViewer()}
-              <LuxuryDescription 
-                title={focusedPart?.name || "nom de la pièce"}  
-                description={focusedPart?.description || "Description de la pièce"} 
-              />
-            </div>
-          )}
+      <section className="relative bg-dark text-ivory min-h-screen pt-15 font-sans overflow-hidden">
+        {/* Halo ambiant, écho de l'éclairage studio de la référence */}
+        <div className="pointer-events-none absolute -top-40 -left-40 w-140 h-140 rounded-full bg-primary/10 blur-[160px]" />
+        <div className="pointer-events-none absolute top-1/3 -right-40 w-105 h-105 rounded-full bg-accent/10 blur-[140px]" />
 
-          {/* RIGHT: Selection Controls */}
-          <div className="space-y-4 md:space-y-8">
-            <SummaryCard sku={sku} selections={selections} price={totalPrice} onCheckout={() => onCheckout?.({price: totalPrice, config})} />
-            
-            {/* Réduction du padding du conteneur des grilles sur mobile */}
-            <div className="space-y-6 md:space-y-10 bg-surface/30 p-4 md:p-6 rounded-2xl border border-white/5">
-              <PartGrid title="Mouvement" part="mouvement" options={filtered.mouvement} current={config[0]} 
-              onSelect={(id: string) => handleSelectPart(0, id, filtered.mouvement)}/>
-              <PartGrid title="Boîtier" part="cases" options={filtered.cases} current={config[1]} 
-              onSelect={(id: string) => handleSelectPart(1, id, filtered.cases)} />
-              <PartGrid title="Cadran" part="dials" options={filtered.dials} current={config[3]} 
-              onSelect={(id: string) => handleSelectPart(3, id, filtered.dials)} />
-              <PartGrid title="Aiguilles" part="hands" options={filtered.hands} current={config[4]} 
-              onSelect={(id: string) => handleSelectPart(4, id, filtered.hands)} />
-               <PartGrid title="Bracelet" part="straps" options={filtered.straps} current={config[2]} 
-              onSelect={(id: string) => handleSelectPart(2, id, filtered.straps)}/>
-            </div>
+        {/* En-tête */}
+        <div className="relative max-w-7xl mx-auto px-4 md:px-8 pt-12 md:pt-16 pb-4 md:pb-6 flex items-start justify-between">
+          <div>
+            <p className="text-text-muted text-[10px] md:text-xs uppercase tracking-widest mb-1 md:mb-2">Visualisation 3D • Prix Réel</p>
+            <h3 className="font-serif text-2xl md:text-4xl text-primary">Configurez votre montre</h3>
           </div>
-
+          
         </div>
-      </div>
-    </section>
-    
-    <MobileLuxuryModal 
-      isOpen={isModalOpen} 
-      onClose={() => setIsModalOpen(false)} 
-      title={focusedPart?.name || "Nom de la pièce"}
-      description={focusedPart?.description || "Sélectionnez une pièce pour voir ses détails."}
-    />
+
+        {/* SCÈNE PRINCIPALE — montre en grand, prix/CTA à gauche, description à droite */}
+        <div className="relative max-w-7xl mx-auto px-4 md:px-8 pt-6 md:pt-10 pb-8 md:pb-14">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="relative flex items-center justify-center"
+          >
+            {renderViewer()}
+
+            {/* Overlay gauche — prix + commander */}
+            <div className="hidden lg:block absolute left-0 top-1/2 -translate-y-1/2 z-20">
+              <BuyCard sku={sku} price={totalPrice} onCheckout={() => onCheckout?.({ price: totalPrice, config })} />
+            </div>
+
+            {/* Overlay droit — description de la pièce active */}
+            <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 z-20 w-65">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activePart?.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  <LuxuryDescription
+                    title={activePart?.name || "Nom de la pièce"}
+                    description={activePart?.description || "Sélectionnez une pièce pour voir ses détails."}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </motion.div>
+
+          {/* Version mobile/tablette : prix + CTA empilés sous la montre */}
+          <div className="lg:hidden mt-5">
+            <BuyCard sku={sku} price={totalPrice} onCheckout={() => onCheckout?.({ price: totalPrice, config })} />
+          </div>
+        </div>
+
+        {/* ZONE BASSE — sélection des composants, par variantes */}
+        <div className="relative border-t border-white/10 bg-surface/10 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-14 space-y-7 md:space-y-10">
+            <PartRow title="Mouvement" options={filtered.mouvement} current={config[0]} onSelect={(id: string) => handleSelectPart(0, id, filtered.mouvement)} />
+            <PartRow title="Boîtier" options={filtered.cases} current={config[1]} onSelect={(id: string) => handleSelectPart(1, id, filtered.cases)} />
+            <PartRow title="Cadran" options={filtered.dials} current={config[3]} onSelect={(id: string) => handleSelectPart(3, id, filtered.dials)} />
+            <PartRow title="Aiguilles" options={filtered.hands} current={config[4]} onSelect={(id: string) => handleSelectPart(4, id, filtered.hands)} />
+            <PartRow title="Bracelet" options={filtered.straps} current={config[2]} onSelect={(id: string) => handleSelectPart(2, id, filtered.straps)} />
+          </div>
+        </div>
+      </section>
+
+      <MobileLuxuryModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={activePart?.name || "Nom de la pièce"}
+        description={activePart?.description || "Sélectionnez une pièce pour voir ses détails."}
+      />
     </>
   );
 }
 
-// ... Keep your Sub-Components (ZoomBtn, SummaryCard, PartGrid) as they were ...
 function ZoomBtn({ label, onClick }: { label: string; onClick: () => void }) {
-  return <button onClick={onClick} className="w-6 h-6 md:w-8 md:h-8 rounded-full hover:bg-white/10 transition flex items-center justify-center">{label}</button>;
+  return (
+    <button
+      onClick={onClick}
+      className="w-6 h-6 md:w-8 md:h-8 rounded-full hover:bg-white/10 transition flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+    >
+      {label}
+    </button>
+  );
 }
 
-function SummaryCard({ sku, price, onCheckout }: any) {
+// Carte flottante prix + CTA, façon verre dépoli — ancrée sur le bord de la montre en desktop,
+// empilée sous la montre en mobile.
+function BuyCard({ sku, price, onCheckout }: any) {
   return (
-    <div className="bg-surface p-4 md:p-6 rounded-2xl border border-primary/20 shadow-2xl">
-      <div className="flex justify-between items-center mb-4 md:mb-6">
-        <div>
-          <h4 className="text-primary font-serif text-lg md:text-xl">Votre Composition</h4>
-        </div>
-        <div className="text-right">
-          <p className="text-xl md:text-2xl font-serif text-primary">{price}€</p>
-        </div>
-      </div>
-      <button onClick={onCheckout} className="w-full text-sm md:text-base bg-primary text-dark font-bold py-3 md:py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-primary-dark transition shadow-lg shadow-primary/20">
-        <GoArrowUpRight className="text-lg md:text-xl" /> COMMANDER LA MONTRE
+    <div className="bg-surface/30 backdrop-blur-md w-full lg:w-65 p-5 md:p-6 rounded-2xl border border-primary/20 shadow-2xl shadow-black/40">
+      <p className="text-text-muted text-[9px] md:text-[10px] uppercase tracking-widest mb-2">{sku}</p>
+      <p className="text-2xl md:text-3xl font-serif text-primary mb-4 md:mb-6">{price}€</p>
+      <button
+        onClick={onCheckout}
+        className="w-full text-xs md:text-sm bg-primary text-dark font-bold py-3 md:py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-primary-dark transition shadow-lg shadow-primary/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      >
+        <GoArrowUpRight className="text-base md:text-lg" /> Commander la montre
       </button>
     </div>
   );
 }
 
-function PartGrid({ title, options, current, onSelect }: any) {
+// Bande horizontale de vignettes rondes par catégorie — c'est la "zone design"
+// qui permet de visualiser et choisir chaque composant.
+function PartRow({ title, options, current, onSelect }: any) {
   return (
     <div>
-      <h5 className="font-serif text-base md:text-lg mb-3 md:mb-4 text-ivory/90">{title}</h5>
-      <div className="grid grid-cols-4 gap-2 md:gap-3">
-        {options.map((opt: PartOption) => (
-          <button 
-            key={opt.id} 
-            onClick={() => onSelect(opt.id)}
-            className={`group relative p-1.5 md:p-2 rounded-xl border transition-all ${current === opt.id ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-white/10 bg-white/5 hover:border-white/30'}`}
-          >
-            <div className="aspect-square mb-1 md:mb-2 overflow-hidden rounded-lg">
-  {opt.type==="strap"?
-              <img src={opt.thumbnail} alt={opt.name} className="w-full h-45 scale-200 object-contain group-hover:scale-250 transition-transform" />
-              : <img src={opt.thumbnail} alt={opt.name} className="w-full h-45 scale-400 object-contain group-hover:scale-500 transition-transform" />}
-              
-
-              
-            </div>
-            <p className="text-[9px] md:text-[10px] text-center uppercase tracking-tighter truncate">{opt.name}</p>
-            {opt.price ? <p className="text-[10px] md:text-[12px] text-center text-primary mt-0.5 md:mt-1">{opt.price}€</p> : null}
-          </button>
-        ))}
+      <div className="flex items-center gap-3 mb-4 md:mb-5">
+        <h5 className="font-serif text-sm md:text-base text-ivory/90 uppercase tracking-widest">{title}</h5>
+        <span className="flex-1 h-px bg-white/10" />
+        <span className="text-[9px] md:text-[10px] text-text-muted uppercase tracking-widest">{options.length} options</span>
+      </div>
+      <div className="flex gap-3 md:gap-4 overflow-x-auto pb-2 snap-x snap-mandatory">
+        {options.map((opt: PartOption) => {
+          const isActive = current?.id === opt.id;
+          return (
+            <button
+              key={opt.id}
+              onClick={() => onSelect(opt.id)}
+              className={`group relative flex-shrink-0 snap-start w-20 md:w-24 rounded-2xl border p-2 md:p-3 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isActive ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-white/10 bg-white/5 hover:border-white/30'}`}
+            >
+              <div className="aspect-square rounded-full overflow-hidden bg-background/60 mb-2">
+                <img
+                  src={opt.thumbnail}
+                  alt={opt.name}
+                  className={`w-full h-full object-contain transition-transform ${opt.type === "strap" ? "scale-150 group-hover:scale-175" : "scale-220 group-hover:scale-250"}`}
+                />
+              </div>
+              <p className="text-[8px] md:text-[9px] text-center uppercase tracking-tighter truncate text-ivory/80">{opt.name}</p>
+              {opt.price ? <p className="text-[9px] md:text-[10px] text-center text-primary mt-0.5">{opt.price}€</p> : null}
+              {isActive && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-primary" />}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
