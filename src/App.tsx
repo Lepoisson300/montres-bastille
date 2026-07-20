@@ -2,7 +2,6 @@
 import "./App.css";
 import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import AccountPage from "./pages/AccountPage";
-import HomePage from "./pages/HomePage";
 import { useEffect, useState } from "react";
 import ConfiguratorPage from "./pages/ConfiguratorPage";
 import AboutPage from "./pages/AboutPage";
@@ -21,7 +20,7 @@ import OrderTrackingPage from "./pages/orderPage";
 import CgvPage from "./pages/CGVPage";
 import MentionsLegalesPage from "./pages/MentionsLegalesPage";
 import ConfidentialitePage from "./pages/ConfidentialitePage";
-import FramePage from "./pages/FramePage";
+import HomePage from "./pages/HomePage";
 
 
 // --- Main App Component ---
@@ -116,7 +115,7 @@ function App() {
       {/* Main Content */}
       <main className="bg-background">
         <Routes>
-          <Route path="/" element={<FramePage />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage allcomponents={components}/>} />
           <Route path="/region-page" element={<RegionPage components={components} />} />
           <Route path="/configurator" element={<ConfiguratorPage/>} />

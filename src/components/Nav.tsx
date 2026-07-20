@@ -78,10 +78,8 @@ const Nav: React.FC<NavProps> = () => {
 ].filter(Boolean).join(" ")}> 
     <nav
       className={[
-        "fixed max-w-350 mx-auto z-50 top-0 left-4 right-4 border-b mt-6 rounded-xl",
-        "bg-midnight/70",
+        "fixed max-w-450 mx-auto z-50 top-0 left-4 right-4 rounded-xl mt-6",
         "backdrop-blur-xs",
-        "border-champagne/20",
         scrolled ? "py-3" : "py-5",
         "transition-all duration-200"
       ].join(" ")}
