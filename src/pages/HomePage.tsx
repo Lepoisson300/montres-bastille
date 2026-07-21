@@ -122,10 +122,10 @@ export default function HomePage() {
       <div className="absolute top-0 left-0 w-full z-10 pointer-events-none">
         
         {/* Étape 1 */}
-        <div className="h-screen flex py-[20%] ml-[20%] max-w-2xl ">
+        <div className="min-h-screen flex mt-80 ml-10 max-w-[50%] lg:py-[20%] lg:ml-[20%] lg:max-w-2xl ">
           <div className="mx-[10%]">
           
-             <p className="tracking-[.25em] text-[16px] md:text-5xl uppercase text-accent-light font-sans mb-3">
+             <p className="tracking-[.25em] text-[30px] md:text-5xl uppercase text-accent-light font-sans mb-3">
               Un morceau d'histoire française au poignet
             </p>
             <div className="flex mt-4 pointer-events-auto">
@@ -144,7 +144,7 @@ export default function HomePage() {
                     <h2 className="font-serif text-4xl md:text-5xl tracking-tight mb-6 text-text-primary">
                       Découvrez la Collection
                     </h2>
-                    <p className="text-[12px] md:text-lg text-text-muted leading-relaxed mb-10 font-sans">
+                    <p className="text-[17px] md:text-xl text-text-muted leading-relaxed mb-10 font-sans">
                       Découvrez les pièces de notre collection, choisies pour représenter au mieux les régions françaises et leur patrimoine.
                       Créez votre morceau d'histoire unique.
                     </p>
@@ -155,12 +155,12 @@ export default function HomePage() {
                 </div>
 
                 {/* BLOC IMAGE (À droite sur PC, en bas sur mobile) */}
-                <div className="flex-1 flex justify-center md:justify-end w-full">
+                <div className="flex-1 flex mt-6 justify-center md:justify-end w-full">
                   <img
                     src={watch2}
                     alt="Collection"
                     // Ajout de classes pour sublimer l'image dans l'esprit Dark Gold
-                    className="mask-image-blur max-w-62.5 md:max-w-sm drop-shadow-diffuse rounded-4xl border border-white/5 md:border-none shadow-2xl md:shadow-none"
+                    className="mask-image-blur max-w-80 md:max-w-sm drop-shadow-diffuse rounded-4xl border border-white/5 md:border-none shadow-2xl md:shadow-none"
                   />
                 </div>
                 
@@ -213,7 +213,7 @@ export default function HomePage() {
                 </svg>
               </div>
               <h3 className="font-serif text-lg md:text-2xl text-[#D4AF37] mb-3">Production Responsable</h3>
-              <p className="font-sans text-[12px] md:text-base text-zinc-400 leading-relaxed max-w-xs">
+              <p className="font-sans text-[13px] md:text-base text-zinc-400 leading-relaxed max-w-xs">
                 Une fabrication raisonnée qui limite notre empreinte carbone. Nous privilégions le sens à la surproduction.
               </p>
             </div>
@@ -226,7 +226,7 @@ export default function HomePage() {
                 </svg>
               </div>
               <h3 className="font-serif text-lg md:text-2xl text-[#D4AF37] mb-3">Industrie Française</h3>
-              <p className="font-sans text-[12px] md:text-base text-zinc-400 leading-relaxed max-w-xs">
+              <p className="font-sans text-[13px] md:text-base text-zinc-400 leading-relaxed max-w-xs">
                 Soutenir l'économie locale en travaillant main dans la main avec des industries et ateliers français.
               </p>
             </div>
@@ -239,7 +239,7 @@ export default function HomePage() {
                 </svg>
               </div>
               <h3 className="font-serif text-lg md:text-2xl text-[#D4AF37] mb-3">Conçu pour Durer</h3>
-              <p className="font-sans text-[12px] md:text-base text-zinc-400 leading-relaxed max-w-xs">
+              <p className="font-sans text-[13px] md:text-base text-zinc-400 leading-relaxed max-w-xs">
                 Des composants robustes sélectionnés pour résister au temps avec une attention particulière pour les finitions. 
               </p>
             </div>
@@ -256,7 +256,7 @@ export default function HomePage() {
               <h3 className="font-serif text-2xl md:text-4xl tracking-tight mb-6 text-text-primary">
                 Faites de votre Montres-Bastille une pièce unique
               </h3>
-              <p className="text-[12px] md:text-lg text-amber-50 leading-relaxed mb-4 font-sans">
+              <p className="text-[15px] md:text-lg text-amber-50 leading-relaxed mb-4 font-sans">
                 Choisissez le cadran, le mouvement, les aiguilles, la finition
                 du boîtier et le bracelet. Visualisez vos modifications en
                 temps réel, puis commandez votre pièce du patrimoine.

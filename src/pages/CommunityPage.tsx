@@ -14,7 +14,6 @@ const apiAddress = import.meta.env.VITE_API_URL;
 
 export default function CommunityPage() {
   const [votedRegions, setVotedRegions] = useState<Set<string>>(new Set());
-  const [likedWatches, setLikedWatches] = useState<Set<string>>(new Set()); // Ajout du state manquant
   const [sharedwatch, setSharedWatch] = useState<any[]>([]); // Modifié en tableau vide []
   
   const { user, isAuthenticated } = useAuth0();
@@ -37,7 +36,7 @@ export default function CommunityPage() {
       .catch((error) => console.error('Error fetching shared watch:', error));
   }, []);
   
-  const voteLike = (type: string, regionName?: string, watchShareName?: string) => {
+  const voteLike = (type: string, regionName?: string) => {
     if (!isAuthenticated) {
       showAlert('warning', 'Vous devez être connecté pour voter ou soutenir une création.');
       return;
@@ -145,7 +144,7 @@ export default function CommunityPage() {
                     </div>
                   </div>
 
-                  <div className="w-full h-[160px] overflow-hidden rounded-lg bg-dark/50">
+                  <div className="w-full h-40 overflow-hidden rounded-lg bg-dark/50">
                       <img 
                         src={region.img} 
                         className="h-full w-full object-cover transition-transform duration-500 hover:scale-110" 

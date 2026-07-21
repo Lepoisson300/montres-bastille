@@ -15,7 +15,7 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
     const [likedWatches, setLikedWatches] = useState<Set<string>>(new Set());
     const { user, isAuthenticated } = useAuth0();
     
-    const colors = ['#B85D38', '#D1B994', '#2F3E46', '#391A4B', '#6D8075'];
+    const colors = ['#5D4037', '#D1B994', '#2F3E46', '#B8B8B8', '#C9A96E'];
     const getColor = (index: number) => colors[index % colors.length];
     const { showAlert } = useAlert();
 

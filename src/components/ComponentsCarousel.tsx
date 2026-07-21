@@ -42,12 +42,10 @@ export default function ComponentsCarousel({ parts }: FrenchPartsCarouselProps) 
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const nextSlide = () => {
-    clearInterval(0);
     setCurrentSlide((prev) => (prev === frenchComponents.length - 1 ? 0 : prev + 1));
   };
 
   const prevSlide = () => {
-    clearInterval(0);
     setCurrentSlide((prev) => (prev === 0 ? frenchComponents.length - 1 : prev - 1));
   };
 
@@ -58,7 +56,7 @@ export default function ComponentsCarousel({ parts }: FrenchPartsCarouselProps) 
       nextSlide();
     }, 8000); // Défilement toutes les 5 secondes
     return () => clearInterval(timer);
-  }, [frenchComponents.length]);
+  }, [frenchComponents.length,currentSlide]);
 
   // 4. Fallback si aucun composant
   if (frenchComponents.length === 0) {
@@ -102,7 +100,7 @@ export default function ComponentsCarousel({ parts }: FrenchPartsCarouselProps) 
                         <img 
                             src={comp.thumbnail} 
                             alt={comp.name} 
-                            className={`w-full h-120 object-cover grayscale-[20%] contrast-125 scale-200 transition-transform duration-700 ${
+                            className={`w-full h-120 object-cover md:mt-10 grayscale-[20%] contrast-125 scale-300 transition-transform duration-700 ${
                             shouldZoomOnHover ? " hover:grayscale-0" : ""
                             }`}
                         />
@@ -110,7 +108,7 @@ export default function ComponentsCarousel({ parts }: FrenchPartsCarouselProps) 
                     <img 
                             src={comp.thumbnail} 
                             alt={comp.name} 
-                            className={`w-full object-cover scale-115 grayscale-[20%] contrast-125 transition-transform duration-700 ${
+                            className={`w-full object-cover mt-18 md:scale-120 md:mt-12 scale-145 grayscale-[20%] contrast-125 transition-transform duration-700 ${
                             shouldZoomOnHover ? "hover:scale-120 hover:grayscale-0" : ""
                             }`}
                         />
@@ -143,7 +141,7 @@ export default function ComponentsCarousel({ parts }: FrenchPartsCarouselProps) 
       {/* CONTRÔLES : Flèches */}
       <button 
         onClick={prevSlide} 
-        className="absolute left-0 md:-left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center bg-black/60 hover:bg-primary text-white hover:text-dark rounded-full backdrop-blur-sm border border-white/10 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] opacity-0 group-hover:opacity-100 disabled:opacity-0"
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center bg-black/60 hover:bg-primary text-white hover:text-dark rounded-full backdrop-blur-sm border border-white/10 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover:opacity-100 "
         aria-label="Composant précédent"
       >
         <svg className="w-6 h-6 ml-[-2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
@@ -151,7 +149,7 @@ export default function ComponentsCarousel({ parts }: FrenchPartsCarouselProps) 
       
       <button 
         onClick={nextSlide} 
-        className="absolute right-0 md:-right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center bg-black/60 hover:bg-primary text-white hover:text-dark rounded-full backdrop-blur-sm border border-white/10 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] opacity-0 group-hover:opacity-100 disabled:opacity-0"
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center bg-black/60 hover:bg-primary text-white hover:text-dark rounded-full backdrop-blur-sm border border-white/10 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover:opacity-100 "
         aria-label="Composant suivant"
       >
         <svg className="w-6 h-6 mr-[-2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
