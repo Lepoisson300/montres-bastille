@@ -73,7 +73,8 @@ export default function AccountPage() {
     prenom: authUser?.given_name || "Utilisateur",
     email: authUser?.email,
     numero: "Non renseigné",
-    commandes: [],  
+    commandes: [],
+    pseudo: "Pseudo inconnu",
   };
   
   // 2. EXTRACTION DES MONTRES
@@ -99,21 +100,11 @@ export default function AccountPage() {
       </Helmet>
       <Nav bg={false}/>
       
-      <div className="relative min-h-screen bg-background font-sans overflow-hidden pt-28 pb-20 ">
+      <div className=" bg-background font-sans overflow-hidden pt-28 pb-20 ">
         
-        {/* Le Gradient Horloger */}
-        <div className="absolute top-0 left-0 w-full h-full mx-auto opacity-90 z-0 pointer-events-none" aria-hidden="true">
-          <MeshGradient
-            width={typeof window !== 'undefined' ? window.innerWidth : 1920}
-            height={1080}
-            colors={["#0a0a0c", "#262626", "#c5a059", "#1c1a17"]}
-            distortion={0.25}
-            speed={0.45}
-          />
-          <div className="absolute inset-0 bg-linear-to-b from-transparent to-background"></div>
-        </div>
 
-        <div className="relative z-10 max-w-6xl mx-auto px-6">
+
+        <div className="">
           
           {/* --- EN-TÊTE --- */}
           <Reveal>
@@ -136,7 +127,7 @@ export default function AccountPage() {
           </Reveal>
 
           {/* --- INFORMATIONS PERSONNELLES --- */}
-          <div className="mb-24">
+          <div className="mb-24 mx-[10%]">
             <Reveal delay={1}>
               <h2 className="font-serif text-3xl mb-10 text-text-primary border-l-2 border-primary pl-4">
                 Mes Coordonnées
@@ -147,13 +138,24 @@ export default function AccountPage() {
               <Reveal delay={2}><InfoCard title="Identité" value={`${displayUser.prenom} ${displayUser.nom}`} /></Reveal>
               <Reveal delay={3}><InfoCard title="Email" value={displayUser.email || "Non renseigné"} /></Reveal>
               <Reveal delay={4}><InfoCard title="Téléphone" value={displayUser.numero || "Non renseigné"} /></Reveal>
+              <Reveal delay={5}><InfoCard title="Pseudo" value={displayUser.pseudo || "Non renseigné"} /></Reveal>
+
             </div>
           </div>
 
           {/* --- COLLECTION DE MONTRES --- */}
-          <div>
+          <div className="">
+            <div className="absolute w-full h-full opacity-90 z-0 pointer-events-none" aria-hidden="true">
+                <MeshGradient
+                  width={typeof window !== 'undefined' ? window.innerWidth : 1920}
+                  height={1080}
+                  colors={["#0a0a0c", "#262626", "#c5a059", "#1c1a17"]}
+                  distortion={0.25}
+                  speed={0.45}
+                />
+              </div>
             <Reveal delay={2}>
-              <div className="flex justify-between items-end mb-10 border-b border-white/5 pb-4">
+              <div className="flex p-4 mx-[10%] justify-between items-end mb-10 border-b border-white/5 pb-4">
                 <h2 className="font-serif text-3xl text-text-primary border-l-2 border-primary pl-4">
                   Ma Collection
                 </h2>
@@ -162,7 +164,9 @@ export default function AccountPage() {
             </Reveal>
             
             {toutesLesMontres.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 mx-[10%] md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {/* Le Gradient Horloger */}
+              
                 {commandesValidees.map((commande:Order) => 
                   commande.montres.map((uneMontre, index) => (
                     <Reveal key={`${commande.numero_commande}-${index}`} delay={index + 3}>

@@ -25,13 +25,12 @@ export default function WatchCard({
   index, 
   etape_actuelle = 1, 
   numero_commande,
-  user 
 }: WatchCardProps) {
   
   // États pour l'UX du bouton Partager
   const [isSharing, setIsSharing] = useState(false);
   const [shareFeedback, setShareFeedback] = useState<{ type: 'success' | 'error', msg: string } | null>(null);
-  const {user: authUser, isAuthenticated} = useAuth0();
+  const {user: authUser, isAuthenticated, getAccessTokenSilently} = useAuth0();
 
   const getStatusDisplay = (etape: number) => {
     switch (etape) {
@@ -43,7 +42,7 @@ export default function WatchCard({
     }
   };
   const currentStatus = getStatusDisplay(etape_actuelle);
-
+  console.log(montre)
   const getPartName = (type: string) => {
     const part = montre.composants?.find(c => c.type === type);
     return part ? part.name : "Standard";
@@ -56,54 +55,62 @@ export default function WatchCard({
     { label: "Bracelet", value: getPartName("strap") }
   ];
 
-  // --- NOUVELLE FONCTION D'ENVOI À L'API ---
-  const handleShare = async () => {
-      if (!isAuthenticated) {
-        setShareFeedback({ type: 'error', msg: "Connectez-vous pour partager" });
-        return;
-      }
-            
-      // 1. On active le chargement tout de suite
-      setIsSharing(true);
-      setShareFeedback(null);
+  const handleShare = async (unShare: boolean) => {
+    if (!isAuthenticated) {
+      setShareFeedback({ type: 'error', msg: "Connectez-vous pour partager" });
+      return;
+    }
+    
+    setIsSharing(true);
+    setShareFeedback(null);
 
-      // --- ÉTAPE 2 : Préparer et envoyer la montre ---
+    try {
+      // 1. On attend (await) la récupération du token JWT
+      const token = await getAccessTokenSilently();
+
       const payload = {
         watch: {
           name: montre.name || `Création N°${index + 1}`,
           components: montre.composants,
           votes: 0,
-          creator: "test"
+          // 2. On remplace "test" par le vrai nom de l'utilisateur (ou "Anonyme" par défaut)
+          creator: authUser?.nickname || authUser?.name || "Anonyme" 
         },
         user: {
           email: authUser?.email,
         }
       };
 
-      console.log("posting watch", payload);
+      // 3. On détermine l'URL dynamiquement pour éviter de dupliquer le fetch
+      const endpoint = unShare ? '/api/unpostwatch' : '/api/postwatch';
 
-      try {
-        const response = await fetch(`${apiAddress}/api/postwatch`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+      const response = await fetch(`${apiAddress}${endpoint}`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify(payload)
+      });
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (!response.ok) {
-          throw new Error(data.error || "Erreur lors du partage");
-        }
-
-        setShareFeedback({ type: 'success', msg: "Partagée avec succès !" });
-
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Erreur serveur";
-        setShareFeedback({ type: 'error', msg: errorMessage });
-      } finally {
-        setIsSharing(false);
+      if (!response.ok) {
+        throw new Error(data.error || "Erreur lors de l'opération");
       }
-    };
+
+      setShareFeedback({ type: 'success', msg: unShare ? "Retirée de la communauté !" : "Partagée avec succès !" });
+
+      // Optionnel : effacer le message de succès après 3 secondes
+      setTimeout(() => setShareFeedback(null), 3000);
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Erreur serveur";
+      setShareFeedback({ type: 'error', msg: errorMessage });
+    } finally {
+      setIsSharing(false);
+    }
+  };
 
   return (
     <div className="p-8 rounded-xl relative transition-all duration-500 bg-surface/40 border border-white/5 hover:border-primary/40 hover:-translate-y-1 group flex flex-col h-full">
@@ -170,9 +177,21 @@ export default function WatchCard({
         >
           Ma commande
         </Link>
-      
-        <button 
-          onClick={handleShare}
+        {montre.shared ? (
+          <button 
+          onClick={()=>handleShare(true)}
+          disabled={isSharing || shareFeedback?.type === 'success'}
+          className={`w-1/2 flex items-center bg-amber-400/80 backdrop-blur-2xl justify-center text-xs tracking-widest uppercase py-3 rounded transition-all duration-300 border ${
+            shareFeedback?.type === 'success'
+              ? 'bg-green-500/20 text-green-400 border-green-500/30 cursor-default'
+              : ' border-white/10 text-text-primary hover:bg-primary hover:text-dark hover:border-primary disabled:opacity-50 disabled:cursor-not-allowed'
+          }`}
+        >
+          {isSharing ? "Envoi..." : shareFeedback?.type === 'success' ? "Supprimé de la communauté ✓" : "Départager"}
+        </button>
+        ) : 
+          <button 
+          onClick={()=>handleShare(false)}
           disabled={isSharing || shareFeedback?.type === 'success'}
           className={`w-1/2 flex items-center justify-center text-xs tracking-widest uppercase py-3 rounded transition-all duration-300 border ${
             shareFeedback?.type === 'success'
@@ -182,6 +201,8 @@ export default function WatchCard({
         >
           {isSharing ? "Envoi..." : shareFeedback?.type === 'success' ? "Partagé ✓" : "Partager"}
         </button>
+        }
+       
       </div>
 
     </div>

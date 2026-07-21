@@ -15,6 +15,7 @@ export default function OnboardingModal({ dbUser, onUpdateSuccess }: OnboardingM
     prenom: dbUser?.prenom || user?.given_name || "",
     nom: dbUser?.nom || user?.family_name || "",
     numero: dbUser?.numero || "",
+    pseudo : dbUser.pseudo || ""
   });
   const [loading, setLoading] = useState(false);
 
@@ -109,6 +110,20 @@ export default function OnboardingModal({ dbUser, onUpdateSuccess }: OnboardingM
               type="tel"
               name="numero"
               value={formData.numero}
+              onChange={handleChange}
+              required
+              className="w-full bg-[#111] border border-gray-700 text-white p-3 rounded-lg focus:border-[#C9A96E] focus:outline-none transition-colors"
+              placeholder="06 12 34 56 78"
+            />
+          </div>
+          
+          {/* Phone Number (The Key Field) */}
+          <div className="space-y-2">
+            <label className="text-xs uppercase tracking-widest text-[#C9A96E]">Pseudo pour espace communautaire</label>
+            <input
+              type="text"
+              name="pseudo"
+              value={formData.pseudo}
               onChange={handleChange}
               required
               className="w-full bg-[#111] border border-gray-700 text-white p-3 rounded-lg focus:border-[#C9A96E] focus:outline-none transition-colors"

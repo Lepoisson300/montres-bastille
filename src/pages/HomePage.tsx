@@ -122,8 +122,8 @@ export default function HomePage() {
       <div className="absolute top-0 left-0 w-full z-10 pointer-events-none">
         
         {/* Étape 1 */}
-        <div className="min-h-screen flex mt-80 ml-10 max-w-[50%] lg:py-[20%] lg:ml-[20%] lg:max-w-2xl ">
-          <div className="mx-[10%]">
+        <div className="min-h-screen flex mt-80 md:mt-40 max-w-[50%] lg:py-[20%] lg:ml-[20%] lg:max-w-2xl ">
+          <div className="md:mx-[10%]">
           
              <p className="tracking-[.25em] text-[30px] md:text-5xl uppercase text-accent-light font-sans mb-3">
               Un morceau d'histoire française au poignet

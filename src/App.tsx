@@ -9,7 +9,7 @@ import CommunityPage from "./pages/CommunityPage";
 import ContactPage from "./pages/ContactPage";
 import RegionPage from "./pages/RegionPage"
 import { useAuth0 } from "@auth0/auth0-react";
-import OnboardingModal from "./components/OnboardingModal";
+import OnboardingModal from "./Modals/OnboardingModal";
 import Footer from "./components/Footer";
 import CartPage from "./pages/CartPage";
 import type { PartOption } from "./types/Parts";

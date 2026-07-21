@@ -122,7 +122,6 @@ export default function AboutPage({allcomponents}:AboutInterface) {
                 distortion={0.25}
                 speed={0.35}
               />
-              {/* J'ai corrigé bg-linear-to-b (non standard dans Tailwind) par bg-gradient-to-b */}
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background"></div>
           </div>
 
