@@ -3,9 +3,11 @@ import type { Watch } from "./Parts";
 export type User = {
   id: string;
   email: string;
+  numero: string;
   nom: string;
   prenom: string;
   commandes: Order[];
+  pseudo: string;
 };
 
 export type Order = {

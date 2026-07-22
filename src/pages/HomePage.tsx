@@ -122,7 +122,7 @@ export default function HomePage() {
       <div className="absolute top-0 left-0 w-full z-10 pointer-events-none">
         
         {/* Étape 1 */}
-        <div className="min-h-screen flex mt-80 md:mt-40 max-w-[50%] lg:py-[20%] lg:ml-[20%] lg:max-w-2xl ">
+        <div className="min-h-screen flex md:mt-auto md:mb-auto mt-[50%] ml-10 py-[20%] lg:ml-[20%] max-w-2xl ">
           <div className="md:mx-[10%]">
           
              <p className="tracking-[.25em] text-[30px] md:text-5xl uppercase text-accent-light font-sans mb-3">

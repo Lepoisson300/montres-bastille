@@ -7,6 +7,9 @@ import BtnRedirection from "../components/btnRedirect";
 import { Helmet } from "react-helmet-async";
 import WatchCard from "../components/WatchCard";
 import InfoCard from "../components/InfoCards";
+import { useAlert } from "../Logic/AlertContext";
+import OnboardingModal from "../Modals/OnboardingModal";
+
 
 // Animation de Reveal (inchangée)
 const Reveal = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => {
@@ -44,6 +47,10 @@ export default function AccountPage() {
   const { user: authUser, isAuthenticated, isLoading, logout } = useAuth0();
   const [dbUser, setDbUser] = useState<User | null>(null);
   const [loadingData, setLoadingData] = useState(true);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  const { showAlert } = useAlert();
 
   // 1. Un seul appel API pour récupérer l'utilisateur ET ses commandes embarquées
   useEffect(() => {
@@ -52,10 +59,16 @@ export default function AccountPage() {
         try {
           const response = await fetch(`${apiAddress}/api/users`);
           const users = await response.json();
-          const foundUser = users.find((u: User) => u.email === authUser.email);       
+          const foundUser = users.find((u: User) => u.email === authUser.email);    
+          console.log(users)   
           if (foundUser) {
             setDbUser(foundUser);
           }
+          if (!foundUser.numero || foundUser.numero === "") {
+              setShowOnboarding(true);
+            } else {
+              setShowOnboarding(false);
+            }
         } catch (error) {
           console.error("Error fetching user data:", error);
         } finally {  
@@ -67,6 +80,11 @@ export default function AccountPage() {
     }
     getUserData();
   }, [isAuthenticated, authUser, isLoading]);
+
+  const handleOnboardingSuccess = (updatedUser: any) => {
+    setDbUser(updatedUser); // Update local state immediately
+    setShowOnboarding(false); // Close the modal
+  };
 
   const displayUser = dbUser || {
     nom: authUser?.family_name || "Nom Inconnu",
@@ -92,6 +110,34 @@ export default function AccountPage() {
     );
   }
 
+async function deleteAccount() {
+  if (!displayUser?.email) {
+    showAlert('error', "Impossible d'identifier le compte à supprimer.");
+    return;
+  }
+  fetch(`${apiAddress}/api/users/delete`, {
+    method: 'DELETE', 
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(
+      { email: displayUser.email, 
+        auth0Id : authUser?.sub
+      }
+    ) 
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        showAlert('error', data.error);
+        return;
+      }
+      // La déconnexion après la suppression réussie
+      logout({ logoutParams: { returnTo: window.location.origin } });
+    })
+    .catch((error) => {
+      console.error(error);
+      showAlert('error', "Impossible de supprimer le compte");
+    });
+}
   return (
     <>
       <Helmet>
@@ -102,7 +148,12 @@ export default function AccountPage() {
       
       <div className=" bg-background font-sans overflow-hidden pt-28 pb-20 ">
         
-
+        {isAuthenticated && showOnboarding && (
+                <OnboardingModal 
+                   dbUser={dbUser} 
+                   onUpdateSuccess={handleOnboardingSuccess} 
+                />
+              )}
 
         <div className="">
           
@@ -116,13 +167,22 @@ export default function AccountPage() {
               <p className="text-text-muted text-lg max-w-2xl mx-auto leading-relaxed mb-8">
                 Bienvenue, <span className="text-primary font-serif text-xl">{displayUser.prenom}</span>.
               </p>
+              <div className="mx-auto">
+                <button 
+                  onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })} 
+                  className="text-xs uppercase tracking-widest border border-primary/40 rounded-full px-6 py-3 bg-surface/50 text-text-primary hover:bg-primary hover:text-dark transition-all duration-300"
+                >
+                  Se déconnecter
+                </button>
+
+                <button 
+                  onClick={() => deleteAccount()} 
+                  className="text-xs ml-4 uppercase tracking-widest border border-primary/40 rounded-full px-6 py-3 bg-surface/50 text-text-primary hover:bg-primary hover:text-dark transition-all duration-300"
+                >
+                  Supprimer mon compte
+                </button>
+              </div>
               
-              <button 
-                onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })} 
-                className="text-xs uppercase tracking-widest border border-primary/40 rounded-full px-6 py-3 bg-surface/50 text-text-primary hover:bg-primary hover:text-dark transition-all duration-300"
-              >
-                Se déconnecter
-              </button>
             </div>
           </Reveal>
 
@@ -134,7 +194,7 @@ export default function AccountPage() {
               </h2>
             </Reveal>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               <Reveal delay={2}><InfoCard title="Identité" value={`${displayUser.prenom} ${displayUser.nom}`} /></Reveal>
               <Reveal delay={3}><InfoCard title="Email" value={displayUser.email || "Non renseigné"} /></Reveal>
               <Reveal delay={4}><InfoCard title="Téléphone" value={displayUser.numero || "Non renseigné"} /></Reveal>
@@ -145,43 +205,47 @@ export default function AccountPage() {
 
           {/* --- COLLECTION DE MONTRES --- */}
           <div className="">
-            <div className="absolute w-full h-full opacity-90 z-0 pointer-events-none" aria-hidden="true">
-                <MeshGradient
-                  width={typeof window !== 'undefined' ? window.innerWidth : 1920}
-                  height={1080}
-                  colors={["#0a0a0c", "#262626", "#c5a059", "#1c1a17"]}
-                  distortion={0.25}
-                  speed={0.45}
-                />
-              </div>
+            <div className="absolute w-full h-screen opacity-90 z-0 pointer-events-none" aria-hidden="true">
+              <MeshGradient
+                width={typeof window !== 'undefined' ? window.innerWidth : 1920}
+                height={typeof window !== 'undefined' ? window.innerHeight : 1080}
+                colors={["#0a0a0c", "#262626", "#c5a059", "#1c1a17"]}
+                distortion={0.25}
+                speed={0.45}
+              />
+            </div>
             <Reveal delay={2}>
               <div className="flex p-4 mx-[10%] justify-between items-end mb-10 border-b border-white/5 pb-4">
                 <h2 className="font-serif text-3xl text-text-primary border-l-2 border-primary pl-4">
                   Ma Collection
                 </h2>
-                <BtnRedirection text="Nouvelle Création" style="bordered" redirection="/region-page" size={{px: 5, py: 2}} />
+                <div className="mx-4">
+                  <BtnRedirection text="Nouvelle Création" style="bordered" redirection="/region-page" size={{px: 5, py: 2}} />
+                </div>
               </div>
             </Reveal>
             
             {toutesLesMontres.length > 0 ? (
-              <div className="grid grid-cols-1 mx-[10%] md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {/* Le Gradient Horloger */}
-              
-                {commandesValidees.map((commande:Order) => 
-                  commande.montres.map((uneMontre, index) => (
-                    <Reveal key={`${commande.numero_commande}-${index}`} delay={index + 3}>
-                      <WatchCard 
-                        montre={uneMontre}
-                        index={index} 
-                        numero_commande={commande.numero_commande} 
-                        etape_actuelle={commande.etape_actuelle} 
-                      />
-                    </Reveal>
-                  ))
-                  
-                )}
+               <div 
+                  ref={scrollContainerRef}
+                  className="flex flex-row items-start overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-y-4 px-6 md:px-24 py-8 md:py-12 gap-x-6 md:gap-x-16 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                >
+                  {commandesValidees.map((commande: Order) => 
+                    commande.montres.map((uneMontre, index) => (
+                      <Reveal key={`${commande.numero_commande}-${index}`} delay={index + 3}>
+                        <div className="w-[85vw] max-w-[340px] shrink-0 snap-center md:w-auto md:max-w-none">
+                          <WatchCard 
+                            montre={uneMontre}
+                            index={index} 
+                            numero_commande={commande.numero_commande} 
+                            etape_actuelle={commande.etape_actuelle} 
+                          />
+                        </div>
+                      </Reveal>
+                    ))
+                  )}
                 </div>
-            ) : (
+                            ) : (
               <Reveal delay={3}>
                 <div className="text-center py-20 bg-surface/20 rounded-2xl border border-white/5">
                   <p className="text-text-muted mb-8 text-lg font-serif">Votre collection est actuellement vide.</p>
