@@ -114,7 +114,7 @@ ${formData.message}
 
       {/* Main Container with Dark Metallic radial background */}
       <div 
-        className="relative min-h-screen pt-28 pb-16 overflow-hidden" 
+        className="relative min-h-screen pb-16 overflow-hidden" 
     
       >
       <div className="fixed inset-0 z-0 pointer-events-none bg-background">

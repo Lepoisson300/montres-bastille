@@ -51,7 +51,7 @@ export default function WatchCard({
   const watchDetails = [
     { label: "Boîtier", value: getPartName("case") },
     { label: "Cadran", value: getPartName("dial") },
-    { label: "Aiguilles", value: getPartName("hands") },
+    { label: "Aiguilles", value: getPartName("hand") },
     { label: "Bracelet", value: getPartName("strap") }
   ];
 
@@ -113,7 +113,7 @@ export default function WatchCard({
   };
 
   return (
-    <div className="p-8 rounded-xl relative transition-all duration-500 bg-surface/40 border border-white/5 hover:border-primary/40 hover:-translate-y-1 group flex flex-col h-full">
+    <div className="p-8 rounded-xl max-w-xl relative transition-all duration-500 bg-surface/40 border border-white/5 hover:border-primary/40 hover:-translate-y-1 group flex flex-col">
       
       {/* En-tête */}
       <div className="flex items-start justify-between mb-6 pb-4 border-b border-white/10">
@@ -130,7 +130,7 @@ export default function WatchCard({
       
       {/* Visuel */}
       <div className="relative w-full aspect-square mb-8 bg-dark/20 rounded-lg overflow-hidden flex items-center justify-center">
-        {["case", "dial", "hands", "strap"].map((category) => {
+        {["case", "dial", "hand", "strap"].map((category) => {
           const part = montre.composants?.find((c) => c.type === category);
           if (!part || !part.thumbnail) return null;
           
