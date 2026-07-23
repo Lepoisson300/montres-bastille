@@ -293,7 +293,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
 
         {/* --- ZONE BASSE (Slider horizontal) --- */}
         {/* Le Mesh ne descend plus ici. Le fond sera le 'bg-dark' de la section + un 'bg-surface/10' par dessus */}
-        <div className="relative z-20 pl-10 border-t border-white/10 bg-surface/10 backdrop-blur-sm group">
+        <div className="relative z-20 pl-10 border-t border-white/10 bg-surface/10 backdrop-blur-sm">
           
           {/* Navigation PC : Flèche Gauche */}
           <button 
@@ -385,7 +385,7 @@ function PartRow({ title, options, current, onSelect }: any) {
                 <img
                   src={opt.thumbnail}
                   alt={opt.name}
-                  className={`w-full h-full pt-2 lg:pt-4 object-contain transition-transform ${opt.type === "strap" ? "scale-150 group-hover:scale-275" : "scale-520 group-hover:scale-450"}`}
+                  className={`w-full h-full pt-2 lg:pt-4 object-contain transition-transform ${opt.type === "strap" || opt.type ==='mouvement' ? "scale-170 group-hover:scale-180" : "scale-620 group-hover:scale-600"}`}
                 />
               </div>
               <p className="text-[8px] md:text-[9px] text-center uppercase tracking-tighter truncate text-ivory/80">{opt.name}</p>
