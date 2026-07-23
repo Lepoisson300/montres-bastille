@@ -152,6 +152,7 @@ async function deleteAccount() {
                 <OnboardingModal 
                    dbUser={dbUser} 
                    onUpdateSuccess={handleOnboardingSuccess} 
+                   onClose={() => setShowOnboarding(false)}
                 />
               )}
 
@@ -247,7 +248,7 @@ async function deleteAccount() {
                 </div>
                             ) : (
               <Reveal delay={3}>
-                <div className="text-center py-20 bg-surface/20 rounded-2xl border border-white/5">
+                <div className="mx-[10%] text-center py-20 bg-surface/20 rounded-2xl border border-white/5">
                   <p className="text-text-muted mb-8 text-lg font-serif">Votre collection est actuellement vide.</p>
                   <BtnRedirection text="Débuter la personnalisation" style="full" redirection="/region-page" size={{px: 8, py: 4}} />
                 </div>

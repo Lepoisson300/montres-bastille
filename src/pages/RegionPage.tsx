@@ -228,7 +228,7 @@ export default function RegionPage({ components }: RegionPageProps) {
             Le Patrimoine des Régions de France
           </h2>
           <div className="w-16 h-[1px] bg-[#d4af37] mx-auto mb-6 opacity-40"></div>
-          <p className="text-sm sm:text-base text-neutral-400 font-sans max-w-2xl mx-auto tracking-wide leading-relaxed">
+          <p className="text-[17px] sm:text-base text-neutral-400 font-sans max-w-2xl mx-auto tracking-wide leading-relaxed">
             Sélectionnez votre région sur la carte pour concevoir une montre unique à partir de matériaux locaux.
           </p>
         </header>

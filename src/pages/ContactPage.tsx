@@ -122,7 +122,7 @@ ${formData.message}
         <img 
           src="/contactBG.webp" 
           alt="Fond spatial MedGlass" 
-          className="absolute  object-cover w-full h-full"
+          className="absolute  object-cover max-w-2xl md:w-full h-full"
         />
       </div>
         {/* Subtle texture overlay for brushed metal look */}
@@ -130,15 +130,15 @@ ${formData.message}
         <div className="relative flex md:flex-row flex-col z-20 max-w-400 mx-auto  items-start mt-15 lg:mt-[10%]">
           
           {/* LEFT COLUMN: Info */}
-          <div className="lg:sticky lg:top-40 pt-10 mx-10">
+          <div className="lg:sticky lg:top-40 pt-10 mt-4 mx-10">
             <Reveal delay={0}>
-              <div className="h-[2px] w-16 md:bg-accent-light bg-parchment mb-8 opacity-60" />
+              <div className="h-0.5 w-16 bg-accent-light mb-8 opacity-60" />
               <h1 
-                className="font-serif text-parchment md:text-accent-light text-6xl md:text-8xl tracking-tight mb-8"
+                className="font-serif md:text-accent-light text-6xl md:text-8xl tracking-tight mb-8"
               >
                 Contactez l'Atelier
               </h1>
-              <p className="text-lg md:text-xl text-parchment md:text-accent-light leading-relaxed mb-16 font-sans max-w-md font-light">
+              <p className="text-lg md:text-xl text-accent-light leading-relaxed mb-16 font-sans max-w-md font-light">
                 Notre équipe d'artisans horlogers est à votre disposition pour vous accompagner dans votre quête de la montre parfaite.
               </p>
 
