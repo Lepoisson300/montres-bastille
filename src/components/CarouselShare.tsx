@@ -119,7 +119,7 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
                     return (
                         <div
                             key={index}
-                            className={`${getStyles(index)} bg-black/90 backdrop-blur-xs w-[400px] h-full cursor-pointer flex flex-col justify-between overflow-hidden rounded-2xl`}
+                            className={`${getStyles(index)} bg-black/90 max-w-2xs backdrop-blur-xs md:w-100 h-full cursor-pointer flex flex-col justify-between overflow-hidden rounded-2xl`}
                             onClick={() => setActiveIndex(index)}
                         >
                             <div

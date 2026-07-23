@@ -8,6 +8,7 @@ import { Helmet } from "react-helmet-async";
 import Reveal from "../Logic/Reveal";
 import { useAlert } from "../Logic/AlertContext";
 import CarouselShare from "../components/CarouselShare";
+import RegionCard from "../components/regionCard";
 
 // ... (Gardez vos composants Grain et Reveal tels quels)
 const apiAddress = import.meta.env.VITE_API_URL;
@@ -41,10 +42,6 @@ export default function CommunityPage() {
       showAlert('warning', 'Vous devez être connecté pour voter ou soutenir une création.');
       return;
     }
-
-    // ==========================================
-    // CAS 1 : VOTE POUR UNE RÉGION
-    // ==========================================
     if (type === 'r') {
       if (regionName && votedRegions.has(regionName)) {
         showAlert('info', 'Vous avez déjà voté pour cette région.');
@@ -136,36 +133,7 @@ export default function CommunityPage() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">
             {regionsVotes.map((region, index) => (
               <Reveal key={region.name} delay={index - 1}>
-                <div className="bg-surface/70 border border-primary/40 backdrop-blur-xs rounded-3xl p-10 transition-all duration-300 hover:bg-surface-hover hover:-translate-y-1">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-serif text-xl text-text-primary">{region.name}</h3>
-                    <div className="text-primary font-sans text-sm font-bold">
-                      {region.votes} votes
-                    </div>
-                  </div>
-
-                  <div className="w-full h-40 overflow-hidden rounded-lg bg-dark/50">
-                      <img 
-                        src={region.img} 
-                        className="h-full w-full object-cover transition-transform duration-500 hover:scale-110" 
-                        alt={`Patrimoine de la région ${region.name} - Inspiration pour Montre Bastille`} 
-                        loading="lazy"
-                      />
-                  </div>
-                  
-                  <button
-                    onClick={() => voteLike('r', region.name)}
-                    disabled={votedRegions.has(region.name)}
-                    aria-label={`Voter pour la région ${region.name}`}
-                    className={`w-full py-3 mt-4 rounded-full text-sm font-sans uppercase tracking-wider transition-all duration-300 ${
-                      votedRegions.has(region.name)
-                        ? 'bg-primary/20 text-primary/50 cursor-not-allowed border border-transparent'
-                        : 'border border-primary text-primary hover:bg-primary hover:text-dark'
-                    }`}
-                  >
-                    {votedRegions.has(region.name) ? 'Vote enregistré' : 'Voter pour cette région'}
-                  </button>
-                </div>
+                <RegionCard region={region} votedRegions={votedRegions} vote={voteLike}/>
               </Reveal>
             ))}
           </div>
