@@ -167,7 +167,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
   const renderViewer = () => (
     <div
       id="watch-viewer"
-      className="relative mx-auto aspect-square w-full max-w-105 md:max-w-155 rounded-[2rem] md:rounded-[3rem] border border-white/10 bg-surface/15 overflow-hidden shadow-2xl shadow-black/50"
+      className="relative mx-auto aspect-square w-full max-w-70 sm:max-w-105 md:max-w-155 rounded-[2rem] md:rounded-[3rem] border border-white/10 bg-surface/15 overflow-hidden shadow-2xl shadow-black/50"
     >
       <div className="relative h-full w-full transition-transform duration-300" style={{ transform: `scale(${zoom})` }}>
         <img
@@ -293,7 +293,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
 
         {/* --- ZONE BASSE (Slider horizontal) --- */}
         {/* Le Mesh ne descend plus ici. Le fond sera le 'bg-dark' de la section + un 'bg-surface/10' par dessus */}
-        <div className="relative z-20 pl-10 border-t border-white/10 bg-surface/10 backdrop-blur-sm">
+        <div className="relative pl-15 z-20 border-t border-white/10 bg-surface/10 backdrop-blur-sm group">
           
           {/* Navigation PC : Flèche Gauche */}
           <button 
@@ -385,11 +385,11 @@ function PartRow({ title, options, current, onSelect }: any) {
                 <img
                   src={opt.thumbnail}
                   alt={opt.name}
-                  className={`w-full h-full pt-2 lg:pt-4 object-contain transition-transform ${opt.type === "strap" || opt.type ==='mouvement' ? "scale-170 group-hover:scale-180" : "scale-620 group-hover:scale-600"}`}
+                  className={`w-full h-full pt-2 lg:pt-4 object-contain transition-transform ${opt.type === "strap" ? "scale-150 hover:scale-275" : "scale-520 hover:scale-450"}`}
                 />
               </div>
               <p className="text-[8px] md:text-[9px] text-center uppercase tracking-tighter truncate text-ivory/80">{opt.name}</p>
-              {opt.price ? <p className="text-[12px] md:text-[17px] text-center text-primary mt-0.5">{opt.price}€</p> : null}
+              {opt.price ? <p className="text-[9px] md:text-[10px] text-center text-primary mt-0.5">{opt.price}€</p> : null}
               {isActive && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_8px_rgba(197,160,89,0.8)]" />}
             </button>
           );
