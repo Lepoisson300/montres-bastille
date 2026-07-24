@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState, useRef } from "react";
-import { GoArrowUpRight, GoChevronLeft, GoChevronRight } from "react-icons/go";
+import { GoChevronLeft, GoChevronRight } from "react-icons/go";
 import { motion, AnimatePresence } from "framer-motion";
-import html2canvas from "html2canvas";
 import type { PartOption } from "../types/Parts";
 import type { WatchConfiguratorProps } from "../types/Configurator";
 import LuxuryDescription from './ComponentsDesc';
 import MobileLuxuryModal from './DescriptionModal';
 import { MeshGradient } from "@paper-design/shaders-react";
+import BuyCard from "./buyCard";
+import PartRow from "./PartRow";
+import RenderViewer from "./RenderConfig";
 
 // Converts PartOption[] → ?mouvement=mov-001&cases=case-42&...
 const toQuery = (conf: PartOption[]) => {
@@ -27,7 +29,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
 
   const [isMobile, setIsMobile] = useState(false);
   const filtered = useMemo(() => {
-    const filter = (items: PartOption[]) => items.filter(i => !i.regions || !selectedRegion || Object.values(i.regions).includes(selectedRegion));
+  const filter = (items: PartOption[]) => items.filter(i => !i.regions || !selectedRegion || Object.values(i.regions).includes(selectedRegion));
     return {
       mouvement: filter(assets.mouvement),
       cases: filter(assets.cases),
@@ -102,39 +104,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
     };
   }, []);
 
-  const handleDownload = async () => {
-    const el = document.querySelector("#watch-viewer") as HTMLElement;
-    if (!el) return;
 
-    const canvas = await html2canvas(el, {
-      backgroundColor: null,
-      scale: 2,
-      useCORS: true,
-      onclone: (clonedDocument) => {
-        const allElements = clonedDocument.querySelectorAll('*');
-        allElements.forEach((node) => {
-          const htmlNode = node as HTMLElement;
-          const style = window.getComputedStyle(htmlNode);
-          const colorProps = ['backgroundColor', 'color', 'borderColor', 'outlineColor'];
-          colorProps.forEach(prop => {
-            // @ts-ignore
-            if (style[prop] && style[prop].includes('oklab')) {
-              if (prop === 'color') htmlNode.style.color = '#000000';
-              else htmlNode.style[prop as any] = 'transparent';
-            }
-          });
-          if (style.boxShadow.includes('oklab')) {
-            htmlNode.style.boxShadow = 'none';
-          }
-        });
-      }
-    });
-
-    const link = document.createElement("a");
-    link.download = `Bastille_${sku}.png`;
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-  };
 
   const handleSelectPart = (index: number, id: string, options: PartOption[]) => {
     const selectedPart = options.find(opt => opt.id === id);
@@ -163,59 +133,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
     }
   };
 
-  // Watch stage
-  const renderViewer = () => (
-    <div
-      id="watch-viewer"
-      className="relative mx-auto aspect-square w-full max-w-70 sm:max-w-105 md:max-w-155 rounded-[2rem] md:rounded-[3rem] border border-white/10 bg-surface/15 overflow-hidden shadow-2xl shadow-black/50"
-    >
-      <div className="relative h-full w-full transition-transform duration-300" style={{ transform: `scale(${zoom})` }}>
-        <img
-          src="/fondConfigurateur.webp"
-          alt="Fond du configurateur"
-          className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-90"
-        />
-        <AnimatePresence mode="popLayout">
-          {(() => {
-            const isC3 = selections.cases?.id === "c3";
-            const renderLayers = isC3
-              ? [selections.dials, selections.straps, selections.cases, selections.hands]
-              : [selections.dials, selections.cases, selections.straps, selections.hands];
 
-            return renderLayers.map((part) => (
-              part?.thumbnail && (
-                <motion.img
-                  key={part.id}
-                  src={part.thumbnail}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute scale-130 inset-0 top-7 md:top-12 w-full h-full object-contain pointer-events-none"
-                />
-              )
-            ));
-          })()}
-        </AnimatePresence>
-      </div>
-
-      {/* Barre de contrôle discrète */}
-      <div className="absolute bottom-0 inset-x-0 flex items-center justify-between px-3 md:px-6 py-2.5 md:py-4 bg-gradient-to-t from-dark/90 to-transparent">
-        <div className="flex items-center bg-surface/70 backdrop-blur-sm rounded-full border border-white/10 p-1">
-          <ZoomBtn label="−" onClick={() => setZoom(z => Math.max(0.8, z - 0.5))} />
-          <span className="px-2 md:px-3 text-[9px] md:text-[10px] uppercase tracking-widest text-ivory/80">
-            Zoom {Math.round((zoom / 3) * 100)}%
-          </span>
-          <ZoomBtn label="+" onClick={() => setZoom(z => Math.min(5, z + 0.5))} />
-        </div>
-        <button
-          onClick={handleDownload}
-          className="text-[9px] md:text-[10px] uppercase tracking-widest bg-accent/90 text-white border border-primary/30 px-3 md:px-5 py-1.5 md:py-2.5 rounded-full hover:bg-primary/10 transition backdrop-blur-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-        >
-          Capture
-        </button>
-      </div>
-    </div>
-  );
 
   return (
     <>
@@ -235,7 +153,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
                 width={typeof window !== 'undefined' ? window.innerWidth : 1920}
                 height={930}
                 colors={["#0a0a0c", "#362b1e", "#c5a059", "#1c1a17", "#8b6528"]}
-                distortion={0.35} 
+                distortion={0.35}
                 speed={0.40}
               />
             </div>
@@ -258,7 +176,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
               transition={{ duration: 0.5, ease: "easeOut" }}
               className="relative flex items-center justify-center"
             >
-              {renderViewer()}
+              <RenderViewer selections={selections} zoom={zoom} setZoom={setZoom}/>
 
               {/* Overlay gauche — prix + commander */}
               <div className="hidden lg:block absolute left-0 top-1/2 -translate-y-1/2 z-20">
@@ -335,66 +253,5 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
         description={activePart?.description || "Sélectionnez une pièce pour voir ses détails."}
       />
     </>
-  );
-}
-
-function ZoomBtn({ label, onClick }: { label: string; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      className="w-6 h-6 md:w-8 md:h-8 rounded-full hover:bg-white/10 transition flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-    >
-      {label}
-    </button>
-  );
-}
-
-function BuyCard({ sku, price, onCheckout }: any) {
-  return (
-    <div className="bg-surface/30 flex flex-col backdrop-blur-md w-full lg:w-65 p-5 md:p-6 rounded-2xl border border-primary/20 shadow-2xl shadow-black/40">
-      <p className="text-2xl md:text-3xl font-serif text-primary mb-4 md:mb-6">Total : {price}€</p>
-      <button
-        onClick={onCheckout}
-        className="w-full px-3 text-xs md:text-sm bg-primary text-dark font-bold py-3 md:py-4 rounded-xl gap-2 hover:bg-primary-dark transition shadow-lg shadow-primary/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-      >
-        Commander
-      </button>
-    </div>
-  );
-}
-
-// Les composants sont désormais intégrés dans le flux du grand slider parent
-function PartRow({ title, options, current, onSelect }: any) {
-  return (
-    <div className="flex-shrink-0">
-      <div className="flex items-center gap-3 mb-4 md:mb-5">
-        <h5 className="font-serif text-sm md:text-base text-ivory/90 uppercase tracking-widest whitespace-nowrap">{title}</h5>
-        <span className="w-12 md:w-20 h-px bg-white/10" />
-      </div>
-      <div className="flex gap-3 md:gap-4">
-        {options.map((opt: PartOption) => {
-          const isActive = current?.id === opt.id;
-          return (
-            <button
-              key={opt.id}
-              onClick={() => onSelect(opt.id)}
-              // Le composant individuel agit comme point d'ancrage pour le scroll naturel mobile
-              className={`group relative flex-shrink-0 snap-start w-20 md:w-40 rounded-2xl border p-2 md:p-3 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isActive ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-white/10 bg-white/5 hover:border-white/30'}`}
-            >
-              <div className="aspect-square rounded-full overflow-hidden bg-background/60 mb-2">
-                <img
-                  src={opt.thumbnail}
-                  alt={opt.name}
-                  className={`w-full h-full pt-2 lg:pt-4 object-contain transition-transform ${opt.type === "strap" ? "scale-150 hover:scale-275" : "scale-520 hover:scale-450"}`}
-                />
-              </div>
-              <p className="text-[8px] md:text-[9px] text-center uppercase tracking-tighter truncate text-ivory/80">{opt.name}</p>
-              {opt.price ? <p className="text-[9px] md:text-[10px] text-center text-primary mt-0.5">{opt.price}€</p> : null}
-              {isActive && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_8px_rgba(197,160,89,0.8)]" />}
-            </button>
-          );
-        })}
-      </div>
-    </div>
   );
 }

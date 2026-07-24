@@ -28,7 +28,8 @@ export type Watch = {
   name: string;
   votes: number;
   image: string;
-  components: PartOption[];
+  composants: PartOption[];
+  shared:boolean
 }
 
 export type Region = {

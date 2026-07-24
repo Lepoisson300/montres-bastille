@@ -146,7 +146,7 @@ export default function WatchCard({
       </div>
 
       {/* Détails */}
-      <div className="space-y-4 flex-grow">
+      <div className="space-y-4 grow">
         {watchDetails.map((detail, idx) => (
           <div key={idx} className="flex justify-between items-end">
             <span className="text-sm text-text-muted">{detail.label}</span>
