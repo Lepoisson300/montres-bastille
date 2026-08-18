@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import type { PartOption, Watch } from "../types/Parts";
+import type { PartOption } from "../types/Parts";
 import Nav from "../components/Nav";
 import { Helmet } from "react-helmet-async";
 import { useAlert } from "../Logic/AlertContext";
@@ -50,6 +50,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
   const { showAlert } = useAlert();
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hasAccepted, setHasAccepted] = useState(false)
 
   // SÉCURITÉ BOUCLE INFINIE : On retire updateCartCount des dépendances
   useEffect(() => {
@@ -72,7 +73,6 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
   
   // Sécurité pour éviter le crash si l'index est hors limites
   const selectedWatch = cartWatches[selectedWatchIndex] || cartWatches[0];
-  const grandTotal = cartWatches.reduce((acc, watch) => acc + (watch.price || 0), 0);
 
   const removeWatch = (indexToRemove: number) => {
     const updatedCart = cartWatches.filter((_, index) => index !== indexToRemove);
@@ -131,6 +131,7 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
   return (
     <div className="min-h-screen  bg-background text-text-primary font-sans pt-34 pb-12">
       <Nav bg={false} />
+      
       <Helmet>
         <title>Votre Panier | Montre Bastille - Paiement Sécurisé</title>
         <meta name="robots" content="noindex, nofollow" />
@@ -296,6 +297,19 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
                       Offert
                     </span>
                   </div>
+
+                  <div className="flex items-center">
+                  <input 
+                    id="link-checkbox" 
+                    type="checkbox" 
+                    value=""
+                    onChange={(e) => setHasAccepted(e.target.checked)}
+                    className="w-4 h-4 border border-default-medium rounded-xs bg-neutral-secondary-medium focus:ring-2 focus:ring-brand-soft" 
+                  />
+                  <label htmlFor="link-checkbox" className="ml-4 select-none ms-2 text-sm font-medium text-text-muted">
+                    J'accepte les <a href="/cgv" className="text-primary hover:underline">conditions générales de vente</a>.
+                  </label>
+                </div>
                 </div>
 
                 {/* Total à payer */}
@@ -307,9 +321,8 @@ export default function CartPage({ updateCartCount }: CartPageProps) {
                 {/* Bouton de paiement */}
                 <button
                   onClick={handleCheckout}
-                  disabled={isRedirecting}
-                  className="w-full py-4 px-6 rounded-full text-sm uppercase tracking-[0.2em] font-bold bg-primary text-dark hover:bg-primary-dark transition-all duration-300 flex items-center justify-center gap-3"
-                >
+                  disabled={isRedirecting||!hasAccepted}
+                  className="w-full py-4 px-6 rounded-full text-sm uppercase tracking-[0.2em] font-bold bg-primary text-dark hover:bg-primary-dark transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary"                >
                   {isRedirecting ? (
                     <>
                       <div className="w-4 h-4 border-2 border-dark/20 border-t-dark rounded-full animate-spin"></div>

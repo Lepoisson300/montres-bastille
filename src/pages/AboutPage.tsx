@@ -3,6 +3,7 @@ import Nav from "../components/Nav";
 import { MeshGradient } from "@paper-design/shaders-react";
 import ComponentsCarousel from "../components/ComponentsCarousel";
 import type { PartOption } from "../types/Parts";
+import ConsentModal from "../Modals/ConsentModal";
 
 // Images
 const heroBg = "/fond1.webp";
@@ -29,6 +30,7 @@ export default function AboutPage({allcomponents}:AboutInterface) {
 
       {/* Navigation requires dark background to be visible on the hero section if hero is dark, the original Nav had bg={false} which means transparent. */}
       <Nav bg={false} />
+      <ConsentModal/>
 
       <div className="bg-dark text-text-primary overflow-hidden font-sans selection:bg-primary/30">
         

@@ -7,11 +7,10 @@ export default function MentionsLegalesPage() {
   
   const legalInfo = {
     companyName: "Montres-Bastille",
-    legalForm: "[Statut juridique, Auto-entreprise]",
-    //capital: "4000 €", // À retirer si auto-entreprise
+    legalForm: "Auto-entreprise",
     address: "538 rte de la Redonde, 24260 Campagne",
-    siret: "",
-    rcs: "Ville du RCS - RCS de Paris",
+    siret: "99055158200010",
+    rcs: "RCS de Paris",
     //vatNumber: "[Numéro de TVA intracommunautaire - si applicable]",
     email: "contact@montres-bastille.fr",
     phone: "+33 6 23 25 65 46",

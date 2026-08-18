@@ -87,7 +87,7 @@ export default function CommunityPage() {
       </Helmet>
 
       <Nav bg={false}/>
-
+    
       {/* HERO SECTION */}
       <section className="bg-dark text-text-primary pt-24">
         <div className="fixed inset-0 z-0 pointer-events-none bg-background">

@@ -21,6 +21,7 @@ import CgvPage from "./pages/CGVPage";
 import MentionsLegalesPage from "./pages/MentionsLegalesPage";
 import ConfidentialitePage from "./pages/ConfidentialitePage";
 import HomePage from "./pages/HomePage";
+import ConsentModal from "./Modals/ConsentModal";
 
 
 // --- Main App Component ---
@@ -112,6 +113,8 @@ function App() {
       <HelmetProvider>
       <BrowserRouter>
       <AlertProvider>
+      <ConsentModal/>
+
       {/* Main Content */}
       <main className="bg-background">
         <Routes>

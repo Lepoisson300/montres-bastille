@@ -6,6 +6,7 @@ import Reveal from "../Logic/Reveal";
 import watch2 from "/gurv.webp";
 import { Helmet } from "react-helmet-async";
 import Nav from "../components/Nav";
+import ConsentModal from "../Modals/ConsentModal";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -92,7 +93,7 @@ export default function HomePage() {
   return (
     <section 
       ref={containerRef} 
-      className="relative h-[400vh] bg-black"
+      className="relative min-h-[400vh] bg-black"
     >
       <Helmet>
         <title>Montre Bastille | Créateur de Montres Personnalisées à Bordeaux</title>
@@ -119,8 +120,7 @@ export default function HomePage() {
       </div>
 
       {/* Conteneur des textes superposés */}
-      <div className="absolute top-0 left-0 w-full z-10 pointer-events-none">
-        
+      <div className="relative w-full z-10 pointer-events-none -mt-[100vh]">        
         {/* Étape 1 */}
         <div className="min-h-screen flex md:mt-auto md:mb-auto mt-[50%] ml-10 py-[20%] lg:ml-[20%] max-w-2xl ">
           <div className="md:mx-[10%]">
@@ -249,7 +249,7 @@ export default function HomePage() {
       </div>
     </div>
       {/* Etape 4*/}
-      <div className="mt-2 flex items-center justify-center">
+      <div className="mt-2 pb-4 flex items-center justify-center">
         <div className="px-6 md:px-12 pointer-events-auto">
           <Reveal>
             <div className="text-center max-w-4xl mx-auto">
@@ -287,7 +287,7 @@ export default function HomePage() {
         </div>
       </div>
     </div>
-
+    
     </section>
   );
 }

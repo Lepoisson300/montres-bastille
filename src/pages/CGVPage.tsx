@@ -8,8 +8,8 @@ export default function CgvPage() {
   const companyInfo = {
     companyName: "Montres-Bastille",
     email: "contact@montres-bastille.fr",
-    mediator: "[Nom de ton médiateur de la consommation - ex: CM2C]",
-    mediatorWebsite: "[Site web du médiateur]",
+      mediator: "Atlantique Médiation",
+    mediatorWebsite: "https://atlantique-mediation.org/",
   };
 
   return (

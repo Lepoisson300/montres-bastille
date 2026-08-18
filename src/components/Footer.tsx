@@ -5,14 +5,14 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <footer className="pt-20 pb-10 bg-dark text-ivory border-t border-primary/20 relative overflow-hidden">
+    <footer className="pt-4 pb-10 bg-dark text-ivory border-t border-primary/20 relative overflow-hidden">
       
       {/* Background Texture Element (Optional subtle luxury touch) */}
       <div className="absolute top-0 left-0 w-full h-1 from-transparent via-primary/40 to-transparent opacity-50" />
 
       <div className="mx-auto max-w-7xl px-6 md:px-12 relative z-10">
         <Reveal>
-          <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-12 grid-cols-2 lg:grid-cols-4">
             
             {/* Column 1: Brand & Tagline */}
             <div className="space-y-4">
