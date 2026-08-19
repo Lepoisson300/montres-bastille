@@ -7,8 +7,9 @@ import BtnRedirection from "../components/btnRedirect";
 import { Helmet } from "react-helmet-async";
 import WatchCard from "../components/WatchCard";
 import InfoCard from "../components/InfoCards";
-import { useAlert } from "../Logic/AlertContext";
 import OnboardingModal from "../Modals/OnboardingModal";
+import DeleteAccountModal from "../Modals/DeleteAccountModal";
+import { useAlert } from "../Logic/AlertContext";
 
 
 // Animation de Reveal (inchangée)
@@ -49,8 +50,9 @@ export default function AccountPage() {
   const [loadingData, setLoadingData] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
-
+  const [deleteAction, setDeleteAction] = useState(false);
   const { showAlert } = useAlert();
+
 
   // 1. Un seul appel API pour récupérer l'utilisateur ET ses commandes embarquées
   useEffect(() => {
@@ -64,11 +66,15 @@ export default function AccountPage() {
           if (foundUser) {
             setDbUser(foundUser);
           }
+          if(!foundUser){
+            showAlert('error', 'Aucun utilisateur connu, veuillez contacter le support code:L006')
+          }
           if (!foundUser.numero || foundUser.numero === "") {
               setShowOnboarding(true);
             } else {
               setShowOnboarding(false);
             }
+
         } catch (error) {
           console.error("Error fetching user data:", error);
         } finally {  
@@ -110,34 +116,8 @@ export default function AccountPage() {
     );
   }
 
-async function deleteAccount() {
-  if (!displayUser?.email) {
-    showAlert('error', "Impossible d'identifier le compte à supprimer.");
-    return;
-  }
-  fetch(`${apiAddress}/api/users/delete`, {
-    method: 'DELETE', 
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(
-      { email: displayUser.email, 
-        auth0Id : authUser?.sub
-      }
-    ) 
-  })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error) {
-        showAlert('error', data.error);
-        return;
-      }
-      // La déconnexion après la suppression réussie
-      logout({ logoutParams: { returnTo: window.location.origin } });
-    })
-    .catch((error) => {
-      console.error(error);
-      showAlert('error', "Impossible de supprimer le compte");
-    });
-}
+
+
   return (
     <>
       <Helmet>
@@ -145,11 +125,16 @@ async function deleteAccount() {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       <Nav bg={false}/>
+
+      {deleteAction && (
+        <DeleteAccountModal isOpen={deleteAction} onClose={()=> setDeleteAction(false)} user={displayUser} />
+      )}
       
       <div className=" bg-background font-sans overflow-hidden pt-28 pb-20 ">
         
         {isAuthenticated && showOnboarding && (
                 <OnboardingModal 
+                   isOpen={showOnboarding}
                    dbUser={dbUser} 
                    onUpdateSuccess={handleOnboardingSuccess} 
                    onClose={() => setShowOnboarding(false)}
@@ -177,7 +162,7 @@ async function deleteAccount() {
                 </button>
 
                 <button 
-                  onClick={() => deleteAccount()} 
+                  onClick={() => setDeleteAction(true)} 
                   className="text-xs ml-4 uppercase tracking-widest border border-primary/40 rounded-full px-6 py-3 bg-surface/50 text-text-primary hover:bg-primary hover:text-dark transition-all duration-300"
                 >
                   Supprimer mon compte

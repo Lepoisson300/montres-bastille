@@ -5,11 +5,17 @@ const apiAddress = import.meta.env.VITE_API_URL;
 
 
 interface OnboardingModalProps {
+  isOpen:boolean
   dbUser: any;
   onUpdateSuccess: (updatedUser: any) => void;
+  onClose(): void;
 }
 
-export default function OnboardingModal({ dbUser, onUpdateSuccess }: OnboardingModalProps) {
+export default function OnboardingModal({ isOpen, dbUser, onUpdateSuccess, onClose }: OnboardingModalProps) {
+
+  if (!isOpen) return null;
+
+
   const { user } = useAuth0();
   const [formData, setFormData] = useState({
     prenom: dbUser?.prenom || user?.given_name || "",
@@ -43,6 +49,7 @@ export default function OnboardingModal({ dbUser, onUpdateSuccess }: OnboardingM
       if (response.ok) {
         const updatedUser = await response.json();
         // 3. Notify parent component to close the modal
+        onClose()
         onUpdateSuccess(updatedUser);
       } else {
         console.error("Failed to update profile");
@@ -56,7 +63,7 @@ export default function OnboardingModal({ dbUser, onUpdateSuccess }: OnboardingM
 
   return (
     // 1. Full Screen Overlay with Blur
-    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 transition-all duration-500">
+    <div className="fixed inset-0 z-999 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 transition-all duration-500">
       
       {/* 2. The Modal Card */}
       <div className="w-full max-w-lg bg-[#1a1a1a] border border-[#C9A96E]/30 rounded-2xl shadow-2xl p-8 animate-fade-in-up">

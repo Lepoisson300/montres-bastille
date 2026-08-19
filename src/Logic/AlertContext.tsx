@@ -31,7 +31,7 @@ export const AlertProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       {children}
       
       {/* CONTENEUR DES ALERTES : C'est lui qui est fixe */}
-      <div className="fixed top-24 right-4 z-[9999] flex flex-col items-end pointer-events-none">
+      <div className="fixed top-24 right-4 z-9999 flex flex-col items-end pointer-events-none">
         {alerts.map((alert) => (
           <div key={alert.id} className="pointer-events-auto">
             <Alert

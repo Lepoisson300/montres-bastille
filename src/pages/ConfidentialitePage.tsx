@@ -77,7 +77,6 @@ export default function ConfidentialitePage() {
                     <ul className="list-disc pl-5 space-y-2 mt-2">
                       <li><strong>Données d'identification :</strong> Nom, prénom, adresse e-mail.</li>
                       <li><strong>Données de livraison :</strong> Adresse postale, numéro de téléphone.</li>
-                      <li><strong>Données techniques :</strong> Adresse IP, type de navigateur, informations de session.</li>
                     </ul>
                     <p className="text-sm italic">Note : Nous ne stockons aucune coordonnée bancaire. Les transactions sont gérées intégralement par nos prestataires de paiement sécurisés.</p>
                   </div>
@@ -143,7 +142,6 @@ export default function ConfidentialitePage() {
                     <ul className="list-disc pl-5 space-y-2 mt-2">
                       <li>La gestion et le traitement de vos commandes de montres.</li>
                       <li>Le suivi de la livraison et le service après-vente (garanties).</li>
-                      <li>L'amélioration de l'expérience de navigation sur le site.</li>
                     </ul>
                     <p><strong>{privacyInfo.companyName} s'engage à ne jamais vendre, louer ou céder vos données à des tiers à des fins commerciales.</strong></p>
                   </div>
@@ -158,8 +156,8 @@ export default function ConfidentialitePage() {
                   <div className="text-text-muted font-sans leading-relaxed space-y-4">
                     <p>Conformément à la réglementation européenne (RGPD), vous disposez des droits suivants concernant vos données personnelles :</p>
                     <ul className="list-disc pl-5 space-y-2 mt-2">
-                      <li><strong>Droit d'accès et de rectification :</strong> Vous pouvez modifier vos informations à tout moment depuis votre espace client Auth0.</li>
-                      <li><strong>Droit à l'effacement ("droit à l'oubli") :</strong> Vous pouvez demander la suppression totale de votre compte et de l'historique associé.</li>
+                      <li><strong>Droit d'accès et de rectification :</strong> Vous pouvez modifier vos informations à tout moment depuis votre espace client sur le site Montres-Bastille, ce qui aura pour effet de ne modifier que les informations de votre compte. Pour modifier des informations de connexion veuillez nous contacter.</li>
+                      <li><strong>Droit à l'effacement ("droit à l'oubli") :</strong> Vous pouvez demander la suppression totale de votre compte et de l'historique associé. Dans le cas contraire, vos données de comptes et d'informations seront supprimés au bout de 2 ans d'inutilisation de celui-ci.</li>
                       <li><strong>Droit à la portabilité :</strong> Vous pouvez demander l'export de vos données.</li>
                     </ul>
                     <p className="mt-4">
