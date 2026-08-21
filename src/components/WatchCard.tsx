@@ -66,8 +66,6 @@ export default function WatchCard({
 
     try {
       // 1. On attend (await) la récupération du token JWT
-      const token = await getAccessTokenSilently();
-
       const payload = {
         watch: {
           name: montre.name || `Création N°${index + 1}`,
@@ -83,7 +81,11 @@ export default function WatchCard({
 
       // 3. On détermine l'URL dynamiquement pour éviter de dupliquer le fetch
       const endpoint = unShare ? '/api/unpostwatch' : '/api/postwatch';
-
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+            audience: import.meta.env.VITE_AUTH0_IDENTIFIER
+        }
+      });
       const response = await fetch(`${apiAddress}${endpoint}`, {
         method: 'POST',
         headers: { 

@@ -122,7 +122,7 @@ ${formData.message}
         <img 
           src="/contactBG.webp" 
           alt="Fond spatial MedGlass" 
-          className="absolute  object-cover max-w-2xl md:w-full h-full"
+          className="absolute object-cover max-w-6xl md:w-full h-full"
         />
       </div>
         {/* Subtle texture overlay for brushed metal look */}
@@ -168,9 +168,9 @@ ${formData.message}
           </div>
 
           {/* RIGHT COLUMN: Form */}
-          <div className="lg:mt-15 lg:mx-auto mx-6 mt-10">
+          <div className="lg:mt-15 lg:mx-auto mx-3 mt-10">
             <Reveal delay={2}>
-              <div className="bg-[#0a0a0c]/80 backdrop-blur-xs border border-white/5 rounded-3xl p-16 md:p-30 shadow-2xl relative overflow-hidden ">
+              <div className="bg-[#0a0a0c]/80 backdrop-blur-xs border border-white/5 rounded-3xl p-10 md:pt-30 md:pb-30 md:px-15 shadow-2xl relative overflow-hidden ">
                 {/* Form decorative accent */}
 
                 <h2 className="font-serif text-3xl tracking-wide mb-10 text-neutral-100">
@@ -189,7 +189,7 @@ ${formData.message}
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-10 relative z-10 w-full h-full">
-                    <div className="grid gap-10 md:grid-cols-2">
+                    <div className="grid gap-4 md:grid-cols-2">
                       <div className="relative">
                         <input
                           type="text"

@@ -13,7 +13,7 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
     
     const [activeIndex, setActiveIndex] = useState(0);
     const [likedWatches, setLikedWatches] = useState<Set<string>>(new Set());
-    const { user, isAuthenticated } = useAuth0();
+    const { user, isAuthenticated,getAccessTokenSilently } = useAuth0();
     
     const colors = ['#5D4037', '#D1B994', '#2F3E46', '#B8B8B8', '#C9A96E'];
     const getColor = (index: number) => colors[index % colors.length];
@@ -32,7 +32,7 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
         setActiveIndex((prev) => (prev === 0 ? watches.length - 1 : prev - 1));
     };
 
-    const voteLike = (watchShareName: string) => {
+    const voteLike = async (watchShareName: string) => {
         if (!isAuthenticated) {
             showAlert('warning', 'Vous devez être connecté pour voter ou soutenir une création.');
             return;
@@ -48,10 +48,14 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
         if (!watch) return;
 
         const likeData = { email: user?.email, elem: watch.watch.name, type: 'w' };
-
+        const token = await getAccessTokenSilently({
+        authorizationParams: {
+            audience: import.meta.env.VITE_AUTH0_IDENTIFIER
+        }
+        });
         fetch(`${apiAddress}/api/users/vote`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${token}` },
             body: JSON.stringify(likeData)
         })
             .then(response => response.json())

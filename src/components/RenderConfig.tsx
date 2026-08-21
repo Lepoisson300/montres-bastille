@@ -47,7 +47,7 @@ export default function RenderViewer({selections, setZoom, zoom}:renderInterface
     return(
         <div
         id="watch-viewer"
-        className="relative mx-auto aspect-square w-full max-w-70 sm:max-w-105 md:max-w-155 rounded-4xl md:rounded-[3rem] border border-white/10 bg-surface/15 overflow-hidden shadow-2xl shadow-black/50"
+        className="relative mx-auto aspect-square w-full sm:max-w-105 md:max-w-155 rounded-4xl md:rounded-[3rem] border border-white/10 bg-surface/15 overflow-hidden shadow-2xl shadow-black/50"
         >
       <div className="relative h-full w-full transition-transform duration-300" style={{ transform: `scale(${zoom})` }}>
         <img

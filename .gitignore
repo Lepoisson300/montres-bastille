@@ -14,6 +14,7 @@ node_modules
 
 node_modules/*
 .env
+strix_runs/*
 
 # Editor directories and files
 .vscode/*

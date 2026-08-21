@@ -16,7 +16,7 @@ export default function OnboardingModal({ isOpen, dbUser, onUpdateSuccess, onClo
   if (!isOpen) return null;
 
 
-  const { user } = useAuth0();
+  const { user, getAccessTokenSilently } = useAuth0();
   const [formData, setFormData] = useState({
     prenom: dbUser?.prenom || user?.given_name || "",
     nom: dbUser?.nom || user?.family_name || "",
@@ -37,18 +37,22 @@ export default function OnboardingModal({ isOpen, dbUser, onUpdateSuccess, onClo
     try {
       // 1. Prepare the payload (merging existing data with new data)
       const payload = {
-        email: user?.email, // Identifier
+        email: user?.email,
         ...formData
       };
-      // 2. Call your API (Ensure you have an endpoint for this, usually PUT or POST)
-      const response = await fetch(`${apiAddress}/api/users/update`, {
-        method: "PUT", // or POST depending on your backend
-        headers: { "Content-Type": "application/json" },
+        const token = await getAccessTokenSilently({
+          authorizationParams: {
+              audience: import.meta.env.VITE_AUTH0_IDENTIFIER
+          }
+        });
+        const response = await fetch(`${apiAddress}/api/users/update`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json","Authorization": `Bearer ${token}` 
+ },
         body: JSON.stringify(payload),
       });
       if (response.ok) {
         const updatedUser = await response.json();
-        // 3. Notify parent component to close the modal
         onClose()
         onUpdateSuccess(updatedUser);
       } else {

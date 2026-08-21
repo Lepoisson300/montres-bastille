@@ -9,7 +9,6 @@ import WatchCard from "../components/WatchCard";
 import InfoCard from "../components/InfoCards";
 import OnboardingModal from "../Modals/OnboardingModal";
 import DeleteAccountModal from "../Modals/DeleteAccountModal";
-import { useAlert } from "../Logic/AlertContext";
 
 
 // Animation de Reveal (inchangée)
@@ -45,38 +44,43 @@ const Reveal = ({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 const apiAddress = import.meta.env.VITE_API_URL;
 
 export default function AccountPage() {
-  const { user: authUser, isAuthenticated, isLoading, logout } = useAuth0();
+  const { user: authUser, isAuthenticated, isLoading, logout,getAccessTokenSilently } = useAuth0();
   const [dbUser, setDbUser] = useState<User | null>(null);
   const [loadingData, setLoadingData] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [deleteAction, setDeleteAction] = useState(false);
-  const { showAlert } = useAlert();
-
 
   // 1. Un seul appel API pour récupérer l'utilisateur ET ses commandes embarquées
   useEffect(() => {
     async function getUserData() {
       if (isAuthenticated && authUser?.email) {
         try {
-          const response = await fetch(`${apiAddress}/api/users`);
-          const users = await response.json();
-          const foundUser = users.find((u: User) => u.email === authUser.email);    
-          console.log(users)   
-          if (foundUser) {
-            setDbUser(foundUser);
-          }
-          if(!foundUser){
-            showAlert('error', 'Aucun utilisateur connu, veuillez contacter le support code:L006')
-          }
-          if (!foundUser.numero || foundUser.numero === "") {
+          const token = await getAccessTokenSilently({
+            authorizationParams: {
+                audience: import.meta.env.VITE_AUTH0_IDENTIFIER
+            }
+          });
+          const res = await fetch(`${apiAddress}/api/users/me`, {
+            method: "GET",
+            headers: { 
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}` 
+            },
+          });
+          const user = await res.json();
+          console.log(user)
+          if (user) {
+            setDbUser(user);
+            // If phone number is missing or empty, trigger the modal
+            if (!user.numero || user.numero === "") {
               setShowOnboarding(true);
             } else {
               setShowOnboarding(false);
             }
-
+          }
         } catch (error) {
-          console.error("Error fetching user data:", error);
+          console.error("Failed to fetch user", error);
         } finally {  
           setLoadingData(false);
         }
@@ -106,7 +110,7 @@ export default function AccountPage() {
   // On peut filtrer pour ne prendre que les commandes payées (etape_actuelle >= 1) si on le souhaite
   const commandesValidees = displayUser.commandes?.filter(c => c.etape_actuelle >= 1) || [];
   const toutesLesMontres = commandesValidees.flatMap(commande => commande.montre) || [];
-  console.log(commandesValidees)
+  //console.log(commandesValidees)
   if (isLoading || loadingData) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center text-primary font-serif">

@@ -17,7 +17,7 @@ export default function CommunityPage() {
   const [votedRegions, setVotedRegions] = useState<Set<string>>(new Set());
   const [sharedwatch, setSharedWatch] = useState<any[]>([]); // Modifié en tableau vide []
   
-  const { user, isAuthenticated } = useAuth0();
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const { showAlert } = useAlert();
   const [regionsVotes, setRegionsVotes] = React.useState<Region[]>([]);
 
@@ -37,7 +37,7 @@ export default function CommunityPage() {
       .catch((error) => console.error('Error fetching shared watch:', error));
   }, []);
   
-  const voteLike = (type: string, regionName?: string) => {
+  const voteLike = async (type: string, regionName?: string) => {
     if (!isAuthenticated) {
       showAlert('warning', 'Vous devez être connecté pour voter ou soutenir une création.');
       return;
@@ -53,10 +53,14 @@ export default function CommunityPage() {
 
       // Nouveau format attendu par ton backend unifié
       const voteData = { email: user?.email, elem: region.name, type: 'r' };
-
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+            audience: import.meta.env.VITE_AUTH0_IDENTIFIER
+        }
+      });
       fetch(`${apiAddress}/api/users/vote`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' , "Authorization": `Bearer ${token}`},
         body: JSON.stringify(voteData)
       })
       .then(response => response.json())

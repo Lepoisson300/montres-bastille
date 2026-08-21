@@ -12,7 +12,7 @@ export default function DeleteAccountModal({ isOpen, onClose, user }: DeleteAcco
 
     const { showAlert } = useAlert();
     const apiAddress = import.meta.env.VITE_API_URL;
-    const { logout, user: auth0User } = useAuth0();
+    const { logout, user: auth0User, getAccessTokenSilently } = useAuth0();
 
     async function deleteAccount(e: React.FormEvent) {
         // 2. Prevent the default page reload
@@ -21,10 +21,17 @@ export default function DeleteAccountModal({ isOpen, onClose, user }: DeleteAcco
             showAlert('error', "Impossible d'identifier le compte à supprimer.");
             return;
         }
-        
+        const token = await getAccessTokenSilently({
+            authorizationParams: {
+                audience: import.meta.env.VITE_AUTH0_IDENTIFIER
+            }
+          });
         fetch(`${apiAddress}/api/users/delete`, {
             method: 'DELETE', 
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${token}`
+             },
             body: JSON.stringify({ 
                 email: user.email, 
                 auth0Id: auth0User?.sub

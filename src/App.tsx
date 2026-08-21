@@ -9,7 +9,6 @@ import CommunityPage from "./pages/CommunityPage";
 import ContactPage from "./pages/ContactPage";
 import RegionPage from "./pages/RegionPage"
 import { useAuth0 } from "@auth0/auth0-react";
-import OnboardingModal from "./Modals/OnboardingModal";
 import Footer from "./components/Footer";
 import CartPage from "./pages/CartPage";
 import type { PartOption } from "./types/Parts";
@@ -30,51 +29,13 @@ const apiAddress = import.meta.env.VITE_API_URL;
 
 function App() {
 
-  const { user, isAuthenticated, isLoading } = useAuth0();
-  const [dbUser, setDbUser] = useState<any>(null);
-  const [showOnboarding, setShowOnboarding] = useState(false);
+  const { isLoading } = useAuth0();
   const [components, setComponents] = useState<PartOption[]>([]);  // 1. Fetch User Data whenever Auth0 User changes
-  
-  useEffect(() => {
-    async function fetchUserData() {
-      if (isAuthenticated && user?.email) {
-        try {
-          const res = await fetch(`${apiAddress}/api/users`);
-          const users = await res.json();
-          const found = users.find((u: any) => u.email === user.email);
 
-          if (found) {
-            setDbUser(found);
-            // If phone number is missing or empty, trigger the modal
-            if (!found.numero || found.numero === "") {
-              setShowOnboarding(true);
-            } else {
-              setShowOnboarding(false);
-            }
-          }
-        } catch (error) {
-          console.error("Failed to fetch user", error);
-        }
-      }
-    }
-    fetchUserData();
-  }, [isAuthenticated, user]);
   
 
   useEffect(() => {
-    async function startServer() {
-      try {
-        const start = await fetch(`${apiAddress}/api/site`);
-        console.log("Server start OK :", start.ok);
-      } catch (error) {
-        console.error("Failed to ping server", error);
-      }
-    }
-    
-    // Create an async wrapper function inside the useEffect
     async function fetchAllData() {
-      // We can run the ping in the background without waiting for it
-      startServer(); 
       setComponents(await getComponents());
     }
     console.log(components)
@@ -89,22 +50,13 @@ function App() {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
       const result = await response.json();
-      console.log("result : ",result)
       return result; 
-      
     } catch (error) {
       console.error("Erreur lors de la récupération des composants:", error);
       return []; 
     }
   }
-
-
-  const handleOnboardingSuccess = (updatedUser: any) => {
-    setDbUser(updatedUser); // Update local state immediately
-    setShowOnboarding(false); // Close the modal
-  };
 
   if (isLoading) return <div>Chargement...</div>;
 
@@ -137,14 +89,6 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
-
-      {isAuthenticated && showOnboarding && (
-        <OnboardingModal 
-           dbUser={dbUser} 
-           onUpdateSuccess={handleOnboardingSuccess} 
-        />
-      )}
-
       {/* Footer */}
       <Footer />
       </AlertProvider>
