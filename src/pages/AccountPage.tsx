@@ -56,6 +56,7 @@ export default function AccountPage() {
     async function getUserData() {
       if (isAuthenticated && authUser?.email) {
         try {
+          console.log(import.meta.env.VITE_AUTH0_IDENTIFIER)
           const token = await getAccessTokenSilently({
             authorizationParams: {
                 audience: import.meta.env.VITE_AUTH0_IDENTIFIER
