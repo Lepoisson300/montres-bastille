@@ -92,8 +92,8 @@ export default function AccountPage() {
   }, [isAuthenticated, authUser, isLoading]);
 
   const handleOnboardingSuccess = (updatedUser: any) => {
-    setDbUser(updatedUser); // Update local state immediately
-    setShowOnboarding(false); // Close the modal
+    setDbUser(updatedUser);
+    setShowOnboarding(false); 
   };
 
   const displayUser = dbUser || {
