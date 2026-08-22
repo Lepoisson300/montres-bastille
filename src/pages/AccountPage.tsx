@@ -56,7 +56,6 @@ export default function AccountPage() {
     async function getUserData() {
       if (isAuthenticated && authUser?.email) {
         try {
-          console.log(import.meta.env.VITE_AUTH0_IDENTIFIER)
           const token = await getAccessTokenSilently({
             authorizationParams: {
                 audience: import.meta.env.VITE_AUTH0_IDENTIFIER
@@ -70,7 +69,7 @@ export default function AccountPage() {
             },
           });
           const user = await res.json();
-          console.log(user)
+          //console.log(user)
           if (user) {
             setDbUser(user);
             // If phone number is missing or empty, trigger the modal
