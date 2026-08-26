@@ -152,25 +152,8 @@ export default function RegionPage({ components }: RegionPageProps) {
     return new XMLSerializer().serializeToString(newSvg);
   };
 
-  // --- 3. CONDITIONS D'AFFICHAGE ---
-
-  // Affichage du loader SEULEMENT après avoir initialisé tous les Hooks !
-  if (!components || components.length === 0 || !svgContent) {
-    return (
-      <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#050505]">
-        <div className="relative flex items-center justify-center w-16 h-16 mb-8">
-          <div className="absolute inset-0 border border-[#d4af37]/10 rounded-full"></div>
-          <div className="absolute inset-0 border border-transparent border-t-[#d4af37] rounded-full animate-[spin_1.2s_cubic-bezier(0.5,0.1,0.4,0.9)_infinite]"></div>
-        </div>
-        <div className="flex flex-col items-center">
-          <p className="text-[#d4af37] text-xs sm:text-sm uppercase tracking-[0.4em] font-serif animate-pulse ml-[0.4em]">
-            Chargement des composants
-          </p>
-          <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/60 to-transparent mt-4 opacity-50"></div>
-        </div>
-      </div>
-    );
-  }
+  // On crée une variable au lieu d'un 'return' bloquant
+  const isLoading = !components || components.length === 0 || !svgContent;
 
   return (
     <>
@@ -180,6 +163,7 @@ export default function RegionPage({ components }: RegionPageProps) {
         <meta property="og:title" content="Carte des Régions - Créez votre Montre Bastille" />
         <meta property="og:description" content="Découvrez les composants horlogers issus du patrimoine de nos régions françaises." />
         <link rel="canonical" href="https://montres-bastille.fr/region-page" />
+        <link rel="preload" href="/france.svg" as="fetch" crossorigin="anonymous"></link>
       </Helmet>
 
       <script type="application/ld+json">
@@ -204,7 +188,7 @@ export default function RegionPage({ components }: RegionPageProps) {
 
       {/* Main Container with Dark Metallic radial background */}
       <div
-        className="relative flex flex-col items-center justify-center min-h-screen px-4 pt-32 pb-16 overflow-hidden"
+        className="relative flex flex-col items-center justify-center min-h-screen px-4 pt-32 overflow-hidden"
         ref={containerRef}
         style={{
           background: 'radial-gradient(circle at 50% 50%, #2e2e32 0%, #121214 80%)'        }}
@@ -214,7 +198,7 @@ export default function RegionPage({ components }: RegionPageProps) {
 
 
 
-        <header className="relative z-20 text-center mb-12 sm:mb-16 px-4">
+        <header className="relative z-20 text-center px-4">
           <h1
             className="text-4xl sm:text-5xl md:text-6xl font-serif tracking-widest mb-4"
             style={{
@@ -227,23 +211,43 @@ export default function RegionPage({ components }: RegionPageProps) {
           <h2 className="text-xs sm:text-sm md:text-base text-[#f5d47a] font-sans uppercase tracking-[0.4em] mb-4 opacity-90">
             Le Patrimoine des Régions de France
           </h2>
-          <div className="w-16 h-[1px] bg-[#d4af37] mx-auto mb-6 opacity-40"></div>
+          <div className="w-16 h-px bg-[#d4af37] mx-auto mb-6 opacity-40"></div>
           <p className="text-[17px] sm:text-base text-neutral-400 font-sans max-w-2xl mx-auto tracking-wide leading-relaxed">
             Sélectionnez votre région sur la carte pour concevoir une montre unique à partir de matériaux locaux.
           </p>
         </header>
 
-        <main className="relative z-20 w-full" role="main" aria-label="Carte interactive des régions de France">
-          {!isMobile && (
-            <DesktopMap svgContent={svgContent} availableRegions={availableRegions} onSelect={handleConfigureClick} />
-          )}
-          {isMobile && (
-            <MobileCarousel
-              availableRegions={availableRegions}
-              getComponentCount={getComponentCount}
-              extractRegionSVG={extractRegionSVG}
-              onSelect={handleConfigureClick}
-            />
+        <main className="relative w-full max-w-5xl flex flex-col items-center justify-center min-h-[50vh] md:min-h-[60vh]" role="main" aria-label="Carte interactive des régions de France">
+          
+          {isLoading ? (
+            // On affiche le loader DANS l'espace réservé au lieu de recouvrir tout l'écran
+            <div className="flex flex-col items-center justify-center w-full h-full animate-pulse">
+              <div className="relative flex items-center justify-center w-16 h-16 mb-8">
+                <div className="absolute inset-0 border border-[#d4af37]/10 rounded-full"></div>
+                <div className="absolute inset-0 border border-transparent border-t-[#d4af37] rounded-full animate-[spin_1.2s_cubic-bezier(0.5,0.1,0.4,0.9)_infinite]"></div>
+              </div>
+              <div className="flex flex-col items-center">
+                <p className="text-[#d4af37] text-xs sm:text-sm uppercase tracking-[0.4em] font-serif ml-[0.4em]">
+                  Chargement des composants
+                </p>
+                <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/60 to-transparent mt-4 opacity-50"></div>
+              </div>
+            </div>
+          ) : (
+            // La carte s'injecte en douceur une fois prête
+            <>
+              {!isMobile && (
+                <DesktopMap svgContent={svgContent} availableRegions={availableRegions} onSelect={handleConfigureClick} />
+              )}
+              {isMobile && (
+                <MobileCarousel
+                  availableRegions={availableRegions}
+                  getComponentCount={getComponentCount}
+                  extractRegionSVG={extractRegionSVG} // Note: You still want to fix this for mobile performance later!
+                  onSelect={handleConfigureClick}
+                />
+              )}
+            </>
           )}
         </main>
       </div>
