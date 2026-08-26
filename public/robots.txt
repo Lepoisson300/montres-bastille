@@ -5,6 +5,7 @@ Allow: /
 Disallow: /account
 Disallow: /panier
 Disallow: /success
+Disallow: https://api.montres-bastille.fr/
 
 # Lien vers le sitemap
 Sitemap: https://montre-bastille.fr/sitemap.xml
