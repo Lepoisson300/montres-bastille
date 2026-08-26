@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import BtnRedirection from "../components/btnRedirect";
@@ -6,7 +6,6 @@ import Reveal from "../Logic/Reveal";
 import watch2 from "/gurv.webp";
 import { Helmet } from "react-helmet-async";
 import Nav from "../components/Nav";
-import ConsentModal from "../Modals/ConsentModal";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,16 +20,34 @@ export default function HomePage() {
 
   // 1. Chargement des images
   useEffect(() => {
-    const loadedImages: HTMLImageElement[] = [];
+    const loadImages = async () => {
+      const loadedImages:any[] = [];
 
-    for (let i = 1; i <= TOTAL_FRAMES; i++) {
-      const img = new Image();
-      const frameNumber = String(i).padStart(3, "0");
-      img.src = `/frames/ezgif-frame-${frameNumber}.webp`;
-      loadedImages.push(img);
-    }
+      // Load ONLY the first frame immediately to unblock rendering
+      const firstImg = new Image();
+      firstImg.src = `/frames/ezgif-frame-001.webp`;
+      
+      await new Promise((resolve) => {
+        firstImg.onload = () => {
+          loadedImages.push(firstImg);
+          setImages([...loadedImages]); // Trigger a render with just frame 1
+          resolve(true);
+        };
+      });
 
-    setImages(loadedImages);
+      // Once frame 1 is painted, fetch the rest in the background
+      for (let i = 2; i <= TOTAL_FRAMES; i++) {
+        const img = new Image();
+        const frameNumber = String(i).padStart(3, "0");
+        img.src = `/frames/ezgif-frame-${frameNumber}.webp`;
+        loadedImages.push(img);
+      }
+      
+      // Update state once all background images are queued
+      setImages(loadedImages);
+    };
+
+    loadImages();
   }, []);
 
   // 2. Logique du Canvas et de GSAP
@@ -114,8 +131,8 @@ export default function HomePage() {
             className="w-full h-full object-cover object-center"
           />
           <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_80px_40px_#000] md:shadow-[inset_0_0_150px_80px_#000]" />
-          <div className="absolute inset-y-0 left-0 w-16 md:w-32 2xl:w-64 bg-gradient-to-r from-black to-transparent pointer-events-none z-10" />
-          <div className="absolute inset-y-0 right-0 w-16 md:w-32 2xl:w-64 bg-gradient-to-l from-black to-transparent pointer-events-none z-10" />
+          <div className="absolute inset-y-0 left-0 w-16 md:w-32 2xl:w-64 bg-linear-to-r from-black to-transparent pointer-events-none z-10" />
+          <div className="absolute inset-y-0 right-0 w-16 md:w-32 2xl:w-64 bg-linear-to-l from-black to-transparent pointer-events-none z-10" />
         </div>
       </div>
 
@@ -197,7 +214,7 @@ export default function HomePage() {
             </div>
             
             {/* Ligne de séparation dorée en dégradé */}
-            <div className="h-px w-24 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto opacity-70"  />
+            <div className="h-px w-24 bg-linear-to-r from-transparent via-[#D4AF37] to-transparent mx-auto opacity-70"  />
           </div>
 
           {/* Conteneur Flex sur mobile (pour le zigzag) 
