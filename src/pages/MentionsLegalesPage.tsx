@@ -25,7 +25,7 @@ export default function MentionsLegalesPage() {
         <title>Mentions Légales | Montres-Bastille</title>
         <meta name="description" content="Consultez les mentions légales du site Montres-Bastille. Informations sur l'éditeur, l'hébergement et la propriété intellectuelle." />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://montre-bastille.fr/mentions-legales" />
+        <link rel="canonical" href="https://montres-bastille.fr/mention" />
       </Helmet>
 
       <Nav bg={false} />

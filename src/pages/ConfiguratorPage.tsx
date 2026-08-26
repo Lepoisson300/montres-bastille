@@ -5,6 +5,7 @@ import { useState } from "react";
 import Nav from "../components/Nav";
 import { useAlert } from "../Logic/AlertContext";
 import ModalWatchName from "../Modals/ModalWatchName";
+import { Helmet } from "react-helmet-async";
 
 
 interface LocationState {
@@ -77,6 +78,13 @@ export default function ConfiguratorPage() {
 
   return (
     <>
+    <Helmet>
+      <title>Montre Bastille | Configurateur de Montre inspiré du patrimoine</title>
+      <meta name="description" content="Configurez la montre avec les composants que vous avez choisis" />
+      <meta property="og:title" content="Montre Bastille - Votre Garde-Temps du patrimoine" />
+      <meta property="og:image" content="https://montres-bastille.fr/logo.webp" />
+      <link rel="canonical" href="https://montres-bastille.fr/ConfiguratorPage" />
+    </Helmet>
     <Nav bg={true}/>
       <div className="min-h-screen bg-neutral-950">
         <ModalWatchName 

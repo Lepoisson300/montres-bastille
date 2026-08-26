@@ -107,8 +107,8 @@ ${formData.message}
         <meta name="description" content="Une question sur nos montres personnalisées ? Besoin d'un service après-vente ou d'un partenariat ? Contactez l'atelier Montre Bastille. Réponse sous 24h." />
         <meta property="og:title" content="Contactez l'Atelier Montre Bastille" />
         <meta property="og:description" content="Experts en horlogerie à votre écoute pour vos projets de montres uniques." />
-        <meta property="og:image" content="https://montre-bastille.fr/logo.webp" />
-        <link rel="canonical" href="https://montre-bastille.fr/contact" />
+        <meta property="og:image" content="https://montres-bastille.fr/logo.webp" />
+        <link rel="canonical" href="https://montres-bastille.fr/contact" />
       </Helmet>
       <Nav bg={false}/>
 

@@ -179,7 +179,7 @@ export default function RegionPage({ components }: RegionPageProps) {
         <meta name="description" content="Sélectionnez une région française sur notre carte interactive pour configurer votre montre unique. Matériaux locaux et artisanat français de précision." />
         <meta property="og:title" content="Carte des Régions - Créez votre Montre Bastille" />
         <meta property="og:description" content="Découvrez les composants horlogers issus du patrimoine de nos régions françaises." />
-        <link rel="canonical" href="https://montre-bastille.fr/region-page" />
+        <link rel="canonical" href="https://montres-bastille.fr/region-page" />
       </Helmet>
 
       <script type="application/ld+json">

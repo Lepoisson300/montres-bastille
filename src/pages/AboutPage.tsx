@@ -24,8 +24,12 @@ export default function AboutPage({allcomponents}:AboutInterface) {
   return (
     <>
       <Helmet>
-        <title>Notre Histoire | Montre Bastille - L'Art de l'Horlogerie à Bordeaux</title>
+        <title>Notre Histoire | Montre Bastille - L'Art de l'Horlogerie en Dordogne</title>
         <meta name="description" content="Découvrez l'origine de Montre Bastille. Deux passionnés créant des montres uniques inspirées du patrimoine français et assemblées avec précision à Bordeaux." />
+        <meta property="og:title" content="Découvrez l'Atelier Montre Bastille" />
+        <meta property="og:description" content="Experts en horlogerie à votre écoute pour vos projets de montres uniques." />
+        <meta property="og:image" content="https://montres-bastille.fr/logo.webp" />
+        <link rel="canonical" href="https://montres-bastille.fr/about" />
       </Helmet>
 
       {/* Navigation requires dark background to be visible on the hero section if hero is dark, the original Nav had bg={false} which means transparent. */}

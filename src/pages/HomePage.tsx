@@ -101,7 +101,7 @@ export default function HomePage() {
         <meta property="og:title" content="Montre Bastille - Votre Garde-Temps du patrimoine" />
         <meta property="og:image" content="/logo.webp" />
 
-        <link rel="canonical" href="https://montre-bastille.fr/" />
+        <link rel="canonical" href="https://montres-bastille.fr/" />
       </Helmet>
     <Nav bg={false}/>
       {/* Conteneur Sticky pour le Canvas */}
