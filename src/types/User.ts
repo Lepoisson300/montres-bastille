@@ -1,7 +1,7 @@
 import type { Watch } from "./Parts";
 
 export type User = {
-  id: string;
+  _id: string;
   email: string;
   numero: string;
   nom: string;

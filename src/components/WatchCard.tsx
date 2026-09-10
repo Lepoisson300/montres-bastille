@@ -42,7 +42,7 @@ export default function WatchCard({
     }
   };
   const currentStatus = getStatusDisplay(etape_actuelle);
-  console.log(montre)
+
   const getPartName = (type: string) => {
     const part = montre.composants?.find(c => c.type === type);
     return part ? part.name : "Standard";
