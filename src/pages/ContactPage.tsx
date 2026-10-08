@@ -30,9 +30,8 @@ const Reveal = ({
   return (
     <div
       ref={ref}
-      className={`transition-all duration-1000 ease-out ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-      }`}
+      className={`transition-all duration-1000 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+        }`}
     >
       {children}
     </div>
@@ -84,7 +83,7 @@ ${formData.message}
       }
 
       setIsSuccess(true);
-      setFormData({ firstName: '', email: '', message: '', lastName:'', subject:'', phone:'' });
+      setFormData({ firstName: '', email: '', message: '', lastName: '', subject: '', phone: '' });
 
       setTimeout(() => setIsSuccess(false), 5000);
     } catch (error) {
@@ -110,30 +109,30 @@ ${formData.message}
         <meta property="og:image" content="https://montres-bastille.fr/logo.webp" />
         <link rel="canonical" href="https://montres-bastille.fr/contact" />
       </Helmet>
-      <Nav bg={false}/>
+      <Nav bg={false} />
 
       {/* Main Container with Dark Metallic radial background */}
-      <div 
-        className="relative min-h-screen pb-16 overflow-hidden" 
-    
+      <div
+        className="relative min-h-screen pb-16 overflow-hidden"
+
       >
-      <div className="fixed inset-0 z-0 pointer-events-none bg-background">
-        {/* Image de fond fixe */}
-        <img 
-          src="/contactBG.webp" 
-          alt="Fond spatial MedGlass" 
-          className="absolute object-cover max-w-6xl md:w-full h-full"
-        />
-      </div>
+        <div className="fixed inset-0 z-0 pointer-events-none bg-background">
+          {/* Image de fond fixe */}
+          <img
+            src="/contactBG.webp"
+            alt="Fond spatial MedGlass"
+            className="absolute object-cover max-w-2xl h-full md:max-w-none md:w-full md:h-full"
+          />
+        </div>
         {/* Subtle texture overlay for brushed metal look */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/brushed-alum.png")' }}></div>
         <div className="relative flex md:flex-row flex-col z-20 max-w-400 mx-auto  items-start mt-15 lg:mt-[10%]">
-          
+
           {/* LEFT COLUMN: Info */}
           <div className="lg:sticky lg:top-40 pt-10 mt-4 mx-10">
             <Reveal delay={0}>
               <div className="h-0.5 w-16 bg-accent-light mb-8 opacity-60" />
-              <h1 
+              <h1
                 className="font-serif md:text-accent-light text-6xl md:text-8xl tracking-tight mb-8"
               >
                 Contactez l'Atelier
@@ -321,7 +320,7 @@ ${formData.message}
           </div>
         </div>
       </div>
-      
+
       <style>{`
         .animate-fade-in {
           animation: fadeIn 0.8s ease-out forwards;
