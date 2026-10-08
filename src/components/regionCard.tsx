@@ -3,47 +3,65 @@ import type { Region } from "../types/Parts"
 interface regionCardInterface{
     region : Region;
     votedRegions : Set<string>;
-    vote(type:string,name:string) : void
+    vote(type:string,name:string) : void;
+    isActive?: boolean;
+    onClick?: () => void;
 }
 
-export default function RegionCard({region, votedRegions, vote}: regionCardInterface){
-
+export default function RegionCard({region, votedRegions, vote, isActive, onClick}: regionCardInterface){
     return(
-        <div className="bg-surface rounded-3xl p-8 sm:p-10 transition-all duration-300 ease-in-out shadow-[8px_8px_18px_rgba(0,0,0,0.5),-8px_-8px_18px_rgba(255,255,255,0.03)] hover:shadow-[10px_10px_22px_rgba(0,0,0,0.6),-10px_-10px_22px_rgba(255,255,255,0.04)]">
-            {/* En-tête de la carte */}
-            <div className="flex items-center justify-between mb-6">
-                <h3 className="font-serif text-xl text-text-primary">{region.name}</h3>
-                <div className="text-primary font-sans text-sm font-bold">
-                {region.votes} votes
-                </div>
-            </div>
-
-            {/* Conteneur de l'image (Effet Creusé / Inset) */}
-            <div className="w-full h-40 p-1.5 rounded-2xl bg-surface shadow-[inset_6px_6px_12px_rgba(0,0,0,0.5),inset_-6px_-6px_12px_rgba(255,255,255,0.03)] mb-6">
-                <div className="w-full h-full overflow-hidden rounded-xl">
+        <div 
+            onClick={onClick}
+            className={`relative w-64 md:w-80 h-96 md:h-[500px] rounded-3xl overflow-hidden cursor-pointer group transition-all duration-500 ease-out transform ${isActive ? 'scale-105 shadow-2xl z-10 border-2 border-white/30' : 'scale-95 opacity-70 hover:opacity-100 hover:scale-100 border border-white/10 shadow-lg'}`}
+        >
+            {/* Background Image */}
+            <div className="absolute inset-0">
                 <img 
                     src={region.img} 
-                    className="h-full w-full object-cover transition-transform duration-500 hover:scale-110" 
-                    alt={`Patrimoine de la région ${region.name} - Inspiration pour Montre Bastille`} 
+                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
+                    alt={`Patrimoine de la région ${region.name}`} 
                     loading="lazy"
                 />
-                </div>
             </div>
             
-            {/* Bouton Neumorphique Dynamique */}
-            <button
-                onClick={() => vote('r', region.name)}
-                disabled={votedRegions.has(region.name)}
-                aria-label={`Voter pour la région ${region.name}`}
-                className={`w-full py-3.5 rounded-xl text-sm font-sans uppercase tracking-wider transition-all duration-300 bg-surface ${
-                votedRegions.has(region.name)
-                    ? 'shadow-[inset_4px_4px_8px_rgba(0,0,0,0.5),inset_-4px_-4px_8px_rgba(255,255,255,0.02)] text-primary/40 cursor-not-allowed'
-                    : 'shadow-[6px_6px_12px_rgba(0,0,0,0.5),-6px_-6px_12px_rgba(255,255,255,0.03)] text-primary hover:text-primary hover:shadow-[inset_4px_4px_8px_rgba(0,0,0,0.5),inset_-4px_-4px_8px_rgba(255,255,255,0.03)]'
-                }`}
-            >
-                {votedRegions.has(region.name) ? 'Vote enregistré' : 'Voter pour cette région'}
-            </button>
+            {/* Gradient Overlay for Text Readability */}
+            <div className={`absolute inset-0 transition-opacity duration-500 ${isActive ? 'bg-gradient-to-t from-black/90 via-black/30 to-transparent' : 'bg-gradient-to-t from-black/80 via-black/40 to-black/20'}`}></div>
 
+            {/* Top Stats / Avatar */}
+            <div className="absolute top-6 left-6 flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-full border-2 border-white/50 bg-black/40 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                    <span className="text-white font-bold text-sm">{region.votes}</span>
+                </div>
+                <div className="text-white/80 text-xs font-sans uppercase tracking-widest bg-black/30 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
+                    Votes
+                </div>
             </div>
+
+            {/* Bottom Content */}
+            <div className="absolute bottom-0 left-0 w-full p-6 md:p-8 flex flex-col justify-end">
+                <h3 className="font-serif text-3xl md:text-4xl text-white mb-2 leading-none tracking-tight drop-shadow-md group-hover:text-primary transition-colors duration-300">
+                    {region.name}
+                </h3>
+                <p className="text-white/70 text-sm font-sans uppercase tracking-widest mb-6">
+                    Héritage Français
+                </p>
+                
+                {/* Voting Button */}
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        vote('r', region.name);
+                    }}
+                    disabled={votedRegions.has(region.name)}
+                    className={`w-full py-4 rounded-xl text-sm font-sans uppercase tracking-widest transition-all duration-300 backdrop-blur-md border ${
+                        votedRegions.has(region.name)
+                            ? 'bg-white/10 text-white/50 border-white/10 cursor-not-allowed'
+                            : 'bg-primary/90 text-dark border-primary hover:bg-primary hover:shadow-[0_0_15px_rgba(209,185,148,0.5)]'
+                    }`}
+                >
+                    {votedRegions.has(region.name) ? 'Vote enregistré' : 'Voter'}
+                </button>
+            </div>
+        </div>
     )
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { SharedWatch } from '../types/Parts';
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAlert } from "../Logic/AlertContext";
@@ -10,16 +10,19 @@ const apiAddress = import.meta.env.VITE_API_URL;
 
 export default function CarouselShare({ sharedWatch }: carouselInterface) {
     const [watches, setWatches] = useState<SharedWatch[]>((sharedWatch || []));
-    
+
     const [activeIndex, setActiveIndex] = useState(0);
     const [likedWatches, setLikedWatches] = useState<Set<string>>(new Set());
-    const { user, isAuthenticated,getAccessTokenSilently } = useAuth0();
-    
-    const colors = ['#5D4037', '#D1B994', '#2F3E46', '#B8B8B8', '#C9A96E'];
+    const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+
+    // Deeper, luxury colors
+    const colors = ['#1a2e35', '#3d2b1f', '#2a2a2a', '#1e3a5f', '#4a3b2c', '#2c3e50'];
     const getColor = (index: number) => colors[index % colors.length];
     const { showAlert } = useAlert();
 
-    // Permet de synchroniser l'état local si le composant parent met à jour les props
+    const [touchStart, setTouchStart] = useState(0);
+    const [touchEnd, setTouchEnd] = useState(0);
+
     useEffect(() => {
         setWatches(sharedWatch || []);
     }, [sharedWatch]);
@@ -30,6 +33,26 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
 
     const prevSlide = () => {
         setActiveIndex((prev) => (prev === 0 ? watches.length - 1 : prev - 1));
+    };
+
+    const handleTouchStart = (e: React.TouchEvent) => {
+        setTouchStart(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        setTouchEnd(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchEnd = () => {
+        if (!touchStart || !touchEnd) return;
+        const distance = touchStart - touchEnd;
+        if (distance > 50) {
+            nextSlide();
+        } else if (distance < -50) {
+            prevSlide();
+        }
+        setTouchStart(0);
+        setTouchEnd(0);
     };
 
     const voteLike = async (watchShareName: string) => {
@@ -43,15 +66,14 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
             return;
         }
 
-        // On cherche dans notre état local "watches"
         const watch = watches.find(w => w.watch.name === watchShareName);
         if (!watch) return;
 
         const likeData = { email: user?.email, elem: watch.watch.name, type: 'w' };
         const token = await getAccessTokenSilently({
-        authorizationParams: {
-            audience: import.meta.env.VITE_AUTH0_IDENTIFIER
-        }
+            authorizationParams: {
+                audience: import.meta.env.VITE_AUTH0_IDENTIFIER
+            }
         });
         fetch(`${apiAddress}/api/users/vote`, {
             method: 'PUT',
@@ -66,9 +88,7 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
                 }
 
                 setWatches(prevWatches => {
-                    // on retourne un tableau vide pour empêcher le crash du .map()
                     if (!Array.isArray(prevWatches)) return [];
-
                     return prevWatches.map(w => {
                         if (w.watch.name === watch.watch.name) {
                             const currentVotes = w.voteCount || (w.votes ? w.votes.length : 0);
@@ -88,60 +108,120 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
         let offset = index - activeIndex;
         const numItems = watches.length;
 
-        if (offset < -Math.floor(numItems / 2)) offset += numItems;
-        if (offset > Math.floor(numItems / 2)) offset -= numItems;
-
-        let classes = "absolute transition-all duration-500 ease-in-out opacity-0 z-0 scale-50 pointer-events-none";
+        if (offset < 0) offset += numItems; // Wrap around to the right
 
         if (offset === 0) {
-            classes = "absolute transition-all duration-500 ease-in-out z-50 scale-100 translate-x-0 opacity-100 shadow-2xl rounded-2xl pointer-events-auto";
-        } else if (offset === -1) {
-            classes = "absolute transition-all duration-500 ease-in-out z-40 scale-[0.80] -translate-x-[110%] opacity-80 shadow-xl rounded-2xl pointer-events-none";
+            return "absolute transition-all duration-700 ease-out z-50 scale-100 translate-x-0 opacity-100 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-2xl cursor-pointer";
         } else if (offset === 1) {
-            classes = "absolute transition-all duration-500 ease-in-out z-40 scale-[0.80] translate-x-[110%] opacity-80 shadow-xl rounded-2xl pointer-events-none";
-        } else if (offset === -2) {
-            classes = "absolute transition-all duration-500 ease-in-out z-30 scale-[0.65] -translate-x-[160%] opacity-50 rounded-2xl pointer-events-none";
+            return "absolute transition-all duration-700 ease-out z-40 scale-[0.85] translate-x-[60%] md:translate-x-[90%] opacity-90 shadow-xl rounded-2xl cursor-pointer";
         } else if (offset === 2) {
-            classes = "absolute transition-all duration-500 ease-in-out z-30 scale-[0.65] translate-x-[160%] opacity-50 rounded-2xl pointer-events-none";
+            return "absolute transition-all duration-700 ease-out z-30 scale-[0.70] translate-x-[120%] md:translate-x-[180%] opacity-60 shadow-lg rounded-2xl cursor-pointer";
+        } else if (offset === 3) {
+            return "absolute transition-all duration-700 ease-out z-20 scale-[0.55] translate-x-[180%] md:translate-x-[270%] opacity-30 rounded-2xl cursor-pointer";
+        } else {
+            return "absolute transition-all duration-700 ease-out opacity-0 z-0 scale-50 translate-x-[240%] pointer-events-none";
         }
-
-        return classes;
     };
 
     if (watches.length < 1) {
         return null;
     }
 
+    const activeWatch = watches[activeIndex];
+    const activeThemeColor = getColor(activeIndex);
+    const activeVotes = activeWatch.voteCount !== undefined ? activeWatch.voteCount : (activeWatch.watch.votes || (activeWatch.votes ? activeWatch.votes.length : 0));
+
     return (
-        <div className="flex flex-col items-center justify-center w-full min-h-screen overflow-hidden py-10">
+        <div
+            className="relative w-full min-h-screen overflow-hidden py-20 transition-colors duration-1000 ease-in-out flex flex-col md:flex-row items-center"
+            style={{ backgroundColor: activeThemeColor }}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+        >
+            {/* Subtle overlay gradient */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none"></div>
 
-            <div className="relative w-full max-w-6xl h-[500px] flex items-center justify-center mb-12">
-                {/* On map désormais sur l'état local "watches" et non plus sur la prop "sharedWatch" */}
-                {watches.map((shared, index) => {
-                    const themeColor = getColor(index);
+            {/* Left Side: Info */}
+            <div className="w-full md:w-1/2 px-8 md:px-16 lg:px-24 flex flex-col justify-center z-20 text-white min-h-[40vh] md:min-h-auto">
+                <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 rounded-full border-2 border-primary/50 bg-black/40 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                        <span className="text-white font-bold text-lg">{activeVotes}</span>
+                    </div>
+                    <div className="text-primary font-sans uppercase tracking-widest text-sm font-semibold">
+                        Votes de la communauté
+                    </div>
+                </div>
 
-                    return (
-                        <div
-                            key={index}
-                            className={`${getStyles(index)} bg-black/90 max-w-2xs backdrop-blur-xs md:w-100 h-full cursor-pointer flex flex-col justify-between overflow-hidden rounded-2xl`}
-                            onClick={() => setActiveIndex(index)}
+                <h2 className="font-serif text-5xl md:text-7xl lg:text-8xl font-bold mb-4 drop-shadow-xl uppercase leading-tight">
+                    {activeWatch.watch.name || 'Montre Custom'}
+                </h2>
+                <p className="text-xl md:text-2xl text-white/80 mb-10 font-sans tracking-wide">
+                    Créée par <span className="text-primary font-medium">{activeWatch.watch.creator || 'Anonyme'}</span>
+                </p>
+
+                <div className="flex flex-col sm:flex-row items-center gap-6">
+
+
+                    {/* Navigation Buttons */}
+                    <div className="flex">
+                        <button
+                            onClick={() => voteLike(activeWatch.watch.name)}
+                            disabled={likedWatches.has(activeWatch.watch.name)}
+                            className={`max-w-[160px] h-15 justify-center sm:w-auto md:px-10 md:py-5 px-4 py-3 rounded-xl text-xs md:text-xl font-sans uppercase tracking-widest transition-all duration-300 font-bold ${likedWatches.has(activeWatch.watch.name)
+                                ? 'bg-white/10 text-white/50 border border-white/10 cursor-not-allowed'
+                                : 'bg-primary text-dark border border-primary hover:bg-primary-light hover:-translate-y-1'
+                                }`}
                         >
+                            {likedWatches.has(activeWatch.watch.name) ? 'Vote enregistré' : 'Soutenir cette création'}
+                        </button>
+                        <div className='flex flex-row gap-4 ml-3'>
+                            <button
+                                onClick={prevSlide}
+                                className="w-14 h-14 rounded-full border border-white/30 flex items-center justify-center hover:bg-white/10 transition-colors backdrop-blur-sm"
+                                aria-label="Précédent"
+                            >
+                                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+                            <button
+                                onClick={nextSlide}
+                                className="w-14 h-14 rounded-full border border-white/30 flex items-center justify-center hover:bg-white/10 transition-colors backdrop-blur-sm"
+                                aria-label="Suivant"
+                            >
+                                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            {/* Right Side: Cards */}
+            <div className="w-full md:w-1/2 relative h-[450px] md:h-[600px] flex items-center justify-center md:justify-start z-10 mt-4 md:mt-0 px-4 md:px-0">
+                <div className="relative w-64 sm:w-72 md:w-80 h-full max-h-[500px]">
+                    {watches.map((shared, index) => {
+                        const themeColor = getColor(index);
+
+                        return (
                             <div
-                                className="absolute inset-0 rounded-2xl blur-xl transform group-hover:scale-105 transition-all duration-500 z-0"
-                                style={{ backgroundColor: themeColor }}
-                            ></div>
-                            
-                            <div
-                                className={`${getStyles(index)} relative w-full h-full cursor-pointer flex flex-col justify-between overflow-hidden rounded-2xl z-10 border border-white/10`}
+                                key={index}
+                                className={`${getStyles(index)} w-full h-full border border-white/10`}
                                 onClick={() => setActiveIndex(index)}
                                 style={{
-                                    background: `linear-gradient(to bottom, #1e293b 0%, ${themeColor} 100%)`
+                                    background: `linear-gradient(to bottom, #111 0%, ${themeColor} 100%)`
                                 }}
                             >
-                                <div className="flex justify-start w-full pt-5 pl-5 z-20">
-                                    <div className="text-white font-sans text-sm font-bold whitespace-nowrap bg-black/30 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10 transition-colors">
-                                        {/* Affiche dynamiquement voteCount mis à jour localement, ou la longueur du tableau si pas encore voté */}
-                                        {shared.voteCount !== undefined ? shared.voteCount : (shared.watch.votes || (shared.votes ? shared.votes.length : 0))} ❤️
+                                {/* Card Text (visible on non-active cards slightly, or we can keep it clean) */}
+                                <div className="absolute top-6 left-6 z-20 flex flex-col">
+                                    <h3 className="text-white/90 font-serif text-2xl uppercase font-bold tracking-wider">
+                                        {shared.watch.name}
+                                    </h3>
+                                    <div className="text-white/50 text-xs font-sans uppercase tracking-widest mt-1">
+                                        {shared.watch.creator || 'Anonyme'}
                                     </div>
                                 </div>
 
@@ -155,69 +235,19 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
                                                 key={part.id || category}
                                                 src={part.thumbnail}
                                                 alt={`Composant ${category} : ${part.name}`}
-                                                className="absolute inset-0 w-full h-full scale-125 object-contain drop-shadow-[0_15px_35px_rgba(0,0,0,0.5)] transition-transform duration-700"
+                                                className="absolute inset-0 w-full h-full scale-[1.3] object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.6)] transition-transform duration-700"
                                             />
                                         );
                                     })}
                                 </div>
 
-                                <div
-                                    className="absolute inset-0 z-15 mt-auto h-1/4 pointer-events-none"
-                                    style={{
-                                        background: `linear-gradient(to top, ${themeColor}, ${themeColor}B3, transparent)`
-                                    }}
-                                ></div>
-
-                                <div className="relative flex flex-col justify-end p-6 w-full z-20 mt-auto h-full">
-                                    <h3 className="text-white text-3xl font-bold tracking-wide mb-1 drop-shadow-md">
-                                        {shared.watch.name || 'Montre Custom'}
-                                    </h3>
-                                    <p className="text-white/80 text-sm mb-5">
-                                        Créée par {shared.watch.creator || 'Anonyme'}
-                                    </p>
-
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            voteLike(shared.watch.name);
-                                        }}
-                                        disabled={likedWatches.has(shared.watch.name)}
-                                        style={{
-                                            backgroundColor: `${themeColor}4D`
-                                        }}
-                                        className="group flex items-center justify-between backdrop-blur-sm transition-colors p-4 rounded-xl border border-white/20 hover:border-white/40 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        <span className="text-white/90 text-sm font-medium">Soutenir cette création</span>
-                                        <svg className="w-5 h-5 text-white/70 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
-                                        </svg>
-                                    </button>
+                                <div className="absolute inset-0 z-15 mt-auto h-1/3 pointer-events-none"
+                                    style={{ background: `linear-gradient(to top, ${themeColor}, transparent)` }}>
                                 </div>
                             </div>
-                        </div>
-                    );
-                })}
-            </div>
-
-            {/* Boutons de navigation */}
-            <div className="flex mt-16 space-x-6 z-10">
-                <button
-                    onClick={prevSlide}
-                    className="p-3 rounded-full border border-amber-400 text-gray-700 hover:bg-white/10 transition-colors focus:outline-none"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="white">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
-                </button>
-
-                <button
-                    onClick={nextSlide}
-                    className="p-3 rounded-full border border-amber-400 text-gray-700 hover:bg-white/10 transition-colors focus:outline-none"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="white">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                </button>
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );
