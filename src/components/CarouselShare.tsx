@@ -163,19 +163,19 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
                 <div className="flex flex-col sm:flex-row items-center gap-6">
 
 
-                    {/* Navigation Buttons */}
-                    <div className="flex">
+                    {/* Navigation */}
+                    <div className="flex w-full">
                         <button
                             onClick={() => voteLike(activeWatch.watch.name)}
                             disabled={likedWatches.has(activeWatch.watch.name)}
-                            className={`max-w-[160px] h-15 justify-center sm:w-auto md:px-10 md:py-5 px-4 py-3 rounded-xl text-xs md:text-xl font-sans uppercase tracking-widest transition-all duration-300 font-bold ${likedWatches.has(activeWatch.watch.name)
+                            className={`w-full flex items-center justify-center h-[50px] md:px-10 md:py-5 px-4 py-3 rounded-xl text-xs md:text-[18px] transition-all duration-300 ${likedWatches.has(activeWatch.watch.name)
                                 ? 'bg-white/10 text-white/50 border border-white/10 cursor-not-allowed'
                                 : 'bg-primary text-dark border border-primary hover:bg-primary-light hover:-translate-y-1'
                                 }`}
                         >
-                            {likedWatches.has(activeWatch.watch.name) ? 'Vote enregistré' : 'Soutenir cette création'}
+                            {likedWatches.has(activeWatch.watch.name) ? 'Vote enregistré' : 'Soutenir'}
                         </button>
-                        <div className='flex flex-row gap-4 ml-3'>
+                        <div className='flex flex-row justify-end gap-4 ml-3'>
                             <button
                                 onClick={prevSlide}
                                 className="w-14 h-14 rounded-full border border-white/30 flex items-center justify-center hover:bg-white/10 transition-colors backdrop-blur-sm"
@@ -201,7 +201,7 @@ export default function CarouselShare({ sharedWatch }: carouselInterface) {
             </div>
 
             {/* Right Side: Cards */}
-            <div className="w-full md:w-1/2 relative h-[450px] md:h-[600px] flex items-center justify-center md:justify-start z-10 mt-4 md:mt-0 px-4 md:px-0">
+            <div className="md:ml-6 w-full md:w-1/2 relative h-[450px] md:h-[600px] flex items-center justify-center md:justify-start z-10 mt-4 md:mt-0 px-4 md:px-0">
                 <div className="relative w-64 sm:w-72 md:w-80 h-full max-h-[500px]">
                     {watches.map((shared, index) => {
                         const themeColor = getColor(index);
