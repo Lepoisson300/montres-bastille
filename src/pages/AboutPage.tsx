@@ -1,13 +1,14 @@
 import { Helmet } from "react-helmet-async";
 import Nav from "../components/Nav";
-import { MeshGradient } from "@paper-design/shaders-react";
+import { MeshGradient } from '@mesh-gradient/core';
 import ComponentsCarousel from "../components/ComponentsCarousel";
 import type { PartOption } from "../types/Parts";
 import ConsentModal from "../Modals/ConsentModal";
+import type { MeshGradientOptions } from "@mesh-gradient/core";
+import { useRef, useEffect } from "react";
 
 // Images
 const heroBg = "/fond1.webp";
-const cmm10 = "/cmm10.webp";
 const remi = "/remi.webp";
 const womanBg = "/fond2.webp";
 const eclateImg = "/eclate.webp";
@@ -16,11 +17,42 @@ const sketchImg = "/AlsaceDial1.webp";
 const prototypeImg = "/nico.webp";
 const finalWatchImg = "/remiTest.webp";
 
-interface AboutInterface{
-  allcomponents:PartOption[]
+interface AboutInterface {
+  allcomponents: PartOption[]
 }
 
-export default function AboutPage({allcomponents}:AboutInterface) {
+export default function AboutPage({ allcomponents }: AboutInterface) {
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const gradient = new MeshGradient();
+    const options: MeshGradientOptions = {
+      colors: [
+        "#0a0a0c",
+        "#362b1e",
+        "#c5a059",
+        "#8b6528"
+      ],
+      darkenTop: false,              // Disables the diagonal shadow line
+      density: [0.12, 0.20],         // Higher vertex density to eliminate polygonal crease lines
+      reducedMotion: "ignore",
+      isStatic: false,
+      pauseOnOutsideViewport: false,
+      animationSpeed: 1.0,
+    };
+
+    gradient.init(canvas, options);
+    gradient.play();
+
+    return () => {
+      gradient.destroy();
+    };
+  }, []);
+
   return (
     <>
       <Helmet>
@@ -34,10 +66,10 @@ export default function AboutPage({allcomponents}:AboutInterface) {
 
       {/* Navigation requires dark background to be visible on the hero section if hero is dark, the original Nav had bg={false} which means transparent. */}
       <Nav bg={false} />
-      <ConsentModal/>
+      <ConsentModal />
 
       <div className="bg-dark text-text-primary overflow-hidden font-sans selection:bg-primary/30">
-        
+
         {/* Section 1: Hero */}
         <section className="relative min-h-screen flex items-center justify-center pt-20">
           {/* Background Image */}
@@ -45,7 +77,7 @@ export default function AboutPage({allcomponents}:AboutInterface) {
             <img src={heroBg} alt="Hero Background" className="w-full h-full object-cover blur-[2px] opacity-50 mix-blend-screen" />
             <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-dark" />
           </div>
-          
+
           <div className="relative z-10 w-full max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center pb-20">
             {/* Card Left */}
             <div className="border border-primary/30 bg-[#0A0A0A]/70 backdrop-blur-md p-10 md:p-14 rounded-sm shadow-2xl relative overflow-hidden">
@@ -86,7 +118,7 @@ export default function AboutPage({allcomponents}:AboutInterface) {
                 <img src={eclateImg} alt="Pièces de montre" className="w-full max-w-[400px] object-cover rounded-sm grayscale-[30%] contrast-125 hover:grayscale-0 transition-all duration-700" />
               </div>
             </div>
-            
+
             {/* Card Right */}
             <div className="border border-primary/30 bg-[#0A0A0A]/70 backdrop-blur-md p-10 md:p-14 rounded-sm shadow-2xl order-1 md:order-2 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
@@ -98,7 +130,7 @@ export default function AboutPage({allcomponents}:AboutInterface) {
               <p className="text-white/70 text-sm mb-10 leading-relaxed font-light">
                 Nous nous déplaçons à travers les régions de France pour discuter et comprendre avec les locaux ce qui caractérise le mieux leur région. Les matériaux sont ensuite choisis puis retravaillés par des artisans.
               </p>
-              
+
               <div className="grid grid-cols-2 gap-8 pt-4 border-t border-white/10">
                 <div>
                   <p className="text-white/40 text-[10px] tracking-[0.2em] uppercase mb-2">Assemblage</p>
@@ -119,20 +151,14 @@ export default function AboutPage({allcomponents}:AboutInterface) {
             <img src={watchDialBg} alt="Close up watch dial" className="w-full h-full object-cover opacity-15 mix-blend-luminosity grayscale-[50%]" />
             <div className="absolute inset-0 bg-gradient-to-t from-dark via-[#0A0A0A]/90 to-dark" />
           </div>
-          
+
           <div className="absolute inset-0 w-full h-full opacity-90 z-0 pointer-events-none" aria-hidden="true">
-              <MeshGradient
-                width={typeof window !== 'undefined' ? window.innerWidth : 1280}
-                height={typeof window !== 'undefined' ? window.innerHeight : 800}
-                colors={["#0a0a0c", "#262626", "#c5a059", "#1c1a17"]}
-                distortion={0.25}
-                speed={0.35}
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background"></div>
+            <canvas ref={canvasRef} className="w-full h-full block" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background"></div>
           </div>
 
           <div className="relative z-10 w-full max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            
+
             {/* Card Left */}
             <div className="border border-primary/30 bg-[#0A0A0A]/70 backdrop-blur-md p-10 md:p-16 rounded-sm shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
@@ -143,20 +169,20 @@ export default function AboutPage({allcomponents}:AboutInterface) {
                 </svg>
               </div>
               <h2 className="font-serif text-3xl md:text-4xl text-white text-center mb-8">De la qualité</h2>
-              
+
               <p className="text-white/70 text-sm text-center mb-6 leading-relaxed font-light">
-                Une de nos valeurs les plus importantes est de proposer des composants fabriqués et assemblés en France. Ces composants pleins de caractères et iconiques sont l'effet d'une révolution. 
+                Une de nos valeurs les plus importantes est de proposer des composants fabriqués et assemblés en France. Ces composants pleins de caractères et iconiques sont l'effet d'une révolution.
               </p>
               <p className="text-white/70 text-sm text-center mb-10 leading-relaxed font-light">
                 Les mouvements sont fabriqués par l'entreprise Yema à Morteau. Les bracelets sont conçus et fabriqués par la maison Fevre. Ainsi, Chez Montres-Bastille, nous voulons proposer une montres qui permettent de remettre la France dans la lumière dans l'horlogerie.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row justify-center items-center gap-6 text-[11px] text-white/50 tracking-[0.1em] uppercase">
                 <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 bg-primary rounded-full"></span> Mouvement Yema</div>
                 <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 bg-primary rounded-full"></span> Bracelets Maison Fevre</div>
               </div>
             </div>
-            
+
             {/* Image Left (ou Right selon l'ordre md:order) */}
             <div className="flex justify-center md:justify-start order-2 md:order-1">
               <div className="flex justify-center md:justify-start order-2 w-full">
@@ -164,21 +190,21 @@ export default function AboutPage({allcomponents}:AboutInterface) {
               </div>
             </div>
 
-            
+
           </div>
         </section>
 
         {/* Section 4: Repères (Timeline) */}
         <section className="py-32 bg-[#0A0A0A] border-t border-white/5 relative">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-[#0A0A0A] to-[#0A0A0A] pointer-events-none"></div>
-          
+
           <div className="max-w-7xl mx-auto px-6 relative z-10">
             <h2 className="text-center font-serif text-5xl text-primary mb-32 tracking-wide">Repères</h2>
-            
+
             <div className="max-w-4xl mx-auto relative">
               {/* Central Line */}
               <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-primary/30 to-transparent -translate-x-1/2 hidden md:block"></div>
-              
+
               {/* 2024 */}
               <div className="flex flex-col md:flex-row items-center justify-between mb-32 w-full group">
                 <div className="w-full md:w-5/12 text-center md:text-right md:pr-14 mb-8 md:mb-0">
@@ -243,7 +269,7 @@ export default function AboutPage({allcomponents}:AboutInterface) {
           <div className="w-12 h-[1px] bg-primary/40 mb-8"></div>
           <p className="text-white/40 text-[10px] tracking-[0.4em] uppercase">— Le Fondateur</p>
         </section>
-        
+
       </div>
     </>
   );

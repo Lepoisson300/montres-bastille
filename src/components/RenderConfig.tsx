@@ -2,53 +2,53 @@ import { AnimatePresence, motion } from "framer-motion";
 import ZoomBtn from "./zoomBtn";
 import html2canvas from "html2canvas";
 
-interface renderInterface{
-    selections:any;
-    zoom: number;
-    setZoom(zoom:number): void
+interface renderInterface {
+  selections: any;
+  zoom: number;
+  setZoom(zoom: number): void
 }
 
-export default function RenderViewer({selections, setZoom, zoom}:renderInterface){
+export default function RenderViewer({ selections, setZoom, zoom }: renderInterface) {
 
-    const handleDownload = async () => {
+  const handleDownload = async () => {
     const el = document.querySelector("#watch-viewer") as HTMLElement;
     if (!el) return;
 
     const canvas = await html2canvas(el, {
-        backgroundColor: null,
-        scale: 2,
-        useCORS: true,
-        onclone: (clonedDocument) => {
+      backgroundColor: null,
+      scale: 2,
+      useCORS: true,
+      onclone: (clonedDocument) => {
         const allElements = clonedDocument.querySelectorAll('*');
         allElements.forEach((node) => {
-            const htmlNode = node as HTMLElement;
-            const style = window.getComputedStyle(htmlNode);
-            const colorProps = ['backgroundColor', 'color', 'borderColor', 'outlineColor'];
-            colorProps.forEach(prop => {
+          const htmlNode = node as HTMLElement;
+          const style = window.getComputedStyle(htmlNode);
+          const colorProps = ['backgroundColor', 'color', 'borderColor', 'outlineColor'];
+          colorProps.forEach(prop => {
             // @ts-ignore
             if (style[prop] && style[prop].includes('oklab')) {
-                if (prop === 'color') htmlNode.style.color = '#000000';
-                else htmlNode.style[prop as any] = 'transparent';
+              if (prop === 'color') htmlNode.style.color = '#000000';
+              else htmlNode.style[prop as any] = 'transparent';
             }
-            });
-            if (style.boxShadow.includes('oklab')) {
+          });
+          if (style.boxShadow.includes('oklab')) {
             htmlNode.style.boxShadow = 'none';
-            }
+          }
         });
-        }
+      }
     });
 
     const link = document.createElement("a");
     link.download = `Bastille.png`;
     link.href = canvas.toDataURL("image/png");
     link.click();
-    };
+  };
 
-    return(
-        <div
-        id="watch-viewer"
-        className="relative mx-auto aspect-square w-full sm:max-w-105 md:max-w-155 rounded-4xl md:rounded-[3rem] border border-white/10 bg-surface/15 overflow-hidden shadow-2xl shadow-black/50"
-        >
+  return (
+    <div
+      id="watch-viewer"
+      className="relative mx-auto aspect-square w-full sm:max-w-105 md:max-w-155 rounded-4xl md:rounded-[3rem] border border-white/10 bg-surface overflow-hidden shadow-2xl shadow-black/50"
+    >
       <div className="relative h-full w-full transition-transform duration-300" style={{ transform: `scale(${zoom})` }}>
         <img
           src="/fondConfigurateur.webp"
@@ -95,6 +95,6 @@ export default function RenderViewer({selections, setZoom, zoom}:renderInterface
         </button>
       </div>
     </div>
-    )
-    
+  )
+
 };

@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import type { Order, User } from "../types/User";
 import Nav from "../components/Nav";
-import { MeshGradient } from '@paper-design/shaders-react';
+import { MeshGradient, type MeshGradientOptions } from "@mesh-gradient/core";
 import BtnRedirection from "../components/btnRedirect";
 import { Helmet } from "react-helmet-async";
 import WatchCard from "../components/WatchCard";
@@ -49,6 +49,35 @@ export default function AccountPage() {
   const [dbUser, setDbUser] = useState<User | null>(null);
   const [loadingData, setLoadingData] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const gradient = new MeshGradient();
+    const options: MeshGradientOptions = {
+      colors: [
+        "#0a0a0c",
+        "#362b1e",
+        "#c5a059",
+        "#8b6528"
+      ],
+      darkenTop: false,
+      density: [0.12, 0.20],
+      reducedMotion: "ignore",
+      isStatic: false,
+      pauseOnOutsideViewport: false,
+      animationSpeed: 1.0,
+    };
+
+    gradient.init(canvas, options);
+    gradient.play();
+
+    return () => {
+      gradient.destroy();
+    };
+  }, []);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [deleteAction, setDeleteAction] = useState(false);
   const { showAlert } = useAlert();
@@ -277,15 +306,9 @@ export default function AccountPage() {
           </div>
 
           {/* --- COLLECTION DE MONTRES --- */}
-          <div className="">
-            <div className="absolute w-full h-screen opacity-90 z-0 pointer-events-none" aria-hidden="true">
-              <MeshGradient
-                width={typeof window !== 'undefined' ? window.innerWidth : 1920}
-                height={typeof window !== 'undefined' ? window.innerHeight : 1080}
-                colors={["#0a0a0c", "#262626", "#c5a059", "#1c1a17"]}
-                distortion={0.25}
-                speed={0.45}
-              />
+          <div className="relative">
+            <div className="absolute inset-0 w-full h-full opacity-90 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
+              <canvas ref={canvasRef} className="w-full h-full block" />
             </div>
             <Reveal delay={2}>
               <div className="flex p-4 mx-[10%] justify-between items-end mb-10 border-b border-white/5 pb-4">

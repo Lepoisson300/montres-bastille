@@ -16,6 +16,7 @@
     "@babel/code-frame": "^7.29.0",
     "@heroicons/react": "^2.2.0",
     "@material-tailwind/react": "^2.1.10",
+    "@mesh-gradient/core": "^2.0.2",
     "@paper-design/shaders-react": "^0.0.71",
     "@splinetool/react-spline": "^4.1.0",
     "@splinetool/runtime": "^1.12.91",

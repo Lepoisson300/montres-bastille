@@ -108,6 +108,7 @@ ${formData.message}
         <meta property="og:description" content="Experts en horlogerie à votre écoute pour vos projets de montres uniques." />
         <meta property="og:image" content="https://montres-bastille.fr/logo.webp" />
         <link rel="canonical" href="https://montres-bastille.fr/contact" />
+        <link rel="preload" as="image" href="/contactBG.webp" type="image/webp" />
       </Helmet>
       <Nav bg={false} />
 
@@ -120,7 +121,10 @@ ${formData.message}
           {/* Image de fond fixe */}
           <img
             src="/contactBG.webp"
-            alt="Fond spatial MedGlass"
+            alt="Fond Atelier Montre Bastille"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
             className="absolute object-cover max-w-2xl h-full md:max-w-none md:w-full md:h-full"
           />
         </div>

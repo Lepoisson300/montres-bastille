@@ -5,9 +5,10 @@ import type { PartOption } from "../types/Parts";
 import type { WatchConfiguratorProps } from "../types/Configurator";
 import LuxuryDescription from './ComponentsDesc';
 import MobileLuxuryModal from './DescriptionModal';
-import { MeshGradient } from "@paper-design/shaders-react";
 import BuyCard from "./buyCard";
+import { MeshGradient } from '@mesh-gradient/core';
 import PartRow from "./PartRow";
+import { type MeshGradientOptions } from '@mesh-gradient/core';
 import RenderViewer from "./RenderConfig";
 
 // Converts PartOption[] → ?mouvement=mov-001&cases=case-42&...
@@ -25,11 +26,13 @@ const fromQuery = (): Record<string, string> => {
   return Object.fromEntries(new URLSearchParams(window.location.search));
 };
 
+
+
 export default function Configurator({ assets, defaultChoice, selectedRegion, onCheckout }: WatchConfiguratorProps) {
 
   const [isMobile, setIsMobile] = useState(false);
   const filtered = useMemo(() => {
-  const filter = (items: PartOption[]) => items.filter(i => !i.regions || !selectedRegion || Object.values(i.regions).includes(selectedRegion));
+    const filter = (items: PartOption[]) => items.filter(i => !i.regions || !selectedRegion || Object.values(i.regions).includes(selectedRegion));
     return {
       mouvement: filter(assets.mouvement),
       cases: filter(assets.cases),
@@ -45,10 +48,10 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
 
     const resolvedParts = [
       assets.mouvement?.find(p => p.id === (query.mouvement || defaultChoice?.mouvement)) ?? assets.mouvement?.[0],
-      assets.cases?.find(p => p.id === (query.cases         || defaultChoice?.cases))     ?? assets.cases?.[0],
-      assets.straps?.find(p => p.id === (query.straps       || defaultChoice?.straps))    ?? assets.straps?.[0],
-      assets.dials?.find(p => p.id === (query.dials         || defaultChoice?.dials))     ?? assets.dials?.[0],
-      assets.hands?.find(p => p.id === (query.hands         || defaultChoice?.hands))     ?? assets.hands?.[0],
+      assets.cases?.find(p => p.id === (query.cases || defaultChoice?.cases)) ?? assets.cases?.[0],
+      assets.straps?.find(p => p.id === (query.straps || defaultChoice?.straps)) ?? assets.straps?.[0],
+      assets.dials?.find(p => p.id === (query.dials || defaultChoice?.dials)) ?? assets.dials?.[0],
+      assets.hands?.find(p => p.id === (query.hands || defaultChoice?.hands)) ?? assets.hands?.[0],
     ];
 
     return resolvedParts.filter((p): p is PartOption => p !== undefined);
@@ -57,9 +60,38 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
   const [zoom, setZoom] = useState(3);
   const [focusedPart, setFocusedPart] = useState<PartOption | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   // Ref pour le slider de la zone basse
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const gradient = new MeshGradient();
+    const options: MeshGradientOptions = {
+      colors: [
+        "#0a0a0c",
+        "#362b1e",
+        "#c5a059",
+        "#8b6528"
+      ],
+      darkenTop: false,              // Disables the diagonal shadow line
+      density: [0.12, 0.20],         // Higher vertex density to eliminate polygonal crease lines
+      reducedMotion: "ignore",
+      isStatic: false,
+      pauseOnOutsideViewport: false,
+      animationSpeed: 1.0,
+    };
+
+    gradient.init(canvas, options);
+    gradient.play();
+
+    return () => {
+      gradient.destroy();
+    };
+  }, []);
 
   // 3. Derived Data
   const selections = useMemo(() => ({
@@ -72,7 +104,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
 
   const totalPrice = useMemo(() =>
     Object.values(selections).reduce((acc, curr) => acc + (curr?.price || 0), 0)
-  , [selections]);
+    , [selections]);
 
   const sku = Object.values(config).filter(Boolean).join("-");
 
@@ -138,24 +170,18 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
   return (
     <>
       <section className="flex flex-col bg-dark text-ivory min-h-screen font-sans overflow-hidden">
-        
+
         {/* --- ZONE HAUTE (Contient le gradient, l'en-tête et la montre) --- */}
         <div className="relative w-full pt-15 flex-grow">
-          
+
           {/* Halos ambiants (maintenant piégés dans la zone haute) */}
           <div className="pointer-events-none absolute top-0 -left-40 w-140 h-140 rounded-full bg-primary/10 blur-[160px] z-0" />
           <div className="pointer-events-none absolute top-1/3 -right-40 w-105 h-105 rounded-full bg-accent/10 blur-[140px] z-0" />
-          
+
           {/* Mesh Gradient + Grain (limités à la zone haute via inset-0) */}
           <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
             <div className="absolute inset-0 opacity-90">
-              <MeshGradient
-                width={typeof window !== 'undefined' ? window.innerWidth : 1920}
-                height={930}
-                colors={["#0a0a0c", "#362b1e", "#c5a059", "#1c1a17", "#8b6528"]}
-                distortion={0.35}
-                speed={0.40}
-              />
+              <canvas ref={canvasRef} className="w-full h-full block" />
             </div>
 
           </div>
@@ -176,7 +202,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
               transition={{ duration: 0.5, ease: "easeOut" }}
               className="relative flex items-center justify-center"
             >
-              <RenderViewer selections={selections} zoom={zoom} setZoom={setZoom}/>
+              <RenderViewer selections={selections} zoom={zoom} setZoom={setZoom} />
 
               {/* Overlay gauche — prix + commander */}
               <div className="hidden lg:block absolute left-0 top-1/2 -translate-y-1/2 z-20">
@@ -212,9 +238,9 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
         {/* --- ZONE BASSE (Slider horizontal) --- */}
         {/* Le Mesh ne descend plus ici. Le fond sera le 'bg-dark' de la section + un 'bg-surface/10' par dessus */}
         <div className="relative pl-15 z-20 border-t border-white/10 bg-surface/10 backdrop-blur-sm group">
-          
+
           {/* Navigation PC : Flèche Gauche */}
-          <button 
+          <button
             onClick={() => slide("left")}
             className="hidden md:flex absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center rounded-full bg-dark/90 text-white border border-white/10 hover:bg-white/10 hover:scale-105 transition-all opacity-0 group-hover:opacity-100 shadow-xl focus:outline-none"
             aria-label="Défiler à gauche"
@@ -223,7 +249,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
           </button>
 
           {/* Navigation PC : Flèche Droite */}
-          <button 
+          <button
             onClick={() => slide("right")}
             className="hidden md:flex absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center rounded-full bg-dark/90 text-white border border-white/10 hover:bg-white/10 hover:scale-105 transition-all opacity-0 group-hover:opacity-100 shadow-xl focus:outline-none"
             aria-label="Défiler à droite"
@@ -232,7 +258,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
           </button>
 
           {/* Conteneur principal du slider */}
-          <div 
+          <div
             ref={scrollContainerRef}
             className="flex flex-row items-start overflow-x-auto snap-x snap-mandatory px-6 md:px-24 py-8 md:py-12 gap-x-12 md:gap-x-16 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
           >
@@ -243,7 +269,7 @@ export default function Configurator({ assets, defaultChoice, selectedRegion, on
             <PartRow title="Bracelet" options={filtered.straps} current={config[2]} onSelect={(id: string) => handleSelectPart(2, id, filtered.straps)} />
           </div>
         </div>
-        
+
       </section>
 
       <MobileLuxuryModal

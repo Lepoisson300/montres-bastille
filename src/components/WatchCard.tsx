@@ -183,7 +183,7 @@ export default function WatchCard({
           <button 
           onClick={()=>handleShare(true)}
           disabled={isSharing || shareFeedback?.type === 'success'}
-          className={`w-1/2 flex items-center bg-amber-400/80 backdrop-blur-2xl justify-center text-xs tracking-widest uppercase py-3 rounded transition-all duration-300 border ${
+          className={`w-1/2 flex items-center bg-amber-400/80 backdrop-blur-sm justify-center text-xs tracking-widest uppercase py-3 rounded transition-all duration-300 border ${
             shareFeedback?.type === 'success'
               ? 'bg-green-500/20 text-green-400 border-green-500/30 cursor-default'
               : ' border-white/10 text-text-primary hover:bg-primary hover:text-dark hover:border-primary disabled:opacity-50 disabled:cursor-not-allowed'
