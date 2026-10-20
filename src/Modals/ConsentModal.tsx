@@ -20,9 +20,9 @@ export default function ConsentModal() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6 pointer-events-none flex justify-center">
-      
+
       <div className="w-full max-w-4xl bg-surface/95 backdrop-blur-sm border border-border rounded-xl shadow-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pointer-events-auto animate-in slide-in-from-bottom-10 duration-500">
-        
+
         <div className="flex-1 space-y-2">
           <h2 className="font-serif text-lg font-semibold text-primary">
             Zéro tracking. Que de l'essentiel.
@@ -32,9 +32,9 @@ export default function ConsentModal() {
           </p>
           <p className="font-sans text-text-muted text-xs">
             Détails dans notre{' '}
-            <a href="/confidentialite" className="text-primary hover:text-primary-light underline underline-offset-4 transition-colors">Politique de confidentialité</a>, nos{' '}
+            <a href="/privacy" className="text-primary hover:text-primary-light underline underline-offset-4 transition-colors">Politique de confidentialité</a>, nos{' '}
             <a href="/cgv" className="text-primary hover:text-primary-light underline underline-offset-4 transition-colors">CGV</a> et nos{' '}
-            <a href="/mentions-legales" className="text-primary hover:text-primary-light underline underline-offset-4 transition-colors">Mentions légales</a>.
+            <a href="/mention" className="text-primary hover:text-primary-light underline underline-offset-4 transition-colors">Mentions légales</a>.
           </p>
         </div>
 
@@ -44,7 +44,7 @@ export default function ConsentModal() {
         >
           J'ai compris
         </button>
-        
+
       </div>
     </div>
   );
