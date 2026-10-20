@@ -3,7 +3,7 @@ import { GoArrowUpRight, GoMail, GoDeviceMobile } from "react-icons/go";
 import Nav from "../components/Nav";
 import { Helmet } from "react-helmet-async";
 
-// Reveal animation component
+// Reveal animation component - optimized for 60/120fps GPU transitions
 const Reveal = ({
   children,
   delay = 0,
@@ -18,7 +18,7 @@ const Reveal = ({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setTimeout(() => setIsVisible(true), delay * 120);
+          setTimeout(() => setIsVisible(true), delay * 100);
         }
       },
       { threshold: 0.1 }
@@ -30,13 +30,17 @@ const Reveal = ({
   return (
     <div
       ref={ref}
-      className={`transition-all duration-1000 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-        }`}
+      style={{ willChange: "transform, opacity" }}
+      className={`transition-[opacity,transform] duration-700 ease-out ${
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+      }`}
     >
       {children}
     </div>
   );
 };
+
+const apiAddress = import.meta.env.VITE_API_URL || 'https://api.montres-bastille.fr';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -44,51 +48,15 @@ export default function ContactPage() {
     lastName: '',
     email: '',
     phone: '',
-    subject: '',
+    subject: 'general',
     message: ''
   });
+  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSuccess(false);
-
-    // Bundle the name into the message since the backend expects visitorEmail, subject, and message
-    const combinedMessage = `
-Name: ${formData.firstName + " " + formData.lastName}
-
-Message:
-${formData.message}
-    `.trim();
-
-    try {
-      const response = await fetch("https://medglass-backend.onrender.com/sendEmail", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          visitorEmail: formData.email,
-          subject: `New Contact Request from ${formData.firstName + " " + formData.lastName}`,
-          message: combinedMessage,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Network error");
-      }
-
-      setIsSuccess(true);
-      setFormData({ firstName: '', email: '', message: '', lastName: '', subject: '', phone: '' });
-
-      setTimeout(() => setIsSuccess(false), 5000);
-    } catch (error) {
-      console.error("Submission error:", error);
-    }
   };
 
   const subjects = [
@@ -98,6 +66,48 @@ ${formData.message}
     { value: 'warranty', label: 'Garantie & SAV' },
     { value: 'partnership', label: 'Partenariat' }
   ];
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isLoading) return;
+
+    setIsLoading(true);
+    setIsSuccess(false);
+    setErrorMessage(null);
+
+    const subjectLabel = subjects.find(s => s.value === formData.subject)?.label || 'Information Générale';
+
+    try {
+      const response = await fetch(`${apiAddress}/api/contact`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          subject: subjectLabel,
+          message: formData.message,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur de transmission");
+      }
+
+      setIsSuccess(true);
+      setFormData({ firstName: '', email: '', message: '', lastName: '', subject: 'general', phone: '' });
+
+      setTimeout(() => setIsSuccess(false), 6000);
+    } catch (error) {
+      console.error("Submission error:", error);
+      setErrorMessage("Une erreur est survenue lors de l'envoi via le serveur. Veuillez vérifier votre saisie et réessayer.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="font-sans min-h-screen text-neutral-200 selection:bg-[#d4af37]/30">
@@ -112,87 +122,96 @@ ${formData.message}
       </Helmet>
       <Nav bg={false} />
 
-      {/* Main Container with Dark Metallic radial background */}
-      <div
-        className="relative min-h-screen pb-16 overflow-hidden"
-
-      >
-        <div className="fixed inset-0 z-0 pointer-events-none bg-background">
-          {/* Image de fond fixe */}
+      {/* Main Container - optimized for smooth native scrolling */}
+      <div className="relative min-h-screen pb-24 overflow-x-clip">
+        {/* Hardware-accelerated background layer */}
+        <div
+          className="fixed inset-0 z-0 pointer-events-none bg-background transform-gpu"
+          style={{ willChange: "transform", transform: "translateZ(0)" }}
+        >
           <img
             src="/contactBG.webp"
             alt="Fond Atelier Montre Bastille"
             loading="eager"
             fetchPriority="high"
             decoding="async"
-            className="absolute object-cover max-w-2xl h-full md:max-w-none md:w-full md:h-full"
+            className="absolute inset-0 object-cover w-full h-full opacity-80"
           />
+          {/* Subtle gradient vignette instead of heavy blend-modes */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80 pointer-events-none" />
         </div>
-        {/* Subtle texture overlay for brushed metal look */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/brushed-alum.png")' }}></div>
-        <div className="relative flex md:flex-row flex-col z-20 max-w-400 mx-auto  items-start mt-15 lg:mt-[10%]">
+
+        <div className="relative flex md:flex-row flex-col z-20 max-w-7xl mx-auto items-start mt-15 lg:mt-[8%] px-4 sm:px-6">
 
           {/* LEFT COLUMN: Info */}
-          <div className="lg:sticky lg:top-40 pt-10 mt-4 mx-10">
+          <div className="lg:sticky lg:top-36 pt-10 mt-4 mx-4 md:mx-8 max-w-lg">
             <Reveal delay={0}>
               <div className="h-0.5 w-16 bg-accent-light mb-8 opacity-60" />
-              <h1
-                className="font-serif md:text-accent-light text-6xl md:text-8xl tracking-tight mb-8"
-              >
+              <h1 className="font-serif md:text-accent-light text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight mb-8">
                 Contactez l'Atelier
               </h1>
-              <p className="text-lg md:text-xl text-accent-light leading-relaxed mb-16 font-sans max-w-md font-light">
+              <p className="text-base sm:text-lg md:text-xl text-accent-light leading-relaxed mb-12 font-sans font-light">
                 Notre équipe d'artisans horlogers est à votre disposition pour vous accompagner dans votre quête de la montre parfaite.
               </p>
 
-              <div className="space-y-10">
-                <div className="flex items-start gap-6 group cursor-pointer">
-                  <div className="w-12 h-12 rounded-full border border-[#d4af37]/30 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-500 group-hover:border-[#d4af37] group-hover:shadow-[0_0_20px_rgba(212,175,55,0.2)]">
+              <div className="space-y-8">
+                <a
+                  href="tel:+33623256546"
+                  className="flex items-start gap-6 group cursor-pointer transition-transform duration-300 hover:translate-x-1"
+                >
+                  <div className="w-12 h-12 rounded-full border border-[#d4af37]/30 flex items-center justify-center bg-black/60 transition-all duration-300 group-hover:border-[#d4af37] group-hover:shadow-[0_0_20px_rgba(212,175,55,0.2)]">
                     <GoDeviceMobile className="w-5 h-5 text-[#d4af37]" />
                   </div>
                   <div>
-                    <h3 className="text-xl uppercase tracking-[0.2em] text-ink mb-2">Téléphone</h3>
-                    <p className="text-xl font-serif text-neutral-200 group-hover:text-[#d4af37] transition-colors">+33 6 23 25 65 46</p>
+                    <h3 className="text-sm uppercase tracking-[0.2em] text-neutral-400 mb-1">Téléphone</h3>
+                    <p className="text-lg sm:text-xl font-serif text-neutral-200 group-hover:text-[#d4af37] transition-colors">+33 6 23 25 65 46</p>
                   </div>
-                </div>
+                </a>
 
-                <div className="flex items-start gap-6 group cursor-pointer">
-                  <div className="w-12 h-12 rounded-full border border-[#d4af37]/30 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-500 group-hover:border-[#d4af37] group-hover:shadow-[0_0_20px_rgba(212,175,55,0.2)]">
+                <a
+                  href="mailto:contact@montres-bastille.fr"
+                  className="flex items-start gap-6 group cursor-pointer transition-transform duration-300 hover:translate-x-1"
+                >
+                  <div className="w-12 h-12 rounded-full border border-[#d4af37]/30 flex items-center justify-center bg-black/60 transition-all duration-300 group-hover:border-[#d4af37] group-hover:shadow-[0_0_20px_rgba(212,175,55,0.2)]">
                     <GoMail className="w-5 h-5 text-[#d4af37]" />
                   </div>
                   <div>
-                    <h3 className="text-xl uppercase tracking-[0.2em] text-ink mb-2">Email</h3>
-                    <p className="text-xl font-serif text-neutral-200 group-hover:text-[#d4af37] transition-colors">contact@montres-bastille.fr</p>
-                    <p className="text-sm text-neutral-500 mt-1">Réponse sous 24h</p>
+                    <h3 className="text-sm uppercase tracking-[0.2em] text-neutral-400 mb-1">Email</h3>
+                    <p className="text-lg sm:text-xl font-serif text-neutral-200 group-hover:text-[#d4af37] transition-colors">contact@montres-bastille.fr</p>
+                    <p className="text-xs text-neutral-500 mt-1">Réponse sous 24h</p>
                   </div>
-                </div>
+                </a>
               </div>
             </Reveal>
           </div>
 
           {/* RIGHT COLUMN: Form */}
-          <div className="lg:mt-15 lg:mx-auto mx-3 mt-10">
+          <div className="lg:mt-10 lg:ml-auto w-full lg:max-w-xl mx-auto mt-12">
             <Reveal delay={2}>
-              <div className="bg-[#0a0a0c]/80 backdrop-blur-xs border border-white/5 rounded-3xl p-10 md:pt-30 md:pb-30 md:px-15 shadow-2xl relative overflow-hidden ">
-                {/* Form decorative accent */}
-
-                <h2 className="font-serif text-3xl tracking-wide mb-10 text-neutral-100">
+              <div className="bg-[#0c0c0e]/90 border border-white/10 rounded-3xl p-6 sm:p-10 md:p-12 shadow-2xl relative overflow-hidden">
+                <h2 className="font-serif text-2xl sm:text-3xl tracking-wide mb-8 text-neutral-100">
                   Envoyez-nous un message
                 </h2>
 
                 {isSuccess ? (
-                  <div className="animate-fade-in flex flex-col items-center justify-center py-20 text-center ">
+                  <div className="animate-fade-in flex flex-col items-center justify-center py-16 text-center">
                     <div className="w-20 h-20 rounded-full border border-[#d4af37]/50 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(212,175,55,0.2)]">
                       <GoMail className="w-8 h-8 text-[#d4af37]" />
                     </div>
-                    <h3 className="font-serif text-2xl mb-4 text-[#d4af37]">Message Envoyé</h3>
-                    <p className="text-neutral-400 font-sans max-w-sm">
-                      Merci pour votre message. Notre équipe vous répondra dans les plus brefs délais.
+                    <h3 className="font-serif text-2xl mb-3 text-[#d4af37]">Message Envoyé</h3>
+                    <p className="text-neutral-400 font-sans max-w-sm text-sm sm:text-base leading-relaxed">
+                      Merci pour votre message. Notre équipe d'artisans vous répondra dans les plus brefs délais.
                     </p>
                   </div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-10 relative z-10 w-full h-full">
-                    <div className="grid gap-4 md:grid-cols-2">
+                  <form onSubmit={handleSubmit} className="space-y-8 relative z-10 w-full">
+                    {errorMessage && (
+                      <div className="p-4 rounded-xl border border-red-500/30 bg-red-950/30 text-red-200 text-xs sm:text-sm animate-fade-in">
+                        {errorMessage}
+                      </div>
+                    )}
+
+                    <div className="grid gap-6 md:grid-cols-2">
                       <div className="relative">
                         <input
                           type="text"
@@ -225,7 +244,7 @@ ${formData.message}
                       </div>
                     </div>
 
-                    <div className="grid gap-10 md:grid-cols-2">
+                    <div className="grid gap-6 md:grid-cols-2">
                       <div className="relative">
                         <input
                           type="email"
@@ -280,7 +299,7 @@ ${formData.message}
                       </div>
                     </div>
 
-                    <div className="relative pt-6">
+                    <div className="relative pt-4">
                       <textarea
                         name="message"
                         id="message"
@@ -291,30 +310,51 @@ ${formData.message}
                         className="peer w-full bg-transparent border-b border-white/10 py-3 text-neutral-200 font-sans focus:outline-none focus:border-[#d4af37] transition-colors resize-none placeholder-transparent"
                         placeholder="Message"
                       />
-                      <label htmlFor="message" className="absolute left-0 top-0 text-xs text-neutral-500 uppercase tracking-widest transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-9 peer-focus:top-0 peer-focus:text-xs peer-focus:text-[#d4af37]">
+                      <label htmlFor="message" className="absolute left-0 top-0 text-xs text-neutral-500 uppercase tracking-widest transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-7 peer-focus:top-0 peer-focus:text-xs peer-focus:text-[#d4af37]">
                         Message
                       </label>
                     </div>
 
-                    <div className="pt-4">
+                    <div className="pt-2">
                       <button
                         type="submit"
-                        className="group flex items-center justify-center gap-4 w-full md:w-auto bg-transparent border border-[#d4af37] text-[#f5d47a] font-sans px-10 py-4 text-sm uppercase tracking-[0.2em] transition-all duration-500 hover:bg-[#d4af37] hover:text-black hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]"
-                        onClick={() => {
-                          const emailSubject = encodeURIComponent(`Contact: ${subjects.find(s => s.value === formData.subject)?.label || 'Message'}`);
-                          const emailBody = encodeURIComponent(
-                            `Prénom: ${formData.firstName}\n` +
-                            `Nom: ${formData.lastName}\n` +
-                            `Email: ${formData.email}\n` +
-                            `Téléphone: ${formData.phone}\n` +
-                            `Sujet: ${subjects.find(s => s.value === formData.subject)?.label || 'N/A'}\n\n` +
-                            `Message:\n${formData.message}`
-                          );
-                          window.location.href = `mailto:boguiste@montres-bastille.fr?subject=${emailSubject}&body=${emailBody}`;
-                        }}
+                        disabled={isLoading}
+                        className={`group relative flex items-center justify-center gap-3 w-full sm:w-auto min-w-[200px] border border-[#d4af37] text-[#f5d47a] font-sans px-8 py-4 text-sm uppercase tracking-[0.2em] transition-all duration-300 ${
+                          isLoading
+                            ? "cursor-wait bg-[#d4af37]/10 opacity-80"
+                            : "hover:bg-[#d4af37] hover:text-black hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] cursor-pointer"
+                        }`}
                       >
-                        <span>Envoyer</span>
-                        <GoArrowUpRight className="text-xl transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+                        {isLoading ? (
+                          <>
+                            <svg
+                              className="animate-spin w-4 h-4 text-[#d4af37]"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="3"
+                              />
+                              <path
+                                className="opacity-90"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                              />
+                            </svg>
+                            <span className="tracking-wider">Envoi en cours...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Envoyer</span>
+                            <GoArrowUpRight className="text-xl transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+                          </>
+                        )}
                       </button>
                     </div>
                   </form>
@@ -327,10 +367,10 @@ ${formData.message}
 
       <style>{`
         .animate-fade-in {
-          animation: fadeIn 0.8s ease-out forwards;
+          animation: fadeIn 0.6s ease-out forwards;
         }
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
+          from { opacity: 0; transform: translateY(8px); }
           to { opacity: 1; transform: translateY(0); }
         }
       `}</style>

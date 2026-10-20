@@ -114,7 +114,7 @@ export default function CommunityPage() {
                 <div className="w-8 h-8 rounded-full bg-gray-300 border-2 border-white overflow-hidden"><img src="https://i.pravatar.cc/100?img=1" alt="User" /></div>
                 <div className="w-8 h-8 rounded-full bg-gray-400 border-2 border-white overflow-hidden"><img src="https://i.pravatar.cc/100?img=2" alt="User" /></div>
               </div>
-              <span className="text-sm font-medium tracking-wide">Des centaines de passionnés nous ont rejoints. Rejoignez-nous !</span>
+              <span className="text-sm font-medium tracking-wide">Des passionnés nous rejoignent chaques jours, rejoignez-nous !</span>
             </div>
 
             <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl tracking-tight mb-6 leading-tight drop-shadow-xl">
@@ -133,7 +133,7 @@ export default function CommunityPage() {
           </Reveal>
         </div>
 
-        {/* Floating Stats Glass Bar */}
+        {/* Floating Stats Glass Bar 
         <div className="flex flex-row w-full px-6 pb-8">
           <div className="max-w-5xl mx-auto rounded-3xl bg-black/40 backdrop-blur-xl border border-white/10 p-6 md:p-8 flex flex-row md:flex-row justify-around items-center gap-8 shadow-2xl">
             <div className="text-center">
@@ -151,7 +151,9 @@ export default function CommunityPage() {
               <div className="text-[10px] md:text-sm uppercase tracking-wider text-white/70 font-medium">Votes Récoltés</div>
             </div>
           </div>
+          
         </div>
+        */}
       </section>
 
       {/* CAROUSEL SECTION */}

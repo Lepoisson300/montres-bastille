@@ -29,7 +29,7 @@ export default function AboutPage({ allcomponents }: AboutInterface) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gradient = new MeshGradient();
+    let gradient: MeshGradient | null = new MeshGradient();
     const options: MeshGradientOptions = {
       colors: [
         "#0a0a0c",
@@ -37,19 +37,35 @@ export default function AboutPage({ allcomponents }: AboutInterface) {
         "#c5a059",
         "#8b6528"
       ],
-      darkenTop: false,              // Disables the diagonal shadow line
-      density: [0.12, 0.20],         // Higher vertex density to eliminate polygonal crease lines
+      darkenTop: false,
+      density: [0.12, 0.20],
       reducedMotion: "ignore",
       isStatic: false,
-      pauseOnOutsideViewport: false,
-      animationSpeed: 1.0,
+      pauseOnOutsideViewport: true, // Optimisation: met en pause quand non visible
+      animationSpeed: 0.8,
     };
 
     gradient.init(canvas, options);
     gradient.play();
 
+    // IntersectionObserver pour stopper complètement les cycles WebGL/Canvas quand hors de vue
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!gradient) return;
+      if (entry.isIntersecting) {
+        gradient.play();
+      } else {
+        gradient.pause();
+      }
+    }, { threshold: 0.05 });
+
+    observer.observe(canvas);
+
     return () => {
-      gradient.destroy();
+      observer.disconnect();
+      if (gradient) {
+        gradient.destroy();
+        gradient = null;
+      }
     };
   }, []);
 
@@ -64,23 +80,30 @@ export default function AboutPage({ allcomponents }: AboutInterface) {
         <link rel="canonical" href="https://montres-bastille.fr/about" />
       </Helmet>
 
-      {/* Navigation requires dark background to be visible on the hero section if hero is dark, the original Nav had bg={false} which means transparent. */}
       <Nav bg={false} />
       <ConsentModal />
 
-      <div className="bg-dark text-text-primary overflow-hidden font-sans selection:bg-primary/30">
+      {/* Main Container - fluid native GPU scrolling */}
+      <div className="bg-dark text-text-primary overflow-x-clip font-sans selection:bg-primary/30">
 
         {/* Section 1: Hero */}
         <section className="relative min-h-screen flex items-center justify-center pt-20">
-          {/* Background Image */}
-          <div className="absolute inset-0 z-0">
-            <img src={heroBg} alt="Hero Background" className="w-full h-full object-cover blur-[2px] opacity-50 mix-blend-screen" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-dark" />
+          {/* Background Image - GPU optimized without blend-modes */}
+          <div className="absolute inset-0 z-0 pointer-events-none transform-gpu">
+            <img
+              src={heroBg}
+              alt="Hero Background"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="w-full h-full object-cover opacity-45"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-dark" />
           </div>
 
           <div className="relative z-10 w-full max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center pb-20">
             {/* Card Left */}
-            <div className="border border-primary/30 bg-[#0A0A0A]/70 backdrop-blur-md p-10 md:p-14 rounded-sm shadow-2xl relative overflow-hidden">
+            <div className="border border-primary/30 bg-[#0c0c0e]/92 p-8 sm:p-10 md:p-14 rounded-sm shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
               <h1 className="font-serif text-4xl md:text-[2.75rem] text-primary mb-6 leading-[1.15]">
                 L'histoire de<br />Montres-Bastille
@@ -92,13 +115,19 @@ export default function AboutPage({ allcomponents }: AboutInterface) {
               <p className="text-white/60 text-xs md:text-sm mb-10 leading-relaxed font-light">
                 Si vous êtes arrivé là, c'est que vous êtes curieux de savoir comment sont fabriquées ces gardes-temps? Alors allons-y.
               </p>
-
             </div>
+
             {/* Image Right */}
             <div className="flex justify-center md:justify-end">
-              <div className="relative p-2 border border-primary/20 bg-[#0A0A0A]/50 shadow-2xl rounded-sm group">
-                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
-                <img src={remi} alt="Carnet d'horloger" className="w-full max-w-[400px] object-cover rounded-sm grayscale-[20%] contrast-125" />
+              <div className="relative p-2 border border-primary/20 bg-[#0A0A0A]/80 shadow-2xl rounded-sm group">
+                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 pointer-events-none"></div>
+                <img
+                  src={remi}
+                  alt="Carnet d'horloger"
+                  loading="eager"
+                  decoding="async"
+                  className="w-full max-w-[400px] object-cover rounded-sm grayscale-[20%] contrast-125"
+                />
               </div>
             </div>
           </div>
@@ -106,21 +135,33 @@ export default function AboutPage({ allcomponents }: AboutInterface) {
 
         {/* Section 2: La France dans un raffinement absolu */}
         <section className="relative min-h-screen flex items-center justify-center py-24 border-t border-white/5">
-          <div className="absolute inset-0 z-0">
-            <img src={womanBg} alt="Woman Vintage Background" className="w-full h-full object-cover opacity-40 mix-blend-luminosity grayscale" />
+          <div className="absolute inset-0 z-0 pointer-events-none transform-gpu">
+            <img
+              src={womanBg}
+              alt="Woman Vintage Background"
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover opacity-25 grayscale"
+            />
             <div className="absolute inset-0 bg-gradient-to-b from-dark via-[#0A0A0A]/80 to-dark" />
           </div>
 
           <div className="relative z-10 w-full max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             {/* Image Left */}
             <div className="flex justify-center md:justify-start order-2 md:order-1">
-              <div className="relative p-2 border border-primary/20 bg-[#0A0A0A]/50 shadow-2xl rounded-sm">
-                <img src={eclateImg} alt="Pièces de montre" className="w-full max-w-[400px] object-cover rounded-sm grayscale-[30%] contrast-125 hover:grayscale-0 transition-all duration-700" />
+              <div className="relative p-2 border border-primary/20 bg-[#0A0A0A]/80 shadow-2xl rounded-sm">
+                <img
+                  src={eclateImg}
+                  alt="Pièces de montre"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full max-w-[400px] object-cover rounded-sm grayscale-[30%] contrast-125 hover:grayscale-0 transition-all duration-500"
+                />
               </div>
             </div>
 
             {/* Card Right */}
-            <div className="border border-primary/30 bg-[#0A0A0A]/70 backdrop-blur-md p-10 md:p-14 rounded-sm shadow-2xl order-1 md:order-2 relative overflow-hidden">
+            <div className="border border-primary/30 bg-[#0c0c0e]/92 p-8 sm:p-10 md:p-14 rounded-sm shadow-2xl order-1 md:order-2 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
               <h3 className="text-primary/80 text-[10px] tracking-[0.3em] uppercase mb-5 font-semibold">La France dans le détail</h3>
               <h2 className="font-serif text-4xl md:text-[2.75rem] text-white mb-6 leading-[1.15]">
@@ -147,12 +188,18 @@ export default function AboutPage({ allcomponents }: AboutInterface) {
 
         {/* Section 3: De la qualité */}
         <section className="relative min-h-screen flex items-center justify-center py-24 border-t border-white/5 overflow-hidden">
-          <div className="absolute inset-0 z-0">
-            <img src={watchDialBg} alt="Close up watch dial" className="w-full h-full object-cover opacity-15 mix-blend-luminosity grayscale-[50%]" />
+          <div className="absolute inset-0 z-0 pointer-events-none transform-gpu">
+            <img
+              src={watchDialBg}
+              alt="Close up watch dial"
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover opacity-15 grayscale-[50%]"
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-dark via-[#0A0A0A]/90 to-dark" />
           </div>
 
-          <div className="absolute inset-0 w-full h-full opacity-90 z-0 pointer-events-none" aria-hidden="true">
+          <div className="absolute inset-0 w-full h-full opacity-85 z-0 pointer-events-none transform-gpu" aria-hidden="true">
             <canvas ref={canvasRef} className="w-full h-full block" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background"></div>
           </div>
@@ -160,7 +207,7 @@ export default function AboutPage({ allcomponents }: AboutInterface) {
           <div className="relative z-10 w-full max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
 
             {/* Card Left */}
-            <div className="border border-primary/30 bg-[#0A0A0A]/70 backdrop-blur-md p-10 md:p-16 rounded-sm shadow-2xl relative overflow-hidden">
+            <div className="border border-primary/30 bg-[#0c0c0e]/92 p-8 sm:p-10 md:p-16 rounded-sm shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
               <div className="flex justify-center mb-8">
                 <svg className="w-10 h-10 text-primary/80" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
@@ -183,14 +230,10 @@ export default function AboutPage({ allcomponents }: AboutInterface) {
               </div>
             </div>
 
-            {/* Image Left (ou Right selon l'ordre md:order) */}
-            <div className="flex justify-center md:justify-start order-2 md:order-1">
-              <div className="flex justify-center md:justify-start order-2 w-full">
-                <ComponentsCarousel parts={allcomponents} />
-              </div>
+            {/* Image Right */}
+            <div className="flex justify-center md:justify-start order-2 md:order-1 w-full">
+              <ComponentsCarousel parts={allcomponents} />
             </div>
-
-
           </div>
         </section>
 
@@ -216,8 +259,14 @@ export default function AboutPage({ allcomponents }: AboutInterface) {
                   <div className="w-3 h-3 bg-dark border-2 border-primary/50 rounded-full z-10 transition-all duration-300 group-hover:border-primary group-hover:shadow-[0_0_15px_rgba(201,169,110,0.5)] group-hover:scale-125"></div>
                 </div>
                 <div className="w-full md:w-5/12 md:pl-14">
-                  <div className="relative p-1.5 border border-white/5 bg-white/5 rounded-sm overflow-hidden transition-all duration-500 group-hover:border-primary/30">
-                    <img src={sketchImg} alt="Croquis montre" className="w-full h-48 object-cover opacity-60 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105" />
+                  <div className="relative p-1.5 border border-white/5 bg-white/5 rounded-sm overflow-hidden transition-all duration-300 group-hover:border-primary/30">
+                    <img
+                      src={sketchImg}
+                      alt="Croquis montre"
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-48 object-cover opacity-60 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
+                    />
                   </div>
                 </div>
               </div>
@@ -233,8 +282,14 @@ export default function AboutPage({ allcomponents }: AboutInterface) {
                   <div className="w-3 h-3 bg-dark border-2 border-primary/50 rounded-full z-10 transition-all duration-300 group-hover:border-primary group-hover:shadow-[0_0_15px_rgba(201,169,110,0.5)] group-hover:scale-125"></div>
                 </div>
                 <div className="w-full md:w-5/12 md:pr-14">
-                  <div className="relative p-1.5 border border-white/5 bg-white/5 rounded-sm overflow-hidden transition-all duration-500 group-hover:border-primary/30">
-                    <img src={prototypeImg} alt="Prototype boîtier" className="w-full h-48 object-cover opacity-60 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105" />
+                  <div className="relative p-1.5 border border-white/5 bg-white/5 rounded-sm overflow-hidden transition-all duration-300 group-hover:border-primary/30">
+                    <img
+                      src={prototypeImg}
+                      alt="Prototype boîtier"
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-48 object-cover opacity-60 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
+                    />
                   </div>
                 </div>
               </div>
@@ -251,7 +306,13 @@ export default function AboutPage({ allcomponents }: AboutInterface) {
                 </div>
                 <div className="w-full md:w-5/12 md:pl-14">
                   <div className="relative p-1.5 border border-primary/20 bg-primary/5 rounded-sm overflow-hidden shadow-[0_0_30px_rgba(201,169,110,0.1)]">
-                    <img src={finalWatchImg} alt="Montre finalisée" className="w-full h-48 object-cover transition-transform duration-700 hover:scale-110" />
+                    <img
+                      src={finalWatchImg}
+                      alt="Montre finalisée"
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-48 object-cover transition-transform duration-500 hover:scale-110"
+                    />
                   </div>
                 </div>
               </div>
